@@ -29,6 +29,8 @@ dependencies:
   shared_preferences: ^0.4.3
   intl: ^0.16.0
   like_button: ^0.1.9
+  wave: ^0.0.8
+  animated_card: ^1.0.0+8
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
