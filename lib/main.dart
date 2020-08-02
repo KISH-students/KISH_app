@@ -187,62 +187,7 @@ class MainState extends State<Home> {
                       ]))
                 ],
               ),
-              Container(
-                  padding: EdgeInsets.only(top:20,bottom: 25,right: 25.0, left: 25.0),
-                  child: Column(children: [
-                    Container(
-                      height: 200,
-                      width: double.infinity,
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            blurRadius: 18,
-                            offset: Offset(0, 15),
-                            color: examDDayColor.withOpacity(.6),
-                            spreadRadius: -15)
-                      ]),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        //elevation: 10.0,
-                        color: examDDayColor,
-                        child: Column(
 
-                          children: <Widget>[
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children :<Widget>[ Center(
-                                  child: Text(
-                                    '감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontFamily: 'NanumSquareB'),
-                                  )),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  '염도 0.7 / 876.3kcal',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontFamily: 'NanumSquareB'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    // )
-                    //)
-                  ])),
 
 
               Column(
