@@ -206,7 +206,7 @@ class MainState extends State<MAIN> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('오늘의 식단을\n확인하세요', style: TextStyle(fontSize: 35)),
+                      Text('오늘의 \n확인하세요', style: TextStyle(fontSize: 35)),
 
                       //MyGetHttpData(),
                     ],
@@ -229,7 +229,7 @@ class MainState extends State<MAIN> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('시험 D-Day'+Stringdate,
+                          Text('시험 D-Day!!!!!'+Stringdate,
                               style: TextStyle(
                                   fontSize: 13,
                                   fontFamily: 'NanumSquareB',
