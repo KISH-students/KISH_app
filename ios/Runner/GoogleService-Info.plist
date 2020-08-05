@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>595087574039-ihbvneh231bv965f39agjilg3776g18t.apps.googleusercontent.com</string>
+	<string>701540934282-iq7qkdv903itm4l1h96jjaldnrgfs3ri.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.595087574039-ihbvneh231bv965f39agjilg3776g18t</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>595087574039-p0h21e74o7i8n7l29ndlnijsgrlie71q.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.701540934282-iq7qkdv903itm4l1h96jjaldnrgfs3ri</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDaqCqaLTYF11qn9HxpF-oYyG3OgXknW6w</string>
+	<string>AIzaSyCKh0ghWUyTtgkUshGECf4q41l7uZWTK4M</string>
 	<key>GCM_SENDER_ID</key>
-	<string>595087574039</string>
+	<string>701540934282</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.Hancho.KISH.kish2019</string>
 	<key>PROJECT_ID</key>
-	<string>kish-hancho</string>
+	<string>kish2020-e904d</string>
 	<key>STORAGE_BUCKET</key>
-	<string>kish-hancho.appspot.com</string>
+	<string>kish2020-e904d.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:595087574039:ios:d805264224ba91dfe00852</string>
+	<string>1:701540934282:ios:1dd8a8590ec64b966a0373</string>
 	<key>DATABASE_URL</key>
-	<string>https://kish-hancho.firebaseio.com</string>
+	<string>https://kish2020-e904d.firebaseio.com</string>
 </dict>
 </plist>
