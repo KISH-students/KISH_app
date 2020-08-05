@@ -19,18 +19,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^0.4.2  # add dependency for Firebase Core
-  firebase_auth: ^0.15.1
-  firebase_analytics: ^5.0.6 # add dependency for Google Analytics for Firebase
-  http: 0.12.0
+  firebase_core: ^0.4.5  # add dependency for Firebase Core
+  firebase_auth: ^0.16.1
+  firebase_analytics: ^5.0.16 # add dependency for Google Analytics for Firebase
+  http: 0.12.2
   english_words: ^3.1.0
-  device_info: ^0.4.1
-  fluttertoast: ^3.1.3
-  shared_preferences: ^0.4.3
-  intl: ^0.16.0
-  like_button: ^0.1.9
+  fluttertoast: ^7.0.2
+  shared_preferences: ^0.5.8
+  like_button: ^1.0.1
   wave: ^0.0.8
   animated_card: ^1.0.0+8
+  share: ^0.6.4+3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

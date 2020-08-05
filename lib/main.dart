@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:kish2019/api_links.dart';
 import 'package:kish2019/data_manager.dart';
 import 'package:like_button/like_button.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
@@ -123,6 +124,7 @@ class MainState extends State<Home> {
                   child: Card(
                       margin: EdgeInsets.zero,
                       elevation: 12.0,
+                      shadowColor: Colors.cyanAccent,
                       clipBehavior: Clip.antiAlias,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(bottomRight : Radius.circular(16.0), bottomLeft: Radius.circular(16.0))),
@@ -422,6 +424,9 @@ class MainState extends State<Home> {
                     dotPrimaryColor: Colors.pinkAccent,
                     dotSecondaryColor: Colors.pink,
                   ),
+                  onTap: (bool isLiked) {
+                    return onLikeButtonTap(isLiked, launchText);
+                  },
                   likeBuilder: (bool isLiked) {
                     return Icon(
                       Icons.favorite,
@@ -454,6 +459,11 @@ class MainState extends State<Home> {
       ),
       ),
     );
+  }
+
+  Future<bool> onLikeButtonTap(bool isLiked, String launchText) async {  // Just test
+    Share.share(launchText + "\n\nKISH 어플 다운받기 !");
+    return true;
   }
 
 
