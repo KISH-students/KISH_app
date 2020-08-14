@@ -491,26 +491,25 @@ class MainState extends State<Home> {
   }
 
   void parsingDDay(String jsonText) async{
-    if(!jsonText.contains("high")) return; // 잘못된 값을 반환했을 경우 return
     dataManager.set("DDAY", jsonText);
 
-    Map jsonData = json.decode(jsonText);
+    List<int> jsonData = json.decode(jsonText);
     this.examDDay = ":/";
     this.examDDayColor = grey;
 
     print(jsonData);
 
-    for (int i = 0; i < jsonData[this.grade].length; i++) {
-      if (jsonData[this.grade][i] == 0) break;
+    for (int i = 0; i < jsonData.length; i++) {
+      if (jsonData[i] == 0) break;
 
-      var date = new DateTime.fromMillisecondsSinceEpoch(jsonData[this.grade][i] * 1000);
+      var date = new DateTime.fromMillisecondsSinceEpoch(jsonData[i] * 1000);
       print(now.isAfter(date).toString() + i.toString());
 
       if (!now.isAfter(date)) {
         var diff = now.difference(date);
         int df = -diff.inDays + 1;
         this.examDDay = "D - " + df.toString();
-        this.examDate = " / " + jsonData[this.grade + "s"][i].toString();
+        this.examDate = " / " + jsonData[i].toString();
 
         if (df > 60)
           this.examDDayColor = green;
@@ -521,7 +520,7 @@ class MainState extends State<Home> {
         break;
 
       } else if (now.difference(date).inDays == 0) {
-        this.examDate = " / " + jsonData[this.grade + "s"][i].toString();
+        this.examDate = " / " + jsonData[i].toString();
         this.examDDay = "D-DAY";
         this.examDDayColor = red;
         break;
@@ -540,9 +539,9 @@ class MainState extends State<Home> {
   }
 
   loadDDAY () async {
-    final value = dataManager.get("DDAY", "{}");
+    final value = dataManager.get("DDAY", "[]");
     print('Offline DDAY: $value');
-    if(value == "{}") return;
+    if(value == "[]") return;
     parsingDDay(value);
     getDDayFromServer();
   }
