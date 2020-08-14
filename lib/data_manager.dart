@@ -13,7 +13,7 @@ class DataManager{
   }
 
   dynamic get(String key, def){
-    return this.preferences.get(key);
+    return this.preferences.get(key) ?? def;
   }
 
   bool set(String key, value){
