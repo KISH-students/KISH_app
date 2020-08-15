@@ -13,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
-
 DataManager dataManager;
 
 void main() {
@@ -51,6 +50,7 @@ class MainState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
 
     this.preserve();
     this.examDDayColor = grey;
@@ -481,20 +481,21 @@ class MainState extends State<Home> {
     var response = await http.get(
       Uri.encodeFull(url),
     );
+    if(response.statusCode != 200) return "";
     print(response.body);
     return response.body;
   }
 
   void getDDayFromServer() async{
     String result = await this.getWebText(ApiLinks.DDAY);
-    this.parsingDDay(result);
+    if(result != "") {
+      dataManager.set("DDAY", result);
+      this.parsingDDay(result);
+    }
   }
 
   void parsingDDay(String jsonText) async{
-    dataManager.set("DDAY", jsonText);
-
-    List<int> jsonData = json.decode(jsonText);
-    this.examDDay = ":/";
+    List<dynamic> jsonData = json.decode(jsonText);
     this.examDDayColor = grey;
 
     print(jsonData);
@@ -541,8 +542,10 @@ class MainState extends State<Home> {
   loadDDAY () async {
     final value = dataManager.get("DDAY", "[]");
     print('Offline DDAY: $value');
-    if(value == "[]") return;
-    parsingDDay(value);
+    if(value != "[]") {
+      this.examDDay = ":/";
+      parsingDDay(value);
+    }
     getDDayFromServer();
   }
 
