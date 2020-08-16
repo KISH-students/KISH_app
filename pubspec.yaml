@@ -31,7 +31,7 @@ dependencies:
   wave: ^0.0.8
   animated_card: ^1.0.0+8
   share: ^0.6.4+3
-  cron: ^0.2.3
+  google_fonts: ^1.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -57,6 +57,9 @@ flutter:
     - family: NanumSquareR
       fonts:
         - asset: fonts/NanumSquareR.ttf
+    - family: IBMPlexSans-Light
+      fonts:
+        - asset: fonts/IBMPlexSansKR-Light.ttf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -66,7 +69,8 @@ flutter:
   # assets:
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
-
+assets:
+  - fonts/google_fonts
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

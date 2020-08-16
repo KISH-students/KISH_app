@@ -12,6 +12,8 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 DataManager dataManager;
 
@@ -159,7 +161,7 @@ class MainState extends State<Home> {
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 50,
-                                          fontFamily: 'NanumSquareB'),
+                                          fontFamily: 'IBMPlexSans-Light'),
                                     )
                                 )
                             ),
