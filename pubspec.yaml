@@ -32,6 +32,7 @@ dependencies:
   animated_card: ^1.0.0+8
   share: ^0.6.4+3
   cron: ^0.2.3
+  device_info: ^0.4.2+6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

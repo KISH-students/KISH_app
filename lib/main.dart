@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:animated_card/animated_card.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -50,8 +52,7 @@ class MainState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
-
+    _getId();
     this.preserve();
     this.examDDayColor = grey;
     this.todayDate = new DateFormat('yyyy-MM-dd').format(now);
@@ -60,6 +61,17 @@ class MainState extends State<Home> {
     this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
     this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
     /*FINISH TEST*/
+  }
+
+  Future<String> _getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) { // import 'dart:io'
+      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+      print(iosDeviceInfo.identifierForVendor); // unique ID on iOS
+    } else {
+      AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
+      print(androidDeviceInfo.androidId + "이게 dudiudiudiudi"); // unique ID on Android
+    }
   }
 
   void preserve() async{
