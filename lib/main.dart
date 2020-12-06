@@ -1,19 +1,15 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:animated_card/animated_card.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/api_links.dart';
+import 'package:kish2019/constants.dart';
 import 'package:kish2019/data_manager.dart';
 import 'package:like_button/like_button.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
 
 DataManager dataManager;
 
@@ -94,7 +90,7 @@ class MainState extends State<Home> {
       ),
       home: Scaffold(
         backgroundColor: Colors.white,
-        /*appBar: AppBar(
+        appBar: AppBar(
           backgroundColor: Color(0xFFf9f9f9),
           elevation: 0.8,
           centerTitle: true,
@@ -125,65 +121,11 @@ class MainState extends State<Home> {
               )
             ],
           ),
-        ),*/
+        ),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  height: 230.0,
-                  width: double.infinity,
-                  child: Card(
-                      margin: EdgeInsets.zero,
-                      elevation: 12.0,
-                      shadowColor: Colors.cyanAccent,
-                      clipBehavior: Clip.antiAlias,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(bottomRight : Radius.circular(16.0), bottomLeft: Radius.circular(16.0))),
-                      child : Stack(
-                          children: [
-                            WaveWidget(
-                              config: CustomConfig(
-                                gradients: [
-                                  [Colors.cyanAccent, Colors.cyan],
-                                  [Colors.lightBlueAccent, Colors.lightBlue],
-                                  [Colors.tealAccent, Colors.teal],
-                                  [Colors.blue, Colors.blueAccent]
-                                ],
-                                durations: [35000, 19440, 10800, 6000],
-                                heightPercentages: [(0.20 + 0.4), (0.23 + 0.4), (0.25 + 0.4), (0.30 + 0.4)],
-                                blur: MaskFilter.blur(BlurStyle.solid, 40),
-                                gradientBegin: Alignment.bottomLeft,
-                                gradientEnd: Alignment.topRight,
-                              ),
-                              waveAmplitude: 0,
-                              backgroundColor: Color.fromARGB(255, 6, 6, 99),
-                              size: Size(
-                                double.infinity,
-                                double.infinity,
-                              ),
-                            ),
-                            Center(
-                                child: Container(
-                                  //margin: EdgeInsets.only(top: 40),
-                                    child : Text(
-                                      examDDay,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 50,
-                                          fontFamily: 'NanumSquareB'),
-                                    )
-                                )
-                            ),
-                            /*Text("시험 D-DAY", style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 50,
-                                fontFamily: 'NanumSquareB'),),*/
-                          ]
-                      )
-                  )
-              ),
-
               Container(
                 margin: const EdgeInsets.only(top: 40.0, left: 17),
                 child: Column(
@@ -197,7 +139,7 @@ class MainState extends State<Home> {
 
 
 
-              /*Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -223,51 +165,6 @@ class MainState extends State<Home> {
                         ],
                       ),
                     ),
-                  ),
-                  Container(
-                    height: 172.0,
-                    width: double.infinity,
-                  child: Card(
-                    elevation: 12.0,
-                    margin: EdgeInsets.only(right: 16.0, left: 16.0, bottom: 16.0),
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                  child : Stack(
-                    children: [
-                      WaveWidget(
-                    config: CustomConfig(
-                      gradients: [
-                        [Colors.cyanAccent, Colors.cyan],
-                        [Colors.lightBlueAccent, Colors.lightBlue],
-                        [Colors.tealAccent, Colors.teal],
-                        [Colors.blue, Colors.blueAccent]
-                      ],
-                      durations: [35000, 19440, 10800, 6000],
-                      heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                      blur: MaskFilter.blur(BlurStyle.solid, 40),
-                      gradientBegin: Alignment.bottomLeft,
-                      gradientEnd: Alignment.topRight,
-                    ),
-                    waveAmplitude: 0,
-                    backgroundColor: Colors.white,
-                    size: Size(
-                      double.infinity,
-                      double.infinity,
-                    ),
-                  ),
-                      Center(
-                          child: Text(
-                            examDDay,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 50,
-                                fontFamily: 'NanumSquareB'),
-                          )
-                      )
-                    ]
-                  )
-                  )
                   ),
                   Container(
                       padding: EdgeInsets.only(top:20,bottom: 25,right: 25.0, left: 25.0),
@@ -308,7 +205,9 @@ class MainState extends State<Home> {
                         //)
                       ]))
                 ],
-              ),*/
+              ),
+
+
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,6 +228,39 @@ class MainState extends State<Home> {
                                         fontSize: 13,
                                         fontFamily: 'NanumSquareB',
                                         color: Colors.black87)),
+                                LikeButton(
+                                  size: 20,
+                                  circleColor:
+                                  CircleColor(start: Colors.orangeAccent, end: Colors.orange),
+                                  bubblesColor: BubblesColor(
+                                    dotPrimaryColor: Colors.pinkAccent,
+                                    dotSecondaryColor: Colors.pink,
+                                  ),
+                                  likeBuilder: (bool isLiked) {
+                                    return Icon(
+                                      Icons.favorite,
+                                      color: isLiked ? Colors.pinkAccent : Colors.grey,
+                                      size: 20,
+                                    );
+                                  },
+                                  likeCount: 0,
+                                  countPostion: CountPostion.left,
+                                  countBuilder: (int count, bool isLiked, String text) {
+                                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
+                                    Widget result;
+                                    if (count == 0) {
+                                      result = Text(
+                                        "",
+                                        style: TextStyle(color: color),
+                                      );
+                                    } else
+                                      result = Text(
+                                        text,
+                                        style: TextStyle(color: color),
+                                      );
+                                    return result;
+                                  },
+                                ),
                               ],
 
                             ),
@@ -341,11 +273,92 @@ class MainState extends State<Home> {
                 ],
               ),
               Container(
-                  width: double.infinity,
-                  child : Column(
-                    children: this.launchCards,
+                  height: 280.0,
+                  child:
+                  ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [Container(
+                      //
+                      padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
+                      height: 300,
+                      width: 200,
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            blurRadius: 30,
+                            offset: Offset(0, 9),
+                            color: Colors.black.withOpacity(.2),
+                            spreadRadius: -15)
+                      ]),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(11.0),
+                        ),
+                        elevation: 0,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(right: 10,left: 10, top : 30),
+                              child : FittedBox(fit:BoxFit.fitWidth,  child : Text(
+                                '감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontFamily: 'NanumSquareR'),
+                              ),),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                      Container(
+                        //
+                        padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
+                        height: 280,
+                        width: 200,
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                              blurRadius: 30,
+                              offset: Offset(0, 9),
+                              color: Colors.black.withOpacity(.2),
+                              spreadRadius: -15)
+                        ]),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(11.0),
+                          ),
+                          elevation: 0,
+                          color: Colors.white,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.only(right: 12,left: 12, top : 30),
+                                child : FittedBox(fit:BoxFit.fitWidth,  child : Text(
+                                  '감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontFamily: 'NanumSquareR'),
+                                ),),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   )
-              )
+
+              ),
+
+
+
             ],
           ),
         ),
@@ -360,122 +373,6 @@ class MainState extends State<Home> {
         ),
       ),
     );
-  }
-
-  Container createLaunchCard(String launchText, String id){
-    return Container(
-      //
-      padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
-      height: 300,
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-            blurRadius: 30,
-            offset: Offset(0, 9),
-            color: Colors.black.withOpacity(.2),
-            spreadRadius: -15)
-      ]),
-      child : AnimatedCard(
-        direction: AnimatedCardDirection.right, //Initial animation direction
-        initDelay: Duration(milliseconds: 5), //Delay to initial animation
-        duration: Duration(seconds: 1), //Initial animation duration
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11.0),
-          ),
-          elevation: 0,
-          color: Color.fromARGB(255, 35, 39, 41),
-          child: Stack(
-            children : [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  margin: EdgeInsets.only(left: 45),
-                  child : Row(
-                  children : [
-                    Text("3일/",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 35,
-                        fontFamily: 'NanumSquareR'),
-                    ),
-                    Text("월",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontFamily: 'NanumSquareR'),
-                ),
-            ]
-                ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-              child : Container(
-                height: 150,
-                margin: EdgeInsets.only(right: 20,left: 10),
-                child : FittedBox(
-                  fit:BoxFit.scaleDown,
-                  child : Text(
-                  launchText,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 200,
-                      fontFamily: 'NanumSquareR'),
-                ),),
-              ),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  child : LikeButton(
-                  size: 20,
-                  circleColor:
-                  CircleColor(start: Colors.orangeAccent, end: Colors.orange),
-                  bubblesColor: BubblesColor(
-                    dotPrimaryColor: Colors.pinkAccent,
-                    dotSecondaryColor: Colors.pink,
-                  ),
-                  onTap: (bool isLiked) {
-                    return onLikeButtonTap(isLiked, launchText);
-                  },
-                  likeBuilder: (bool isLiked) {
-                    return Icon(
-                      Icons.favorite,
-                      color: isLiked ? Colors.pinkAccent : Colors.grey,
-                      size: 20,
-                    );
-                  },
-                  likeCount: 0,
-                  countPostion: CountPostion.left,
-                  countBuilder: (int count, bool isLiked, String text) {
-                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
-                    Widget result;
-                    if (count == 0) {
-                      result = Text(
-                        "",
-                        style: TextStyle(color: color),
-                      );
-                    } else
-                      result = Text(
-                        text,
-                        style: TextStyle(color: color),
-                      );
-                    return result;
-                  },
-                ),
-                ),
-              )
-            ],
-          )
-      ),
-      ),
-    );
-  }
-
-  Future<bool> onLikeButtonTap(bool isLiked, String launchText) async {  // Just test
-    Share.share(launchText + "\n\nKISH 어플 다운받기 !");
-    return true;
   }
 
 
@@ -493,36 +390,36 @@ class MainState extends State<Home> {
     var response = await http.get(
       Uri.encodeFull(url),
     );
-    if(response.statusCode != 200) return "";
     print(response.body);
     return response.body;
   }
 
   void getDDayFromServer() async{
     String result = await this.getWebText(ApiLinks.DDAY);
-    if(result != "") {
-      dataManager.set("DDAY", result);
-      this.parsingDDay(result);
-    }
+    this.parsingDDay(result);
   }
 
   void parsingDDay(String jsonText) async{
-    List<dynamic> jsonData = json.decode(jsonText);
+    if(!jsonText.contains("high")) return; // 잘못된 값을 반환했을 경우 return
+    dataManager.set("DDAY", jsonText);
+
+    Map jsonData = json.decode(jsonText);
+    this.examDDay = ":/";
     this.examDDayColor = grey;
 
     print(jsonData);
 
-    for (int i = 0; i < jsonData.length; i++) {
-      if (jsonData[i] == 0) break;
+    for (int i = 0; i < jsonData[this.grade].length; i++) {
+      if (jsonData[this.grade][i] == 0) break;
 
-      var date = new DateTime.fromMillisecondsSinceEpoch(jsonData[i] * 1000);
+      var date = new DateTime.fromMillisecondsSinceEpoch(jsonData[this.grade][i] * 1000);
       print(now.isAfter(date).toString() + i.toString());
 
       if (!now.isAfter(date)) {
         var diff = now.difference(date);
         int df = -diff.inDays + 1;
         this.examDDay = "D - " + df.toString();
-        this.examDate = " / " + jsonData[i].toString();
+        this.examDate = " / " + jsonData[this.grade + "s"][i].toString();
 
         if (df > 60)
           this.examDDayColor = green;
@@ -533,7 +430,7 @@ class MainState extends State<Home> {
         break;
 
       } else if (now.difference(date).inDays == 0) {
-        this.examDate = " / " + jsonData[i].toString();
+        this.examDate = " / " + jsonData[this.grade + "s"][i].toString();
         this.examDDay = "D-DAY";
         this.examDDayColor = red;
         break;
@@ -552,12 +449,10 @@ class MainState extends State<Home> {
   }
 
   loadDDAY () async {
-    final value = dataManager.get("DDAY", "[]");
+    final value = dataManager.get("DDAY", "{}");
     print('Offline DDAY: $value');
-    if(value != "[]") {
-      this.examDDay = ":/";
-      parsingDDay(value);
-    }
+    if(value == "{}") return;
+    parsingDDay(value);
     getDDayFromServer();
   }
 
