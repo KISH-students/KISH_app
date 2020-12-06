@@ -1,0 +1,34 @@
+LikeButton(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  size: 8,
+                  circleColor:
+                  CircleColor(start: Colors.orangeAccent, end: Colors.orange),
+                  bubblesColor: BubblesColor(
+                    dotPrimaryColor: Colors.pinkAccent,
+                    dotSecondaryColor: Colors.pink,
+                  ),
+                  likeBuilder: (bool isLiked) {
+                    return Icon(
+                      Icons.favorite,
+                      color: isLiked ? Colors.pinkAccent : Colors.grey,
+                      size: 20,
+                    );
+                  },
+                  likeCount: 0,
+                  countPostion: CountPostion.left,
+                  countBuilder: (int count, bool isLiked, String text) {
+                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
+                    Widget result;
+                    if (count == 0) {
+                      result = Text(
+                        "",
+                        style: TextStyle(color: color),
+                      );
+                    } else
+                      result = Text(
+                        text,
+                        style: TextStyle(color: color),
+                      );
+                    return result;
+                  },
+                ),

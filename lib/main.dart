@@ -1,15 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:kish2019/api_links.dart';
+import 'package:kish2019/data_manager.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:kish2019/api_links.dart';
-import 'package:kish2019/constants.dart';
-import 'package:kish2019/data_manager.dart';
 import 'package:like_button/like_button.dart';
-import 'package:share/share.dart';
+//import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info/device_info.dart';
 
 DataManager dataManager;
 
@@ -53,9 +56,9 @@ class MainState extends State<Home> {
     this.examDDayColor = grey;
     this.todayDate = new DateFormat('yyyy-MM-dd').format(now);
     /*FOR TEST*/
-    this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
-    this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
-    this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
+    //this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
+    //this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
+    //this.launchCards.add(this.createLaunchCard('감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal', ""));
     /*FINISH TEST*/
   }
 
@@ -66,8 +69,76 @@ class MainState extends State<Home> {
       print(iosDeviceInfo.identifierForVendor); // unique ID on iOS
     } else {
       AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-      print(androidDeviceInfo.androidId + "이게 dudiudiudiudi"); // unique ID on Android
+      print(androidDeviceInfo.androidId + "이게 uuid"); // unique ID on Android
     }
+  }
+
+  Container createNewLunchCard(String menu, String detail){
+    return Container(
+      padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
+      height: 300,
+      width: 200,
+      decoration: BoxDecoration(  // 카드 그림자
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 50,
+                offset: Offset(0, 9),
+                color: Color.fromARGB(30, 105, 109, 110),
+                spreadRadius: -15)
+          ]),
+
+      child: Card(  // 급식 카드 부분
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(11.0),
+        ),
+        elevation: 0,
+        color: Colors.white,
+
+        child: Container(   // TODO : 필요 없을경우 Container 제거
+
+          child : Column(     // 급식 메뉴 및 detail 표시용 Column
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(right: 10,left: 10, top : 30),
+
+                child : FittedBox(
+                  fit:BoxFit.fitWidth,
+
+                  child : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+                      Text(   // 급식 메뉴 부분
+                        menu,
+                        style: TextStyle(
+                            color: Color(0XFF6C6C6C),
+                            fontSize: 15,
+                            fontFamily: 'NanumSquareR'),
+                      ),
+                      Container(    // detail 부분
+                        margin: EdgeInsets.only(top: 20),
+                        child : Text(
+                          detail,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontFamily: 'NanumSquare'),
+                        ),
+                      ),
+                    ], ), ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void preserve() async{
@@ -90,44 +161,13 @@ class MainState extends State<Home> {
       ),
       home: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Color(0xFFf9f9f9),
-          elevation: 0.8,
-          centerTitle: true,
-          title:  Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                child : Text(this.selection, style: TextStyle(color: Colors.black87, fontFamily: 'NanumSquareB'),),
-                padding: EdgeInsets.only(left: 15.0),
-              ),
-              PopupMenuButton(
-                padding: EdgeInsets.only(right: 15.0),
-                onSelected: onChangeGrade,
-                //icon: Icon(Icons, color: Colors.lightBlueAccent),
-                elevation: 3.2,
-                onCanceled: () {
-                  print('You have not chossed anything');
-                },
-                tooltip: 'This is tooltip',
-                itemBuilder: (BuildContext context) {
-                  return Constants.choices.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              )
-            ],
-          ),
-        ),
+
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 40.0, left: 17),
+                margin: const EdgeInsets.only(top: 120.0, left: 17),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -137,7 +177,51 @@ class MainState extends State<Home> {
                 ),
               ),
 
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 17),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 20.0, left: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('오늘의 식단 / '+todayDate,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: 'NanumSquareB',
+                                        color: Colors.black87)),
 
+                              ],
+
+                            ),
+                          ),
+                          //MyGetHttpData(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                  height: 280.0,
+                  child:
+                  ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      createNewLunchCard("감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트",
+                          "염도 0.7 / 876.3kcal"),
+                      createNewLunchCard("감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트",
+                          "염도 0.7 / 876.3kcal"),
+                    ],
+                  )
+
+              ),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,158 +290,6 @@ class MainState extends State<Home> {
                       ]))
                 ],
               ),
-
-
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 17),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 20.0, left: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('오늘의 식단 / '+todayDate,
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'NanumSquareB',
-                                        color: Colors.black87)),
-                                LikeButton(
-                                  size: 20,
-                                  circleColor:
-                                  CircleColor(start: Colors.orangeAccent, end: Colors.orange),
-                                  bubblesColor: BubblesColor(
-                                    dotPrimaryColor: Colors.pinkAccent,
-                                    dotSecondaryColor: Colors.pink,
-                                  ),
-                                  likeBuilder: (bool isLiked) {
-                                    return Icon(
-                                      Icons.favorite,
-                                      color: isLiked ? Colors.pinkAccent : Colors.grey,
-                                      size: 20,
-                                    );
-                                  },
-                                  likeCount: 0,
-                                  countPostion: CountPostion.left,
-                                  countBuilder: (int count, bool isLiked, String text) {
-                                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
-                                    Widget result;
-                                    if (count == 0) {
-                                      result = Text(
-                                        "",
-                                        style: TextStyle(color: color),
-                                      );
-                                    } else
-                                      result = Text(
-                                        text,
-                                        style: TextStyle(color: color),
-                                      );
-                                    return result;
-                                  },
-                                ),
-                              ],
-
-                            ),
-                          ),
-                          //MyGetHttpData(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                  height: 280.0,
-                  child:
-                  ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [Container(
-                      //
-                      padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
-                      height: 300,
-                      width: 200,
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            blurRadius: 30,
-                            offset: Offset(0, 9),
-                            color: Colors.black.withOpacity(.2),
-                            spreadRadius: -15)
-                      ]),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(11.0),
-                        ),
-                        elevation: 0,
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(right: 10,left: 10, top : 30),
-                              child : FittedBox(fit:BoxFit.fitWidth,  child : Text(
-                                '감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontFamily: 'NanumSquareR'),
-                              ),),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                      Container(
-                        //
-                        padding: EdgeInsets.only(top:20,bottom: 25,left: 15.0, right: 15.0),
-                        height: 280,
-                        width: 200,
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              blurRadius: 30,
-                              offset: Offset(0, 9),
-                              color: Colors.black.withOpacity(.2),
-                              spreadRadius: -15)
-                        ]),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(11.0),
-                          ),
-                          elevation: 0,
-                          color: Colors.white,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.only(right: 12,left: 12, top : 30),
-                                child : FittedBox(fit:BoxFit.fitWidth,  child : Text(
-                                  '감자햄볶음밥/김가루\n두부된장국\n계란후라이\n미니핫도그&케찹\n단무지\n김치\n요구르트\n\n염도 0.7 / 876.3kcal',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontFamily: 'NanumSquareR'),
-                                ),),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-
-              ),
-
-
 
             ],
           ),
