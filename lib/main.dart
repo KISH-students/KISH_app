@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:kish2019/api_links.dart';
+import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/data_manager.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:like_button/like_button.dart';
-//import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info/device_info.dart';
 
@@ -327,7 +325,7 @@ class MainState extends State<Home> {
   }
 
   void getDDayFromServer() async{
-    String result = await this.getWebText(ApiLinks.DDAY);
+    String result = await this.getWebText(KISHApi.DDAY);
     this.parsingDDay(result);
   }
 
@@ -430,7 +428,7 @@ class MyGetHttpDataState extends State<MyGetHttpData> {
 
   Future<String> getJSONData() async {
     var response = await http.get(
-      Uri.encodeFull(ApiLinks.VIEW_COUNT),
+      Uri.encodeFull(KISHApi.VIEW_COUNT),
     );
 
     print(response.body);
