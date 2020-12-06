@@ -52,7 +52,7 @@ class MainState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _getId();
+
     this.preserve();
     this.examDDayColor = grey;
     this.todayDate = new DateFormat('yyyy-MM-dd').format(now);
