@@ -28,9 +28,9 @@ class _LunchMenu extends State<LunchMenu>{
       decoration: BoxDecoration(  // 카드 그림자
           boxShadow: [
             BoxShadow(
-                blurRadius: 50,
+                blurRadius: 30,
                 offset: Offset(0, 9),
-                color: Color.fromARGB(30, 105, 109, 110),
+                color: Color.fromARGB(50, 105, 109, 110),
                 spreadRadius: -15)
           ]),
 
