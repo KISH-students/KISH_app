@@ -1,4 +1,5 @@
 class KISHApi{
-  static const String DDAY = "https://kish-dev.kro.kr/api/getExamDates";
-  static const String VIEW_COUNT = "https://kish-dev.kro.kr/api/getCount";
+  static const String API_ROOT = "https://kish-dev.kro.kr/api/";
+  static const String GET_EXAM_DATES = API_ROOT + "getExamDates";
+  static const String GET_LUNCH = API_ROOT + "getLunch";
 }
