@@ -32,7 +32,7 @@ class MainState extends State<Home> {
   void initState() {
     super.initState();
     pageController.addListener(() {
-      changePage(pageController.page.toInt());
+      currentIndex = pageController.page.toInt();
     });
   }
 
@@ -68,6 +68,8 @@ class MainState extends State<Home> {
         body: PageView(
           controller: pageController,
           children : [
+            MainPage(),
+            MainPage(),
             MainPage(),
             MainPage(),
           ],
@@ -137,6 +139,7 @@ class MainState extends State<Home> {
   void changePage(int index) {
     setState(() {
       currentIndex = index;
+      pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
       //pageController.jumpToPage(currentIndex);
     });
   }
