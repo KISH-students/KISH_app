@@ -69,7 +69,7 @@ class MainState extends State<Home> {
           controller: pageController,
           children : [
             MainPage(),
-            ExamCard(false, content: "테스트 위젯",),
+            MainPage(),
           ],
         ),// PageView
 
@@ -137,7 +137,7 @@ class MainState extends State<Home> {
   void changePage(int index) {
     setState(() {
       currentIndex = index;
-      pageController.jumpToPage(currentIndex);
+      //pageController.jumpToPage(currentIndex);
     });
   }
 

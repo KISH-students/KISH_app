@@ -17,9 +17,77 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  FutureBuilder lunchFutureBuilder;
+  FutureBuilder examFutureBuilder;
+
   @override
   void initState() {
     super.initState();
+    lunchFutureBuilder = FutureBuilder(
+        future: ApiHelper.getLunch(),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              List<Widget> menuWidget = [];
+              List result = snapshot.data;
+
+              DateTime tmpDate = DateTime.now();
+              DateTime today = DateTime(
+                  tmpDate.year, tmpDate.month, tmpDate.day);
+              int timestamp = (today.millisecondsSinceEpoch / 1000)
+                  .round();
+              int count = 0;
+              //print("our : " + today.millisecondsSinceEpoch.toString());
+
+              result.forEach((element) {
+                if (count > 4) return;
+
+                Map data = element;
+                /*print("-------");
+                          print(data["timestamp"] * 1000);
+                          print(DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000).toString());*/
+                if (timestamp <= data["timestamp"]) {
+                  menuWidget.add(LunchMenu(
+                      menu: (data["menu"] as String).replaceAll(
+                          ",", "\n"),
+                      detail: data["date"]));
+                  count++;
+                }
+              });
+
+              return ListView(
+                scrollDirection: Axis.horizontal,
+                children: menuWidget,
+              );
+            } else if (snapshot.hasError) {
+              return ExamCard(
+                false, color: Colors.redAccent, content: "불러올 수 없음",);
+            }
+            return YoutubeShimmer();
+          }else{
+            return YoutubeShimmer();
+          }
+        }
+    );
+
+    examFutureBuilder = FutureBuilder(
+      future: ApiHelper.getExamDDay(),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            Map data = snapshot.data;
+
+            if (data["invalid"] != null)
+              return new ExamCard(false, content: "정보 없음", color: ExamCard.grey,);
+            widget.ddayLabel = data["label"] + "(" + data["date"] + ")";
+            return new ExamCard(false, timestamp: data["timestamp"],);
+          } else if (snapshot.hasError) {
+            return new ExamCard(false, content: "엥..", color: ExamCard.grey,);
+          }
+        }
+        return YoutubeShimmer();
+      },
+    );
     widget.todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
   }
 
@@ -77,46 +145,9 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           Container(
-            height: 280.0,
-            child:
-            FutureBuilder(
-                future: ApiHelper.getLunch(),
-                builder: (context, snapshot) {
-                  if(snapshot.hasData) {
-                    List<Widget> menuWidget = [];
-                    List result = snapshot.data;
+              height: 280.0,
+              child:lunchFutureBuilder
 
-                    DateTime tmpDate = DateTime.now();
-                    DateTime today = DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
-                    int timestamp = (today.millisecondsSinceEpoch / 1000).round();
-                    int count = 0;
-                    //print("our : " + today.millisecondsSinceEpoch.toString());
-
-                    result.forEach((element) {
-                      if(count > 4) return;
-
-                      Map data = element;
-                      /*print("-------");
-                          print(data["timestamp"] * 1000);
-                          print(DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000).toString());*/
-                      if(timestamp <= data["timestamp"]){
-                        menuWidget.add(LunchMenu(
-                            menu: data["menu"],
-                            detail: data["date"]));
-                        count++;
-                      }
-                    });
-
-                    return ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: menuWidget,
-                    );
-                  }else if(snapshot.hasError){
-                    return ExamCard(false, color: Colors.redAccent, content: "불러올 수 없음",);
-                  }
-                  return YoutubeShimmer();
-                }
-            ),
           ), //식단 container
 
           Column(
@@ -146,21 +177,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
               ),
-              FutureBuilder(
-                future: ApiHelper.getExamDDay(),
-                builder: (context, snapshot) {
-                  if(snapshot.hasData){
-                    Map data = snapshot.data;
-
-                    if(data["invalid"] != null) return new ExamCard(false, content: "정보 없음", color: ExamCard.grey,);
-                    widget.ddayLabel = data["label"] + "(" + data["date"] + ")";
-                    return new ExamCard(false, timestamp: data["timestamp"],);
-                  }else if(snapshot.hasError){
-                    return new ExamCard(false, content: "엥..", color: ExamCard.grey,);
-                  }
-                  return YoutubeShimmer();
-                },
-              ),
+              examFutureBuilder,
             ],
           ),
 
