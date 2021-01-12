@@ -32,7 +32,9 @@ class MainState extends State<Home> {
   void initState() {
     super.initState();
     pageController.addListener(() {
-      currentIndex = pageController.page.toInt();
+      setState(() {
+        currentIndex = pageController.page.toInt();
+      });
     });
   }
 
@@ -67,6 +69,7 @@ class MainState extends State<Home> {
 
         body: PageView(
           controller: pageController,
+          physics:new NeverScrollableScrollPhysics(),
           children : [
             MainPage(),
             MainPage(),
@@ -100,36 +103,47 @@ class MainState extends State<Home> {
             BubbleBottomBarItem(
                 backgroundColor: Colors.deepPurple,
                 icon: Icon(
-                  Icons.access_time,
+                  Icons.bookmark,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.access_time,
+                  Icons.bookmark,
                   color: Colors.deepPurple,
                 ),
                 title: Text("kish magazine")),
             BubbleBottomBarItem(
                 backgroundColor: Colors.indigo,
                 icon: Icon(
-                  Icons.folder_open,
+                  Icons.assignment,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.folder_open,
+                  Icons.assignment,
                   color: Colors.indigo,
                 ),
                 title: Text("가정통신문")),
             BubbleBottomBarItem(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.deepPurple,
                 icon: Icon(
-                  Icons.settings,
+                  Icons.account_balance,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.settings,
+                  Icons.bookmark,
+                  color: Colors.deepPurple,
+                ),
+                title: Text("kish magazine")),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.green,
+                icon: Icon(
+                  Icons.book,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.book,
                   color: Colors.green,
                 ),
-                title: Text("설정"))
+                title: Text("학교 도서")),
           ],
         ),
       ),
