@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/tool/api_helper.dart';
+import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/exam_card.dart';
 import 'package:kish2019/widget/lunch_menu.dart';
+import 'package:kish2019/widget/title_text.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
-  String ddayLabel = "";
-  String todayDate = "";
 
   @override
   _MainPageState createState() {
@@ -19,6 +19,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   FutureBuilder lunchFutureBuilder;
   FutureBuilder examFutureBuilder;
+  String todayDate;
 
   @override
   void initState() {
@@ -73,22 +74,36 @@ class _MainPageState extends State<MainPage> {
     examFutureBuilder = FutureBuilder(
       future: ApiHelper.getExamDDay(),
       builder: (context, snapshot) {
+        List<Widget> list = [];
+        Column column = new Column(children: list, crossAxisAlignment: CrossAxisAlignment.start,);
+
         if(snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             Map data = snapshot.data;
 
-            if (data["invalid"] != null)
-              return new ExamCard(false, content: "정보 없음", color: ExamCard.grey,);
-            widget.ddayLabel = data["label"] + "(" + data["date"] + ")";
-            return new ExamCard(false, timestamp: data["timestamp"],);
+            if (data["invalid"] != null) {
+              list.add(DescriptionText('시험 D-Day - 정보 없음'));
+              list.add(
+                  new ExamCard(false, content: "정보 없음", color: ExamCard.grey));
+              return column;
+            }
+
+            list.add(DescriptionText('시험 D-Day - '+ data["label"] + "(" + data["date"] + ")"));
+            list.add(new ExamCard(false, timestamp: data["timestamp"],));
+            return column;
+
           } else if (snapshot.hasError) {
-            return new ExamCard(false, content: "엥..", color: ExamCard.grey,);
+            list.add(DescriptionText('시험 D-Day - 불러올 수 없음'));
+            list.add(new ExamCard(false, content: "엥..", color: ExamCard.grey,));
+            return column;
           }
         }
-        return YoutubeShimmer();
+        list.add(DescriptionText('시험 D-Day - 불러오는 중'));
+        list.add(YoutubeShimmer());
+        return column;
       },
     );
-    widget.todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
+    todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
   }
 
   @override
@@ -102,85 +117,19 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 120.0, left: 17),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('오늘의 식단을\n확인하세요', style: TextStyle(fontSize: 35)),
-                //MyGetHttpData(),
-              ],
-            ),
-          ),
-
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 17),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 20.0, left: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('오늘의 식단 / ' + widget.todayDate,
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'NanumSquareB',
-                                    color: Colors.black87)),
-
-                          ],
-
-                        ),
-                      ),
-                      //MyGetHttpData(),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+          TitleText('오늘의 식단을\n확인하세요'),
+          DescriptionText('오늘의 식단 / ' + todayDate),
           Container(
               height: 280.0,
               child:lunchFutureBuilder
-
           ), //식단 container
 
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                margin: const EdgeInsets.only(left: 17),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 20.0, left: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('시험 D-Day - '+ widget.ddayLabel,
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'NanumSquareB',
-                                    color: Colors.black87)),
-                          ],
-                        ),
-                      ),
-                      //MyGetHttpData(),
-                    ],
-                  ),
-                ),
-              ),
               examFutureBuilder,
             ],
           ),
-
         ],
       ),
     );
