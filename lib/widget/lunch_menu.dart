@@ -66,6 +66,7 @@ class _LunchMenu extends State<LunchMenu>{
                         style: TextStyle(
                             color: Color(0XFF6C6C6C),
                             fontSize: 15,
+                            fontWeight: FontWeight.bold,
                             fontFamily: 'NanumSquareR'),
                       ),
                       Container(    // detail 부분

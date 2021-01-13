@@ -94,7 +94,7 @@ class _MainPageState extends State<MainPage> {
 
           } else if (snapshot.hasError) {
             list.add(DescriptionText('시험 D-Day - 불러올 수 없음'));
-            list.add(new ExamCard(false, content: "엥..", color: ExamCard.grey,));
+            list.add(new ExamCard(false, content: "엥...", color: ExamCard.grey,));
             return column;
           }
         }
