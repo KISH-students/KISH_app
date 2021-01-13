@@ -97,4 +97,9 @@ class ApiHelper{
     return rs;
   }
 
+  static Future<List> getArticleList({String path: ""}) async {
+    String resultJson = await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
+    return json.decode(resultJson);
+  }
+
 }

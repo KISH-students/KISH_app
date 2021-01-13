@@ -6,17 +6,19 @@ class TitleText extends StatelessWidget {
   static const double size3 = 25;
 
   double size;
+  double top;
   String data;
 
-  TitleText(String data, {size = size1}){
+  TitleText(String data, {size = size1, top = 120.0}){
     this.data = data;
+    this.top = top;
     this.size = size;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(top: 120.0, left: 17),
+        margin: EdgeInsets.only(top: top, left: 17),
         child: Text(data,
             style: TextStyle(fontSize: size)
         )

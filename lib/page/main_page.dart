@@ -84,7 +84,7 @@ class _MainPageState extends State<MainPage> {
             if (data["invalid"] != null) {
               list.add(DescriptionText('시험 D-Day - 정보 없음'));
               list.add(
-                  new ExamCard(false, content: "정보 없음", color: ExamCard.grey));
+                  new ExamCard(false, content: "급식 정보 없음", color: ExamCard.grey));
               return column;
             }
 
