@@ -24,7 +24,10 @@ class ExamCard extends StatefulWidget{
         else nowColor = red;
 
 
-        if(content == "") setDefWidget("D - " + (diffDays + 1).toString());
+        if(content == "") {
+          if(date.day == now.day) setDefWidget("D - DAY");
+          else setDefWidget("D - " + (diffDays + 1).toString());
+        }
       }
     }else nowColor = color;
 
