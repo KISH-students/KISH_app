@@ -11,9 +11,23 @@ import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
 import 'file:///C:/Users/vojou/Desktop/Hancho/nk3/KISH_app/lib/page/main_page.dart';
 import 'package:device_info/device_info.dart';
+import 'package:new_version/new_version.dart';
 
 void main() {
-  runApp(Home());
+  runApp(
+      MaterialApp(
+          title: 'KISH',
+          theme: ThemeData(
+            textTheme: TextTheme(
+              bodyText1: TextStyle(color: Colors.grey[900]),
+            ),
+            fontFamily: 'NanumSquare',
+            primarySwatch: Colors.blue,
+          ),
+          builder: EasyLoading.init(),
+          home: Home()
+      )
+  );
 }
 
 class Home extends StatefulWidget {
@@ -23,6 +37,7 @@ class Home extends StatefulWidget {
 
 class MainState extends State<Home> {
   final PageController pageController = PageController( initialPage: 0 );
+  NewVersion newVersion;
   DateTime currentBackPressTime;
   int currentIndex = 0;
 
@@ -32,105 +47,96 @@ class MainState extends State<Home> {
     pageController.addListener(() {
       currentIndex = pageController.page.toInt();
     });
+    newVersion = NewVersion(context: context);
+    newVersion.showAlertIfNecessary();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'KISH',
-      theme: ThemeData(
-        textTheme: TextTheme(
-          bodyText1: TextStyle(color: Colors.grey[900]),
-        ),
-        fontFamily: 'NanumSquare',
-        primarySwatch: Colors.blue,
-      ),
-      builder: EasyLoading.init(),
-      home: WillPopScope(
-        onWillPop: onWillPop,
-        child: Scaffold(
-          backgroundColor: Colors.white,
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
 
-          body: PageView(
-            controller: pageController,
-            physics: NeverScrollableScrollPhysics(),
-            children : [
-              MainPage(),
-              KishMagazinePage(),
-              MaintenancePage(description: "대나무숲에서 익명으로 사연을 공유하세요",),
-              MaintenancePage(description: "학교 가정통신문을 빠르게 확인하세요",),
-              MaintenancePage(description: "도서 대출 현황을 쉽게 확인하세요",),
-            ],
-          ),// PageView
+        body: PageView(
+          controller: pageController,
+          physics: NeverScrollableScrollPhysics(),
+          children : [
+            MainPage(),
+            KishMagazinePage(),
+            MaintenancePage(description: "대나무숲에서 익명으로 사연을 공유하세요",),
+            MaintenancePage(description: "학교 가정통신문을 빠르게 확인하세요",),
+            MaintenancePage(description: "도서 대출 현황을 쉽게 확인하세요",),
+          ],
+        ),// PageView
 
-          // bottom bar
-          bottomNavigationBar: BubbleBottomBar(
-            hasNotch: true,
-            opacity: .2,
-            currentIndex: currentIndex,
-            onTap: changePage,
-            borderRadius: BorderRadius.vertical(
-                top: Radius.circular(
-                    16)), //border radius doesn't work when the notch is enabled.
-            elevation: 8,
-            items: <BubbleBottomBarItem>[
-              BubbleBottomBarItem(
-                  backgroundColor: Colors.red,
-                  icon: Icon(
-                    Icons.dashboard,
-                    color: Colors.black,
-                  ),
-                  activeIcon: Icon(
-                    Icons.dashboard,
-                    color: Colors.red,
-                  ),
-                  title: Text("Home")),
-              BubbleBottomBarItem(
-                  backgroundColor: Colors.deepPurple,
-                  icon: Icon(
-                    Icons.bookmark,
-                    color: Colors.black,
-                  ),
-                  activeIcon: Icon(
-                    Icons.bookmark,
-                    color: Colors.deepPurple,
-                  ),
-                  title: Text("kish magazine")),
-              BubbleBottomBarItem(
-                  backgroundColor: Colors.deepPurple,
-                  icon: Icon(
-                    Icons.assignment_outlined,
-                    color: Colors.black,
-                  ),
-                  activeIcon: Icon(
-                    Icons.assignment_outlined,
-                    color: Colors.deepPurple,
-                  ),
-                  title: Text("대나무숲")),
-              BubbleBottomBarItem(
-                  backgroundColor: Colors.indigo,
-                  icon: Icon(
-                    Icons.assignment,
-                    color: Colors.black,
-                  ),
-                  activeIcon: Icon(
-                    Icons.assignment,
-                    color: Colors.indigo,
-                  ),
-                  title: Text("가정통신문")),
-              BubbleBottomBarItem(
-                  backgroundColor: Colors.green,
-                  icon: Icon(
-                    Icons.book,
-                    color: Colors.black,
-                  ),
-                  activeIcon: Icon(
-                    Icons.book,
-                    color: Colors.green,
-                  ),
-                  title: Text("학교 도서")),
-            ],
-          ),
+        // bottom bar
+        bottomNavigationBar: BubbleBottomBar(
+          hasNotch: true,
+          opacity: .2,
+          currentIndex: currentIndex,
+          onTap: changePage,
+          borderRadius: BorderRadius.vertical(
+              top: Radius.circular(
+                  16)), //border radius doesn't work when the notch is enabled.
+          elevation: 8,
+          items: <BubbleBottomBarItem>[
+            BubbleBottomBarItem(
+                backgroundColor: Colors.red,
+                icon: Icon(
+                  Icons.dashboard,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.dashboard,
+                  color: Colors.red,
+                ),
+                title: Text("Home")),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.deepPurple,
+                icon: Icon(
+                  Icons.bookmark,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.bookmark,
+                  color: Colors.deepPurple,
+                ),
+                title: Text("kish magazine")),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.deepPurple,
+                icon: Icon(
+                  Icons.assignment_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.assignment_outlined,
+                  color: Colors.deepPurple,
+                ),
+                title: Text("대나무숲")),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.indigo,
+                icon: Icon(
+                  Icons.assignment,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.assignment,
+                  color: Colors.indigo,
+                ),
+                title: Text("가정통신문")),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.green,
+                icon: Icon(
+                  Icons.book,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.book,
+                  color: Colors.green,
+                ),
+                title: Text("학교 도서")),
+          ],
         ),
       ),
     );
