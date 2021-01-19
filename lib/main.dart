@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:kish2019/page/kish_magazine_page.dart';
+import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
-import 'file:///C:/Users/vojou/Desktop/Hancho/nk3/KISH_app/lib/page/main_page.dart';
 import 'package:device_info/device_info.dart';
 import 'package:new_version/new_version.dart';
 
