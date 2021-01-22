@@ -70,6 +70,7 @@ unlinked_spec.ds
 **/android/key.properties
 *.jks
 android/app/google-services.json
+.gradle
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
