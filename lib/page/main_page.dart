@@ -82,23 +82,23 @@ class _MainPageState extends State<MainPage> {
             Map data = snapshot.data;
 
             if (data["invalid"] != null) {
-              list.add(DescriptionText('시험 D-Day - 정보 없음'));
+              list.add(DescriptionText('D-Day - 정보 없음'));
               list.add(
-                  new ExamCard(false, content: "급식 정보 없음", color: ExamCard.grey));
+                  new ExamCard(false, content: "정보 없음", color: ExamCard.grey));
               return column;
             }
 
-            list.add(DescriptionText('시험 D-Day - '+ data["label"] + "(" + data["date"] + ")"));
+            list.add(DescriptionText('D-Day - '+ data["label"] + "(" + data["date"] + ")"));
             list.add(new ExamCard(false, timestamp: data["timestamp"],));
             return column;
 
           } else if (snapshot.hasError) {
-            list.add(DescriptionText('시험 D-Day - 불러올 수 없음'));
+            list.add(DescriptionText('D-Day - 불러올 수 없음'));
             list.add(new ExamCard(false, content: "엥...", color: ExamCard.grey,));
             return column;
           }
         }
-        list.add(DescriptionText('시험 D-Day - 불러오는 중'));
+        list.add(DescriptionText('D-Day - 불러오는 중'));
         list.add(YoutubeShimmer());
         return column;
       },
