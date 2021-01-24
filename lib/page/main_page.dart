@@ -159,7 +159,7 @@ class _MainPageState extends State<MainPage> {
           ),
           CarouselSlider(
             options: CarouselOptions(
-                aspectRatio: 2 / 1.35,
+                aspectRatio: 2 / 1,
                 enlargeCenterPage: true,
                 scrollDirection: Axis.horizontal,
                 autoPlay: true,

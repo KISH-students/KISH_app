@@ -141,7 +141,8 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
               margin: EdgeInsets.all(10),
               elevation: 5,
               child: GridView.count(
-                crossAxisCount: 2,
+                crossAxisCount:
+                    min(max((MediaQuery.of(context).size.width / 400), 1).round(), 5),
                 children: resultWidgetList,
               ),
             ));
@@ -158,7 +159,7 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       TitleText("KISH\nMAGAZINE", top: 60.0),
-      DescriptionText("KISH의 기사를 읽어보세요"),
+      DescriptionText("KISH Magazine에 오셨습니다"),
       yearSelectorWidget,
       Expanded(flex: 2, child: articleListWidget),
     ]);
@@ -240,11 +241,11 @@ class ArticleFolder extends StatelessWidget {
                           fit:BoxFit.fitHeight,
                           child: */
                             Text(
-                      title,
+                      title.replaceAll(", ", "\n"),
                       style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold),
+                          color: Colors.white70,
+                          fontFamily: "Cinzel",
+                          fontSize: max((MediaQuery.of(context).size.width / 96), 15)),
                       textAlign: TextAlign.center,
                     )
                         //),
