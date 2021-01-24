@@ -32,7 +32,7 @@ class _PdfPageState extends State<PdfPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Center(child: Text("${widget.title}")),
+          title: Center(child: Text(widget.title.replaceAll("\n", " "))),
           backgroundColor: Colors.black12,
         ),
         body: PDF(
