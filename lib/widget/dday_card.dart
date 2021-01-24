@@ -1,3 +1,89 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:kish2019/widget/custom_outlined_card.dart';
+
+class DDayCard extends StatelessWidget {
+  static Color grey = new Color(0xFF4B515D);
+  static Color red = new Color(0xFFfc5151);
+  static Color orange = new Color(0xFFffba2f);
+  static Color green = new Color(0xFF00C851);
+
+  String description;
+  Color color;
+  num timestamp;
+  Text textWidget;
+
+  DDayCard({this.timestamp = 0, this.description = "", this.color, String content}){
+    if(timestamp != null && !timestamp.isNaN) {
+      DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+      DateTime now = DateTime.now();
+      int diffDays = date
+          .difference(now)
+          .inDays;
+
+      if(color == null){
+        color = grey;
+        if (diffDays > 45) color = green;
+        else if(diffDays > 25) color = orange;
+        else color = red;
+      }
+
+      if(content == null) {
+        if (date.day == now.day)
+          setTextWidget("D - DAY");
+        else
+          setTextWidget("D - " + (diffDays + 1).toString());
+      }else{
+        setTextWidget(content);
+      }
+    }
+
+  }
+
+  void setTextWidget(String content){
+    textWidget = Text(
+      content,
+      style: TextStyle(
+          color: Colors.black87,
+          fontSize: 50,
+          fontFamily: 'NanumSquare',
+          fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomOutlinedCard(
+        color: color,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            textWidget,
+            Text(description)
+          ],
+        )
+    );
+  }
+}
+
+/*Align(
+                child: RichText(
+                    text: TextSpan(
+                        children: [
+                          WidgetSpan(
+                              child: Icon(
+                                Icons.access_alarm_outlined, size: 25, color: widget.nowColor,)
+                          ),
+                          TextSpan( text: "D-DAY",
+                              style: TextStyle(color: Colors.black, fontSize: 23, fontFamily: "NanumSquare")
+                          )
+                        ]
+                    )
+                ), alignment: Alignment.topLeft,),*/
+
+/*
 import 'package:flutter/material.dart';
 
 class ExamCard extends StatefulWidget{
@@ -87,5 +173,5 @@ class _ExamCard extends State<ExamCard>{
             //)
           ]));
   }
-
 }
+*/

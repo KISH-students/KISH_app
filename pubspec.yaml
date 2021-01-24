@@ -37,6 +37,8 @@ dependencies:
   flutter_cached_pdfview: ^0.3.4
   progress_indicators: ^0.1.5
   new_version: ^0.0.5
+  carousel_slider: ^2.3.1
+  flutter_icons: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -49,15 +51,18 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   fonts:
-    - family: NanumSquare
+    - family: NanumSquareL
       fonts:
         - asset: fonts/NanumSquareL.ttf
-    - family: NanumSquareB
-      fonts:
-        - asset: fonts/NanumSquareB.ttf
     - family: NanumSquareR
       fonts:
         - asset: fonts/NanumSquareR.ttf
+    - family: IBM
+      fonts:
+        - asset: fonts/IBMPlexSansKR-Light.ttf
+    - family: KOTRA
+      fonts:
+        - asset: fonts/KOTRA_BOLD.ttf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

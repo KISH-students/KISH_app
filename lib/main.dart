@@ -21,7 +21,7 @@ void main() {
             textTheme: TextTheme(
               bodyText1: TextStyle(color: Colors.grey[900]),
             ),
-            fontFamily: 'NanumSquare',
+            fontFamily: 'NanumSquareL',
             primarySwatch: Colors.blue,
           ),
           builder: EasyLoading.init(),
@@ -53,6 +53,7 @@ class MainState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.width);
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(

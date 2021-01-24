@@ -2,23 +2,15 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 
-class LunchMenu extends StatefulWidget {
+class LunchMenuCard extends StatelessWidget{
   final String menu;
   final String detail;
 
-  LunchMenu({
+  LunchMenuCard({
     this.menu,
     this.detail = ""
-});
+  });
 
-  @override
-  State<StatefulWidget> createState() {
-    return new _LunchMenu();
-  }
-
-}
-
-class _LunchMenu extends State<LunchMenu>{
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,7 +54,7 @@ class _LunchMenu extends State<LunchMenu>{
 
                     children: [
                       Text(   // 급식 메뉴 부분
-                        widget.menu,
+                        menu,
                         style: TextStyle(
                             color: Color(0XFF6C6C6C),
                             fontSize: 15,
@@ -72,11 +64,11 @@ class _LunchMenu extends State<LunchMenu>{
                       Container(    // detail 부분
                         margin: EdgeInsets.only(top: 20),
                         child : Text(
-                          widget.detail,
+                          detail,
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 12,
-                              fontFamily: 'NanumSquare'),
+                              fontFamily: 'NanumSquareL'),
                         ),
                       ),
                     ], ), ),

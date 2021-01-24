@@ -8,7 +8,7 @@ import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/description_text.dart';
-import 'package:kish2019/widget/exam_card.dart';
+import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/title_text.dart';
 
 class KishMagazinePage extends StatefulWidget {
@@ -54,8 +54,8 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
        resultList = await ApiHelper.getArticleList();
     }catch(e){
       setState(() {
-        this.yearSelectorWidget = ExamCard(
-          false, color: Colors.redAccent, content: "불러올 수 없어요",);
+        this.yearSelectorWidget = DDayCard(
+          color: Colors.redAccent, content: "불러올 수 없어요",);
       });
     }
 

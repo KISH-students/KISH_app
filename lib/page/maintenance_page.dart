@@ -26,7 +26,8 @@ class MaintenancePage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 13,
-                  fontFamily: 'NanumSquareB',
+                  fontFamily: 'NanumSquare',
+                  fontWeight: FontWeight.bold,
                   color: Colors.black87)),
         ],
       ),

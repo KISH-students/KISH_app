@@ -1,10 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/tool/api_helper.dart';
+import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/description_text.dart';
-import 'package:kish2019/widget/exam_card.dart';
-import 'package:kish2019/widget/lunch_menu.dart';
+import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/title_text.dart';
 
 class MainPage extends StatefulWidget {
@@ -20,6 +22,8 @@ class _MainPageState extends State<MainPage> {
   FutureBuilder lunchFutureBuilder;
   FutureBuilder examFutureBuilder;
   String todayDate;
+  int sliderIdx = 0;
+  List<Widget> sliderItems = [];
 
   @override
   void initState() {
@@ -29,7 +33,7 @@ class _MainPageState extends State<MainPage> {
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              List<Widget> menuWidget = [];
+              Widget menuWidget;
               List result = snapshot.data;
 
               DateTime tmpDate = DateTime.now();
@@ -41,28 +45,33 @@ class _MainPageState extends State<MainPage> {
               //print("our : " + today.millisecondsSinceEpoch.toString());
 
               result.forEach((element) {
-                if (count > 4) return;
+                if (count > 0) return;
 
                 Map data = element;
                 /*print("-------");
                           print(data["timestamp"] * 1000);
                           print(DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000).toString());*/
                 if (timestamp <= data["timestamp"]) {
-                  menuWidget.add(LunchMenu(
-                      menu: (data["menu"] as String).replaceAll(
-                          ",", "\n"),
-                      detail: data["date"]));
+                  menuWidget = DetailedCard(
+                    bottomTitle: "",
+                    title: "오늘의 급식",
+                    description: data["date"],
+                    content: (data["menu"] as String).replaceAll(
+                        ",", "\n"),
+                    icon: MaterialCommunityIcons.food_fork_drink,
+                    iconColor: Colors.orangeAccent,
+                    descriptionColor: Colors.orange,
+                    contentTextStyle: TextStyle(fontFamily: "NanumSquareL", fontWeight: FontWeight.w600),);
                   count++;
                 }
               });
 
-              return ListView(
-                scrollDirection: Axis.horizontal,
-                children: menuWidget,
-              );
+              return Container(
+                  child: menuWidget,
+                  width: MediaQuery.of(context).size.width * 0.9);
             } else if (snapshot.hasError) {
-              return ExamCard(
-                false, color: Colors.redAccent, content: "불러올 수 없음",);
+              return DDayCard(
+                color: Colors.redAccent, content: "불러올 수 없음",);
             }
             return YoutubeShimmer();
           }else{
@@ -75,34 +84,38 @@ class _MainPageState extends State<MainPage> {
       future: ApiHelper.getExamDDay(),
       builder: (context, snapshot) {
         List<Widget> list = [];
-        Column column = new Column(children: list, crossAxisAlignment: CrossAxisAlignment.start,);
+        Container widget = Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: new Column(children: list, crossAxisAlignment: CrossAxisAlignment.start,)
+        );
 
         if(snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             Map data = snapshot.data;
 
             if (data["invalid"] != null) {
-              list.add(DescriptionText('D-Day - 정보 없음'));
               list.add(
-                  new ExamCard(false, content: "정보 없음", color: ExamCard.grey));
-              return column;
+                  new DDayCard(content: "정보 없음", color: DDayCard.grey));
+              list.add(DescriptionText('D-Day - 정보 없음', margin: EdgeInsets.only(left: 25, top: 5),));
+              return widget;
             }
 
-            list.add(DescriptionText('D-Day - '+ data["label"] + "(" + data["date"] + ")"));
-            list.add(new ExamCard(false, timestamp: data["timestamp"],));
-            return column;
+            list.add(new DDayCard(timestamp: data["timestamp"], description: data["label"],));
+            list.add(DescriptionText('D-Day - ' + data["date"], margin: EdgeInsets.only(left: 25, top: 5),));
+            return widget;
 
           } else if (snapshot.hasError) {
-            list.add(DescriptionText('D-Day - 불러올 수 없음'));
-            list.add(new ExamCard(false, content: "엥...", color: ExamCard.grey,));
-            return column;
+            list.add(new DDayCard(content: "엥...", color: DDayCard.grey,));
+            list.add(DescriptionText('D-Day - 불러올 수 없음', margin: EdgeInsets.only(left: 25, top: 5),));
+            return widget;
           }
         }
-        list.add(DescriptionText('D-Day - 불러오는 중'));
         list.add(YoutubeShimmer());
-        return column;
+        list.add(DescriptionText('D-Day - 불러오는 중', margin: EdgeInsets.only(left: 25, top: 5),));
+        return widget;
       },
     );
+    sliderItems = [lunchFutureBuilder, examFutureBuilder,];
     todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
   }
 
@@ -117,21 +130,52 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TitleText('오늘의 식단을\n확인하세요'),
-          DescriptionText('오늘의 식단 / ' + todayDate),
           Container(
-              height: 280.0,
-              child:lunchFutureBuilder
-          ), //식단 container
+            margin: EdgeInsets.only(bottom: 25),
+            child: TitleText('오늘의 식단을\n확인하세요'),
+          ),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              examFutureBuilder,
-            ],
+          CarouselSlider(
+            options: CarouselOptions(
+              aspectRatio: 2/1.35,
+              enlargeCenterPage: true,
+              scrollDirection: Axis.horizontal,
+              autoPlay: true,
+              autoPlayInterval: Duration(seconds: 10),
+              enableInfiniteScroll: true,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    sliderIdx = index;
+                  });
+                }
+            ),
+            items: sliderItems,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _getIndicator(sliderItems, sliderIdx),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> _getIndicator(List items, int index){
+    List<Widget> list = [];
+    // https://pub.dev/packages/carousel_slider/example - indicator demo
+    for(int i = 0; i < items.length; i ++){
+      list.add(Container(
+        width: 8.0,
+        height: 8.0,
+        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: i == index
+              ? Color.fromRGBO(0, 0, 0, 0.9)
+              : Color.fromRGBO(0, 0, 0, 0.4),
+        ),
+      ));
+    }
+    return list;
   }
 }
