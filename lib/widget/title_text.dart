@@ -9,7 +9,7 @@ class TitleText extends StatelessWidget {
   double top;
   String data;
 
-  TitleText(String data, {size = size1, top = 120.0}){
+  TitleText(String data, {size = size1, top = 120.0}) {
     this.data = data;
     this.top = top;
     this.size = size;
@@ -19,9 +19,6 @@ class TitleText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(top: top, left: 17),
-        child: Text(data,
-            style: TextStyle(fontSize: size)
-        )
-    );
+        child: Text(data, style: TextStyle(fontSize: size)));
   }
 }

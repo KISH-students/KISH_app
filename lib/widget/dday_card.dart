@@ -13,41 +13,42 @@ class DDayCard extends StatelessWidget {
   num timestamp;
   Text textWidget;
 
-  DDayCard({this.timestamp = 0, this.description = "", this.color, String content}){
-    if(timestamp != null && !timestamp.isNaN) {
+  DDayCard(
+      {this.timestamp = 0, this.description = "", this.color, String content}) {
+    if (timestamp != null && !timestamp.isNaN) {
       DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
       DateTime now = DateTime.now();
-      int diffDays = date
-          .difference(now)
-          .inDays;
+      int diffDays = date.difference(now).inDays;
 
-      if(color == null){
+      if (color == null) {
         color = grey;
-        if (diffDays > 45) color = green;
-        else if(diffDays > 25) color = orange;
-        else color = red;
+        if (diffDays > 45)
+          color = green;
+        else if (diffDays > 25)
+          color = orange;
+        else
+          color = red;
       }
 
-      if(content == null) {
+      if (content == null) {
         if (date.day == now.day)
           setTextWidget("D - DAY");
         else
           setTextWidget("D - " + (diffDays + 1).toString());
-      }else{
+      } else {
         setTextWidget(content);
       }
     }
-
   }
 
-  void setTextWidget(String content){
+  void setTextWidget(String content) {
     textWidget = Text(
       content,
       style: TextStyle(
-          color: Colors.black87,
-          fontSize: 50,
-          fontFamily: 'NanumSquare',
-          fontWeight: FontWeight.bold,
+        color: Colors.black87,
+        fontSize: 50,
+        fontFamily: 'NanumSquare',
+        fontWeight: FontWeight.bold,
       ),
     );
   }
@@ -59,12 +60,8 @@ class DDayCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            textWidget,
-            Text(description)
-          ],
-        )
-    );
+          children: <Widget>[textWidget, Text(description)],
+        ));
   }
 }
 

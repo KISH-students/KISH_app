@@ -7,14 +7,15 @@ import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum Method{ get, post }
+enum Method { get, post }
 
-class ApiHelper{
-  static Future<String> request(String api, Method method, Map<String, dynamic> params) async{
+class ApiHelper {
+  static Future<String> request(
+      String api, Method method, Map<String, dynamic> params) async {
     String url;
     var response;
 
-    if(method == Method.get){
+    if (method == Method.get) {
       api += "?";
 
       params.forEach((key, value) {
@@ -29,15 +30,14 @@ class ApiHelper{
       } else {
         response = await http.post(url, body: params);
       }
-    }catch(e){
+    } catch (e) {
       Fluttertoast.showToast(
           msg: "정보를 불러오지 못했어요",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.CENTER,
           backgroundColor: Colors.redAccent,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     }
     return response.body;
   }
@@ -52,11 +52,11 @@ class ApiHelper{
     prefs.getString("cache_" + key);
   }
 
-  static Future<List> getLunch({date:""}) async {
+  static Future<List> getLunch({date: ""}) async {
     String ym;
     String ymd;
 
-    if(date == ""){
+    if (date == "") {
       DateFormat formatter = new DateFormat('yyyy-MM-dd');
       DateTime now = DateTime.now();
 
@@ -67,12 +67,13 @@ class ApiHelper{
       date = ymd;
     }
 
-    String rsJson = await request(KISHApi.GET_LUNCH, Method.get, {"date": date});
+    String rsJson =
+        await request(KISHApi.GET_LUNCH, Method.get, {"date": date});
     List menuList = json.decode(rsJson);
     return menuList;
   }
 
-  static Future<Map> getExamDDay() async{
+  static Future<Map> getExamDDay() async {
     String resultJson = await request(KISHApi.GET_EXAM_DATES, Method.get, {});
     List examDates = json.decode(resultJson);
 
@@ -84,22 +85,22 @@ class ApiHelper{
 
     examDates.forEach((element) {
       Map data = element;
-      if(timestamp <= data["timestamp"]){
+      if (timestamp <= data["timestamp"]) {
         rs = data;
         return;
       }
     });
 
-    if(rs == null){
-      rs = {"invalid" : true};
+    if (rs == null) {
+      rs = {"invalid": true};
     }
 
     return rs;
   }
 
   static Future<List> getArticleList({String path: ""}) async {
-    String resultJson = await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
+    String resultJson =
+        await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
     return json.decode(resultJson);
   }
-
 }

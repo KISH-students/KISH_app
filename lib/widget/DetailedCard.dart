@@ -13,15 +13,19 @@ class DetailedCard extends StatelessWidget {
   Color iconColor;
   IconData icon;
 
-  DetailedCard({this.title = "", this.bottomTitle = "",
-    this.descriptionColor = Colors.black, this.description = "", this.content = "",
-    this.icon = Icons.title, this.iconColor = Colors.blueAccent,
-    this.contentTextStyle = const TextStyle(color: Colors.black)});
+  DetailedCard(
+      {this.title = "",
+      this.bottomTitle = "",
+      this.descriptionColor = Colors.black,
+      this.description = "",
+      this.content = "",
+      this.icon = Icons.title,
+      this.iconColor = Colors.blueAccent,
+      this.contentTextStyle = const TextStyle(color: Colors.black)});
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
       CustomOutlinedCard(
         color: Colors.black87,
         child: Container(
@@ -47,15 +51,19 @@ class DetailedCard extends StatelessWidget {
                                   color: Colors.black87,
                                   fontSize: 16,
                                   fontFamily: "KOTRA")),
-                          Text(description,
+                          Text(
+                            description,
                             style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontFamily: "NanumSquareR",
-                                color: descriptionColor
-                            ),),
+                                color: descriptionColor),
+                          ),
                           Container(
                               margin: EdgeInsets.only(top: 10),
-                              child: Text(this.content, style: contentTextStyle,))
+                              child: Text(
+                                this.content,
+                                style: contentTextStyle,
+                              ))
                         ]),
                   ),
                 ],
@@ -64,7 +72,10 @@ class DetailedCard extends StatelessWidget {
           ),
         ),
       ),
-      DescriptionText(bottomTitle, margin: EdgeInsets.only(left: 25, top: 5),),
+      DescriptionText(
+        bottomTitle,
+        margin: EdgeInsets.only(left: 25, top: 5),
+      ),
     ]);
   }
 }

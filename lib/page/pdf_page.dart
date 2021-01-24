@@ -6,6 +6,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 class PdfPage extends StatefulWidget {
   String url;
   String title;
+
   PdfPage(this.url, {this.title: "", Key key}) : super(key: key);
 
   @override
@@ -18,8 +19,8 @@ class _PdfPageState extends State<PdfPage> {
   @override
   void initState() {
     super.initState();
-    Fluttertoast.showToast(msg: "페이지를 넘기려면 오른쪽으로 스와이프하세요",
-    toastLength: Toast.LENGTH_LONG);
+    Fluttertoast.showToast(
+        msg: "페이지를 넘기려면 오른쪽으로 스와이프하세요", toastLength: Toast.LENGTH_LONG);
   }
 
   @override
@@ -48,12 +49,8 @@ class _PdfPageState extends State<PdfPage> {
                     JumpingDotsProgressIndicator(
                       fontSize: 40.0,
                     ),
-                  ]
-              )
-          ),
+                  ])),
           errorWidget: (error) => Center(child: Text("불러올 수 없습니다.")),
-
-        )
-    );
+        ));
   }
 }

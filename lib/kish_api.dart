@@ -1,4 +1,4 @@
-class KISHApi{
+class KISHApi {
   static const String HOST = "https://kish-dev.kro.kr/";
   static const String API_ROOT = HOST + "api/";
   static const String MAGAZINE_ROOT = API_ROOT + "kish-magazine/";

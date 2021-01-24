@@ -1,33 +1,28 @@
 import 'dart:io';
 
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
-import 'package:device_info/device_info.dart';
 import 'package:new_version/new_version.dart';
 
 void main() {
-  runApp(
-      MaterialApp(
-          title: 'KISH',
-          theme: ThemeData(
-            textTheme: TextTheme(
-              bodyText1: TextStyle(color: Colors.grey[900]),
-            ),
-            fontFamily: 'NanumSquareL',
-            primarySwatch: Colors.blue,
-          ),
-          builder: EasyLoading.init(),
-          home: Home()
-      )
-  );
+  runApp(MaterialApp(
+      title: 'KISH',
+      theme: ThemeData(
+        textTheme: TextTheme(
+          bodyText1: TextStyle(color: Colors.grey[900]),
+        ),
+        fontFamily: 'NanumSquareL',
+        primarySwatch: Colors.blue,
+      ),
+      builder: EasyLoading.init(),
+      home: Home()));
 }
 
 class Home extends StatefulWidget {
@@ -36,7 +31,7 @@ class Home extends StatefulWidget {
 }
 
 class MainState extends State<Home> {
-  final PageController pageController = PageController( initialPage: 0 );
+  final PageController pageController = PageController(initialPage: 0);
   NewVersion newVersion;
   DateTime currentBackPressTime;
   int currentIndex = 0;
@@ -62,14 +57,20 @@ class MainState extends State<Home> {
         body: PageView(
           controller: pageController,
           physics: NeverScrollableScrollPhysics(),
-          children : [
+          children: [
             MainPage(),
             KishMagazinePage(),
-            MaintenancePage(description: "대나무숲에서 익명으로 사연을 공유하세요",),
-            MaintenancePage(description: "학교 가정통신문을 빠르게 확인하세요",),
-            MaintenancePage(description: "도서 대출 현황을 쉽게 확인하세요",),
+            MaintenancePage(
+              description: "대나무숲에서 익명으로 사연을 공유하세요",
+            ),
+            MaintenancePage(
+              description: "학교 가정통신문을 빠르게 확인하세요",
+            ),
+            MaintenancePage(
+              description: "도서 대출 현황을 쉽게 확인하세요",
+            ),
           ],
-        ),// PageView
+        ), // PageView
 
         // bottom bar
         bottomNavigationBar: BubbleBottomBar(
@@ -77,9 +78,8 @@ class MainState extends State<Home> {
           opacity: .2,
           currentIndex: currentIndex,
           onTap: changePage,
-          borderRadius: BorderRadius.vertical(
-              top: Radius.circular(
-                  16)), //border radius doesn't work when the notch is enabled.
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          //border radius doesn't work when the notch is enabled.
           elevation: 8,
           items: <BubbleBottomBarItem>[
             BubbleBottomBarItem(
@@ -146,7 +146,8 @@ class MainState extends State<Home> {
   void changePage(int index) {
     setState(() {
       currentIndex = index;
-      pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
+      pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
       //pageController.jumpToPage(currentIndex);
     });
   }
@@ -165,7 +166,8 @@ class MainState extends State<Home> {
 
   Future<String> _getId() async {
     var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) { // import 'dart:io'
+    if (Platform.isIOS) {
+      // import 'dart:io'
       IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
       print(iosDeviceInfo.identifierForVendor); // unique ID on iOS
     } else {
