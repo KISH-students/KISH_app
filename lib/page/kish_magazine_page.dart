@@ -241,12 +241,12 @@ class ArticleFolder extends StatelessWidget {
                           fit:BoxFit.fitHeight,
                           child: */
                             Text(
-                      title.replaceAll(", ", "\n"),
+                      title,
                       style: TextStyle(
                           color: Colors.white70,
                           fontFamily: "Cinzel",
                           fontSize: max((MediaQuery.of(context).size.width / 96), 15)),
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                     )
                         //),
                         )),
