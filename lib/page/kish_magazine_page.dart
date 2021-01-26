@@ -23,8 +23,10 @@ class KishMagazinePage extends StatefulWidget {
 class _KishMagazinePageState extends State<KishMagazinePage> {
   Widget yearSelectorWidget = ListTileShimmer();
   Widget articleListWidget = Text("");
+  List<Widget> yearButtons = [];
   List<Widget> articleList = [];
   String nowPath = "";
+  String rootPath = "";
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
 
   void loadYearButtons() async {
     List resultList;
-    List<Widget> yearButtons = [];
+    yearButtons = [];
 
     try {
       resultList = await ApiHelper.getArticleList();
@@ -64,12 +66,18 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
 
       resultList.forEach((map) {
         yearButtons.add(_CustomYearButton(map["name"], () {
-          this.nowPath = nowPath = map["path"];
+          this.nowPath = map["path"];
+          this.rootPath = this.nowPath;
           reloadArticleList();
         }));
       });
     }
 
+    rebuildYearSelector();
+    reloadArticleList();
+  }
+
+  void rebuildYearSelector() {
     setState(() {
       this.yearSelectorWidget = SingleChildScrollView(
         child: Container(
@@ -80,9 +88,10 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
               elevation: 2.8,
               child: Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
-                child: ListView(
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  children: yearButtons,
+                  itemCount: yearButtons.length,
+                  itemBuilder: (context, index) => yearButtons[index],
                 ),
               ),
             ),
@@ -90,8 +99,32 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
         ),
       );
     });
+  }
 
-    reloadArticleList();
+  void addHomeButton() {
+    if (this.yearButtons.length > 0) {
+      _CustomYearButton button = this.yearButtons[0];
+
+      if (button.content != "처음으로") {
+        setState(() {
+          this.yearButtons.insert(
+              0,
+              _CustomYearButton(
+                "처음으로",
+                () {
+                  this.nowPath = this.rootPath;
+                  this.yearButtons.removeAt(0);
+                  this.rebuildYearSelector();
+                  this.reloadArticleList();
+                },
+                borderColor: Colors.blueAccent,
+                textColor: Colors.indigo,
+                borderSize: 1.5,
+              ));
+          this.rebuildYearSelector();
+        });
+      }
+    }
   }
 
   void reloadArticleList() async {
@@ -124,6 +157,7 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
                 "기사" + (element["subfileName"] as List).length.toString() + "개";
           resultFolderList.add(ArticleFolder(element["name"], desc, () {
             this.nowPath = element["path"];
+            addHomeButton();
             this.reloadArticleList();
           }));
         }
@@ -141,8 +175,9 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
               margin: EdgeInsets.all(10),
               elevation: 5,
               child: GridView.count(
-                crossAxisCount:
-                    min(max((MediaQuery.of(context).size.width / 400), 1).round(), 5),
+                crossAxisCount: min(
+                    max((MediaQuery.of(context).size.width / 400), 1).round(),
+                    5),
                 children: resultWidgetList,
               ),
             ));
@@ -160,7 +195,7 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       TitleText("KISH\nMAGAZINE", top: 60.0),
       DescriptionText("KISH Magazine에 오셨습니다"),
-      yearSelectorWidget,
+      Container(child: yearSelectorWidget),
       Expanded(flex: 2, child: articleListWidget),
     ]);
   }
@@ -169,18 +204,25 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
 class _CustomYearButton extends StatelessWidget {
   String content;
   VoidCallback onPressed;
+  Color borderColor;
+  Color textColor;
+  double borderSize;
 
-  _CustomYearButton(this.content, this.onPressed);
+  _CustomYearButton(this.content, this.onPressed,
+      {this.borderColor = Colors.redAccent,
+      this.textColor = Colors.red,
+      this.borderSize = 0.8})
+      : super(key: UniqueKey());
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: OutlinedButton(
-        onPressed: this.onPressed,
-        child: Text(this.content),
+        onPressed: onPressed,
+        child: Text(content),
         style: OutlinedButton.styleFrom(
-          primary: Colors.red,
-          side: BorderSide(width: 0.8, color: Colors.redAccent),
+          primary: textColor,
+          side: BorderSide(width: borderSize, color: borderColor),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(11.0),
           ),
@@ -245,7 +287,8 @@ class ArticleFolder extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.white70,
                           fontFamily: "Cinzel",
-                          fontSize: max((MediaQuery.of(context).size.width / 96), 15)),
+                          fontSize: max(
+                              (MediaQuery.of(context).size.width / 96), 15)),
                       textAlign: TextAlign.start,
                     )
                         //),
