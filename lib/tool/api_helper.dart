@@ -30,14 +30,17 @@ class ApiHelper {
       } else {
         response = await http.post(url, body: params);
       }
+      saveResult(api + "::" + params.toString(), response.body);
     } catch (e) {
       Fluttertoast.showToast(
-          msg: "정보를 불러오지 못했어요",
-          toastLength: Toast.LENGTH_LONG,
+          msg: "정보를 불러오지 못했습니다.",
+          toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.black54,
           textColor: Colors.white,
           fontSize: 16.0);
+      String cache = await getCachedResult(api+"::"+params.toString());
+      if(cache != null) return cache;
     }
     return response.body;
   }
@@ -47,9 +50,9 @@ class ApiHelper {
     prefs.setString("cache_" + key, json);
   }
 
-  static Future<String> getResult(String key) async {
+  static Future<String> getCachedResult(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.getString("cache_" + key);
+    return prefs.getString("cache_" + key);
   }
 
   static Future<List> getLunch({date: ""}) async {
