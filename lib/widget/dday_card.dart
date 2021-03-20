@@ -31,7 +31,7 @@ class DDayCard extends StatelessWidget {
       }
 
       if (content == null) {
-        if (date.day == now.day)
+        if (date.month == now.month && date.day == now.day)
           setTextWidget("D - DAY");
         else
           setTextWidget("D - " + (diffDays + 1).toString());
