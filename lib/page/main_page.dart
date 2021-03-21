@@ -176,7 +176,7 @@ class _MainPageState extends State<MainPage> {
           ),
           Center(
             child: Container(
-                margin: EdgeInsets.only(top: 10), child: lunchFutureBuilder),
+                margin: EdgeInsets.only(top: 30), child: lunchFutureBuilder),
           ),
         ],
       ),
