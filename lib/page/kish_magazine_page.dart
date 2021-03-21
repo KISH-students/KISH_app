@@ -8,8 +8,6 @@ import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
-import 'package:kish2019/widget/description_text.dart';
-import 'package:kish2019/widget/title_text.dart';
 
 class KishMagazinePage extends StatefulWidget {
   KishMagazinePage({Key key}) : super(key: key);
@@ -69,7 +67,11 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
           this.nowPath = map["path"];
           this.rootPath = this.nowPath;
           reloadArticleList();
-        }));
+        },
+            textColor: Colors.white,
+            backgroundColor: Color.fromARGB(255, 48, 48, 48),
+            borderColor: Color.fromARGB(255, 48, 48, 48),
+            borderSize: 0));
       });
     }
 
@@ -79,25 +81,19 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
 
   void rebuildYearSelector() {
     setState(() {
-      this.yearSelectorWidget = SingleChildScrollView(
-        child: Container(
-          height: 70,
+      this.yearSelectorWidget = Container(
+          height: 80,
           child: Container(
             margin: EdgeInsets.fromLTRB(10, 30, 10, 0),
-            child: Card(
-              elevation: 2.8,
-              child: Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: yearButtons.length,
-                  itemBuilder: (context, index) => yearButtons[index],
-                ),
+            child: Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: yearButtons.length,
+                itemBuilder: (context, index) => yearButtons[index],
               ),
             ),
-          ),
-        ),
-      );
+          ));
     });
   }
 
@@ -138,16 +134,22 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
     List<Widget> resultFolderList = [];
     List<Widget> resultWidgetList = [];
 
+    Color backgroundColor = ArticleFolder.BACKGROUND_COLORS[
+        Random.secure().nextInt(ArticleFolder.BACKGROUND_COLORS.length)];
+
     if (articleList.length > 0) {
       articleList.forEach((element) {
         if (element["type"] == "file") {
-          resultArticleList.add(Article(element["name"], () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PdfPage(KISHApi.HOST + element["url"],
-                        title: element["name"])));
-          }));
+          resultArticleList.add(
+            Article(element["name"], element["author"], () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PdfPage(
+                          KISHApi.HOST + element["url"],
+                          title: element["name"])));
+            }, backgroundColor),
+          );
         } else if (element["type"] == "dir") {
           String desc;
           if (element["custom_desc"] != null)
@@ -155,11 +157,12 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
           else
             desc =
                 "기사" + (element["subfileName"] as List).length.toString() + "개";
+
           resultFolderList.add(ArticleFolder(element["name"], desc, () {
             this.nowPath = element["path"];
             addHomeButton();
             this.reloadArticleList();
-          }));
+          }, backgroundColor));
         }
       });
 
@@ -168,19 +171,20 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
 
       setState(() {
         this.articleListWidget = this.articleListWidget = Container(
-            height: 200,
             child: Card(
-              color: Colors.white70,
-              borderOnForeground: true,
-              margin: EdgeInsets.all(10),
-              elevation: 5,
-              child: GridView.count(
-                crossAxisCount: min(
-                    max((MediaQuery.of(context).size.width / 400), 1).round(),
-                    5),
-                children: resultWidgetList,
-              ),
-            ));
+          //color: Colors.white70,
+          //borderOnForeground: true,
+          margin: EdgeInsets.all(4),
+          elevation: 0,
+          child: GridView.count(
+            crossAxisCount: min(
+                max((MediaQuery.of(context).size.width / 400), 2).round(), 5),
+            mainAxisSpacing: 1.0,
+            crossAxisSpacing: 1.0,
+            childAspectRatio: 564 / 348,
+            children: resultWidgetList,
+          ),
+        ));
       });
     } else {
       setState(() {
@@ -193,8 +197,26 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      TitleText("KISH\nMAGAZINE", top: 60.0),
-      DescriptionText("KISH Magazine에 오셨습니다"),
+      //TitleText("KISH\nMAGAZINE", top: 60.0),
+      //DescriptionText("KISH Magazine에 오셨습니다"),
+      Container(
+          decoration: BoxDecoration(color: Colors.white),
+          child: Container(
+              margin: EdgeInsets.only(top: 50, bottom: 10),
+              child: Center(
+                child: Text(
+                  "KISH Magazine",
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 71, 71, 71),
+                      fontFamily: "Cinzel",
+                      fontSize: 30),
+                ),
+              ))),
+      Container(
+          decoration: BoxDecoration(color: Colors.black54),
+          child: Row(
+            children: [Container(margin: EdgeInsets.only(top: 3))],
+          )),
       Container(child: yearSelectorWidget),
       Expanded(flex: 2, child: articleListWidget),
     ]);
@@ -206,11 +228,13 @@ class _CustomYearButton extends StatelessWidget {
   VoidCallback onPressed;
   Color borderColor;
   Color textColor;
+  Color backgroundColor;
   double borderSize;
 
   _CustomYearButton(this.content, this.onPressed,
       {this.borderColor = Colors.redAccent,
       this.textColor = Colors.red,
+      this.backgroundColor = Colors.white,
       this.borderSize = 0.8})
       : super(key: UniqueKey());
 
@@ -219,12 +243,16 @@ class _CustomYearButton extends StatelessWidget {
     return Container(
       child: OutlinedButton(
         onPressed: onPressed,
-        child: Text(content),
+        child: Text(
+          content,
+          style: TextStyle(fontFamily: "CRB", fontSize: 16),
+        ),
         style: OutlinedButton.styleFrom(
           primary: textColor,
           side: BorderSide(width: borderSize, color: borderColor),
+          backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11.0),
+            borderRadius: BorderRadius.circular(16.0),
           ),
         ),
       ),
@@ -235,7 +263,7 @@ class _CustomYearButton extends StatelessWidget {
 }
 
 class ArticleFolder extends StatelessWidget {
-  static const List<List<Color>> BACKGROUND_COLORS = [
+  /*static const List<List<Color>> BACKGROUND_COLORS = [
     [Color.fromARGB(255, 42, 8, 69), Color.fromARGB(255, 100, 65, 165)],
     // 보라
     [Color.fromARGB(255, 24, 90, 157), Color.fromARGB(255, 67, 206, 162)],
@@ -244,64 +272,70 @@ class ArticleFolder extends StatelessWidget {
     // 회색
     [Color.fromARGB(255, 96, 108, 136), Color.fromARGB(255, 63, 76, 107)],
     // ASH
+  ];*/
+
+  static const List<Color> BACKGROUND_COLORS = [
+    Color.fromARGB(255, 41, 41, 41),
   ];
 
   String title = "";
   String description = "";
   VoidCallback onPressed;
-  List<Color> backgroundColor;
+  Color backgroundColor;
 
-  ArticleFolder(this.title, this.description, this.onPressed) {
-    this.backgroundColor =
-        BACKGROUND_COLORS[Random.secure().nextInt(BACKGROUND_COLORS.length)];
-  }
+  ArticleFolder(
+      this.title, this.description, this.onPressed, this.backgroundColor);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 80,
       child: FlatButton(
+        padding: EdgeInsets.all(0),
         onPressed: onPressed,
         child: Card(
+          color: backgroundColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11.0),
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          elevation: 10,
-          child: Column(
-            children: [
-              Flexible(
-                child: Container(
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: backgroundColor)),
-                    padding: EdgeInsets.only(left: 5, right: 5),
-                    child: Center(
-                        child:
-                            /*FittedBox(
-                          fit:BoxFit.fitHeight,
-                          child: */
-                            Text(
-                      title,
-                      style: TextStyle(
-                          color: Colors.white70,
-                          fontFamily: "Cinzel",
-                          fontSize: max(
-                              (MediaQuery.of(context).size.width / 96), 15)),
-                      textAlign: TextAlign.start,
-                    )
+          elevation: 0,
+          child: SizedBox.expand(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                    margin: EdgeInsets.only(top: 30),
+                    decoration: BoxDecoration(color: backgroundColor),
+                    padding: EdgeInsets.only(left: 10, right: 5),
+                    child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "CRB",
+                              fontSize: max(
+                                  (MediaQuery.of(context).size.width / 96),
+                                  13)),
+                          textAlign: TextAlign.start,
+                        )
                         //),
                         )),
-                flex: 8,
-              ),
-              Flexible(
-                child: Container(
-                  child: Center(child: Text(description)),
-                ),
-                flex: 2,
-              )
-            ],
+                Container(
+                  margin: EdgeInsets.only(top: 9, left: 10, bottom: 9),
+                  child: Text(
+                    description,
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontFamily: "CRB",
+                        fontSize:
+                            max((MediaQuery.of(context).size.width / 96), 15) -
+                                3.0),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -311,12 +345,15 @@ class ArticleFolder extends StatelessWidget {
 
 class Article extends StatelessWidget {
   String articleName;
+  String author;
   VoidCallback onPressed;
+  Color backgroundColor;
 
-  Article(this.articleName, this.onPressed);
+  Article(this.articleName, this.author, this.onPressed, this.backgroundColor);
 
   @override
   Widget build(BuildContext context) {
-    return ArticleFolder(articleName, "📖", this.onPressed);
+    return ArticleFolder(
+        articleName, this.author, this.onPressed, backgroundColor);
   }
 }

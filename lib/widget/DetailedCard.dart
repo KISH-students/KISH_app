@@ -10,24 +10,23 @@ class DetailedCard extends StatelessWidget {
   String content;
   TextStyle contentTextStyle;
   Color descriptionColor;
-  Color iconColor;
-  IconData icon;
+  Widget icon;
 
   DetailedCard(
       {this.title = "",
-      this.bottomTitle = "",
-      this.descriptionColor = Colors.black,
-      this.description = "",
-      this.content = "",
-      this.icon = Icons.title,
-      this.iconColor = Colors.blueAccent,
-      this.contentTextStyle = const TextStyle(color: Colors.black)});
+        this.bottomTitle = "",
+        this.descriptionColor = Colors.black,
+        this.description = "",
+        this.content = "",
+        this.icon,
+        this.contentTextStyle = const TextStyle(color: Color.fromARGB(255, 135, 135, 135))});
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       CustomOutlinedCard(
-        color: Colors.black87,
+        borderColor: Color.fromARGB(85, 155, 155, 155),
+        borderWidth: 1.5,
         child: Container(
           padding: EdgeInsets.only(left: 20, top: 20),
           child: Column(
@@ -36,21 +35,19 @@ class DetailedCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    this.icon,
-                    size: 25,
-                    color: iconColor,
+                  Container(
+                    child: icon
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 5),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(" " + title,
+                          Text(title,
                               style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 16,
-                                  fontFamily: "KOTRA")),
+                                  color: Color.fromARGB(220, 43, 43, 43),
+                                  fontSize: 20,
+                                  fontFamily: "CRB")),
                           Text(
                             description,
                             style: TextStyle(

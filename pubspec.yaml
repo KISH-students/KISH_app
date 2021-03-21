@@ -66,6 +66,10 @@ flutter:
     - family: Cinzel
       fonts:
         - asset: fonts/Cinzel-VariableFont_wght.ttf
+    - family: CRB
+      fonts:
+        - asset: fonts/CookieRun Bold.ttf
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

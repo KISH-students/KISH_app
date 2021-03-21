@@ -56,7 +56,7 @@ class DDayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomOutlinedCard(
-        color: color,
+        borderColor: color,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,

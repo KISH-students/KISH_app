@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 class CustomOutlinedCard extends StatelessWidget {
   String description;
-  Color color;
+  Color borderColor;
   Widget child;
+  double borderWidth;
 
-  CustomOutlinedCard({this.color = Colors.redAccent, this.child}) {
+  CustomOutlinedCard({this.borderColor = Colors.redAccent, this.borderWidth = 0.5, this.child}) {
     if (this.child == null) this.child = new Column();
   }
 
@@ -17,7 +18,7 @@ class CustomOutlinedCard extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15)),
-            border: Border.all(width: 0.5, color: color)),
+            border: Border.all(width: borderWidth, color: borderColor)),
         child: child);
   }
 }
