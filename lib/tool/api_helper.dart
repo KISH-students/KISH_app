@@ -32,13 +32,13 @@ class ApiHelper {
       }
       saveResult(api + "::" + params.toString(), response.body);
     } catch (e) {
-      Fluttertoast.showToast(
+     /* Fluttertoast.showToast(
           msg: "정보를 불러오지 못했습니다.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           backgroundColor: Colors.black54,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 16.0);*/
       String cache = await getCachedResult(api+"::"+params.toString());
       if(cache != null) return cache;
     }
