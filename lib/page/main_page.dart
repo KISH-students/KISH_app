@@ -6,6 +6,8 @@ import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/title_text.dart';
+import 'package:kish2019/noti_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -22,6 +24,9 @@ class _MainPageState extends State<MainPage> {
   String todayDate;
   int sliderIdx = 0;
 
+  Icon ddayNotiIcon = new Icon(Icons.alarm_off_sharp);
+  Icon lunchNotiIcon = new Icon(Icons.alarm_off_sharp);
+
   //List<Widget> sliderItems = [];
 
   @override
@@ -32,12 +37,14 @@ class _MainPageState extends State<MainPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
+              loadLunchNotiIcon();
+
               Widget menuWidget;
               List result = snapshot.data;
 
               DateTime tmpDate = DateTime.now();
               DateTime today =
-                  DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
+              DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
               int timestamp = (today.millisecondsSinceEpoch / 1000).round();
               int count = 0;
               //print("our : " + today.millisecondsSinceEpoch.toString());
@@ -84,6 +91,8 @@ class _MainPageState extends State<MainPage> {
     ddayFutureBuilder = FutureBuilder(
       future: ApiHelper.getExamDDay(),
       builder: (context, snapshot) {
+        loadDdayNotiIcon();
+
         List<Widget> list = [];
         Container widget = Container(
             width: MediaQuery.of(context).size.width * 0.9,
@@ -172,15 +181,104 @@ class _MainPageState extends State<MainPage> {
             children: _getIndicator(sliderItems, sliderIdx),
           ),*/
           Center(
-            child: ddayFutureBuilder,
+              child: Column(
+                  children: [
+                    Container(
+                        alignment: Alignment.topRight,
+                        child: FlatButton.icon(onPressed: () { updateDdayNoti(); },
+                          icon: ddayNotiIcon,
+                          label: Text("DDay 알림"),)),
+                    ddayFutureBuilder,
+                  ]
+              )
           ),
+
           Center(
-            child: Container(
-                margin: EdgeInsets.only(top: 30), child: lunchFutureBuilder),
+              child: Column(
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(top: 30),
+                      alignment: Alignment.topRight,
+                      child: FlatButton.icon(onPressed: updateLunchNoti,
+                        icon: this.lunchNotiIcon,
+                        label: Text("식단 알림"),)),
+                  Container(
+                      child: lunchFutureBuilder),
+                ],
+              )
           ),
         ],
       ),
     );
+  }
+
+  Future<void> loadDdayNotiIcon() async {
+    await NotificationManager.checkSettings();
+    Future<void>.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        ddayNotiIcon = Icon(NotificationManager.showDdayNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
+      });
+    });
+  }
+
+  Future<void> updateDdayNoti() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool result = preferences.getBool("ddayNoti");
+
+    if(result == null){
+      result = true;
+    }else{
+      result = !result;
+    }
+
+    preferences.setBool("ddayNoti", result);
+    NotificationManager.showDdayNoti = result;
+
+    if(result) {
+      NotificationManager.startDdayNoti();
+    }else{
+      NotificationManager.stopDdayNoti();
+    }
+
+    await preferences.setBool("ddayNoti", result);
+
+    setState(() {
+      ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
+  }
+
+  Future<void> loadLunchNotiIcon() async {
+    await NotificationManager.checkSettings();
+    Future<void>.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        lunchNotiIcon = Icon(NotificationManager.showDdayNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
+      });
+    });
+  }
+
+  Future<void> updateLunchNoti() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool result = preferences.getBool("lunchNoti");
+    if(result == null){
+      result = true;
+    }else{
+      result = !result;
+    }
+
+    preferences.setBool("lunchNoti", result);
+    NotificationManager.showDdayNoti = result;
+
+    if(result) {
+      NotificationManager.startLunchMenuNoti();
+    }else{
+      NotificationManager.stopLunchMenuNoti();
+    }
+
+    await preferences.setBool("lunchNoti", result);
+
+    setState(() {
+      lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
   }
 
   List<Widget> _getIndicator(List items, int index) {

@@ -40,6 +40,7 @@ dependencies:
   carousel_slider: ^2.3.1
   flutter_icons: ^1.1.0
   flutter_local_notifications: ^4.0.1+2
+  flutter_native_timezone: ^1.0.4
 
 dev_dependencies:
   flutter_test:

@@ -9,9 +9,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationManager.startNoti();
+
   runApp(MaterialApp(
       title: 'KISH',
       theme: ThemeData(
@@ -24,6 +28,8 @@ void main() {
       builder: EasyLoading.init(),
       home: Home()));
 }
+
+
 
 class Home extends StatefulWidget {
   @override
