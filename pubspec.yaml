@@ -36,7 +36,7 @@ dependencies:
   flutter_easyloading: ^2.2.2
   flutter_cached_pdfview: ^0.3.5
   progress_indicators: ^0.1.5
-  new_version: ^0.0.5
+  new_version: ^0.0.7
   carousel_slider: ^2.3.1
   flutter_icons: ^1.1.0
   flutter_local_notifications: ^4.0.1+2
