@@ -12,9 +12,9 @@ import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
 
-void main() {
+Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  NotificationManager.startNoti();
+  await NotificationManager().startNoti();
 
   runApp(MaterialApp(
       title: 'KISH',

@@ -6,16 +6,27 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationManager {
+  static NotificationManager instance;
   static final int ID_LUNCH = 0;
   static final int ID_DDAY = 1;
 
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
-  static bool showLunchNoti = false;
-  static bool showDdayNoti = false;
+  bool showLunchNoti = false;
+  bool showDdayNoti = false;
 
-  static Future<void> startNoti() async{
+  static NotificationManager getInstance() {
+    return instance;
+  }
+
+  NotificationManager() {
+    if(instance != null) throw new Exception(["이미 다른 인스턴스가 존재합니다."]);
+
+    instance = this;
+  }
+
+  Future<void> startNoti() async{
     await _configureLocalTimeZone();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -25,7 +36,7 @@ class NotificationManager {
     //await _scheduleDailyTenAMNotification();
   }
 
-  static Future<void> checkSettings() async {
+  Future<void> checkSettings() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     showDdayNoti = preferences.getBool("ddayNoti");
@@ -43,7 +54,7 @@ class NotificationManager {
     }
   }
 
-  static Future<void> _configureLocalTimeZone() async {
+  Future<void> _configureLocalTimeZone() async {
     tz.initializeTimeZones();
     final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(timeZoneName));
@@ -80,7 +91,7 @@ class NotificationManager {
         matchDateTimeComponents: DateTimeComponents.time);
   }*/
 
-  static Future<NotificationDetails> _getOngoingNotification() async {
+  Future<NotificationDetails> _getOngoingNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
         '알림 - 종합', '알림 - 종합', '급식 및 dday 알림.',
@@ -97,7 +108,7 @@ class NotificationManager {
     return platformChannelSpecifics;
   }
 
-  static Future<void> startDdayNoti() async {
+  Future<void> startDdayNoti() async {
     NotificationDetails platformChannelSpecifics = await _getOngoingNotification();
 
     await flutterLocalNotificationsPlugin.show(ID_DDAY, 'D-DAY : 불러오는 중',
@@ -116,11 +127,11 @@ class NotificationManager {
     }
   }
 
-  static Future<void> stopDdayNoti() async {
+  Future<void> stopDdayNoti() async {
     await flutterLocalNotificationsPlugin.cancel(ID_DDAY);
   }
 
-  static Future<void> _showDdayNoti (NotificationDetails platformChannelSpecifics) async {
+  Future<void> _showDdayNoti (NotificationDetails platformChannelSpecifics) async {
     Map data = await ApiHelper.getExamDDay();
 
     String title;
@@ -142,7 +153,7 @@ class NotificationManager {
         body, platformChannelSpecifics);
   }
 
-  static Future<void> startLunchMenuNoti() async {
+  Future<void> startLunchMenuNoti() async {
     NotificationDetails platformChannelSpecifics = await _getOngoingNotification();
 
     await flutterLocalNotificationsPlugin.show(ID_LUNCH, '오늘의 급식',
@@ -161,11 +172,11 @@ class NotificationManager {
     }
   }
 
-  static Future<void> stopLunchMenuNoti() async {
+  Future<void> stopLunchMenuNoti() async {
     await flutterLocalNotificationsPlugin.cancel(ID_LUNCH);
   }
 
-  static Future<void> _showLunchMenuNoti(NotificationDetails platformChannelSpecifics) async {
+  Future<void> _showLunchMenuNoti(NotificationDetails platformChannelSpecifics) async {
     DateTime tmpDate = DateTime.now();
     DateTime today = DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
     int timestamp = (today.millisecondsSinceEpoch / 1000).round();

@@ -24,8 +24,13 @@ class _MainPageState extends State<MainPage> {
   String todayDate;
   int sliderIdx = 0;
 
-  Icon ddayNotiIcon = new Icon(Icons.alarm_off_sharp);
-  Icon lunchNotiIcon = new Icon(Icons.alarm_off_sharp);
+  Icon ddayNotiIcon = new Icon(Icons.sync);
+  Icon lunchNotiIcon = new Icon(Icons.sync);
+
+  _MainPageState() {
+    loadDdayNotiIcon();
+    loadLunchNotiIcon();
+  }
 
   //List<Widget> sliderItems = [];
 
@@ -37,8 +42,6 @@ class _MainPageState extends State<MainPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              loadLunchNotiIcon();
-
               Widget menuWidget;
               List result = snapshot.data;
 
@@ -91,8 +94,6 @@ class _MainPageState extends State<MainPage> {
     ddayFutureBuilder = FutureBuilder(
       future: ApiHelper.getExamDDay(),
       builder: (context, snapshot) {
-        loadDdayNotiIcon();
-
         List<Widget> list = [];
         Container widget = Container(
             width: MediaQuery.of(context).size.width * 0.9,
@@ -212,16 +213,16 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Future<void> loadDdayNotiIcon() async {
-    await NotificationManager.checkSettings();
-    Future<void>.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        ddayNotiIcon = Icon(NotificationManager.showDdayNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
-      });
-    });
+  void loadDdayNotiIcon() async {
+    NotificationManager manager = NotificationManager.getInstance();
+
+    ddayNotiIcon = Icon(
+        manager.showDdayNoti ? Icons.notifications_active : Icons
+            .notifications_active_outlined);
   }
 
   Future<void> updateDdayNoti() async{
+    NotificationManager manager = NotificationManager.getInstance();
     SharedPreferences preferences = await SharedPreferences.getInstance();
     bool result = preferences.getBool("ddayNoti");
 
@@ -232,12 +233,12 @@ class _MainPageState extends State<MainPage> {
     }
 
     preferences.setBool("ddayNoti", result);
-    NotificationManager.showDdayNoti = result;
+    manager.showDdayNoti = result;
 
     if(result) {
-      NotificationManager.startDdayNoti();
+      manager.startDdayNoti();
     }else{
-      NotificationManager.stopDdayNoti();
+      manager.stopDdayNoti();
     }
 
     await preferences.setBool("ddayNoti", result);
@@ -247,18 +248,16 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  Future<void> loadLunchNotiIcon() async {
-    await NotificationManager.checkSettings();
-    Future<void>.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        lunchNotiIcon = Icon(NotificationManager.showDdayNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
-      });
-    });
+  void loadLunchNotiIcon() async {
+    NotificationManager manager = NotificationManager.getInstance();
+    lunchNotiIcon = Icon(manager.showLunchNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> updateLunchNoti() async{
+    NotificationManager manager = NotificationManager.getInstance();
     SharedPreferences preferences = await SharedPreferences.getInstance();
     bool result = preferences.getBool("lunchNoti");
+
     if(result == null){
       result = true;
     }else{
@@ -266,16 +265,15 @@ class _MainPageState extends State<MainPage> {
     }
 
     preferences.setBool("lunchNoti", result);
-    NotificationManager.showDdayNoti = result;
+    manager.showLunchNoti = result;
 
     if(result) {
-      NotificationManager.startLunchMenuNoti();
+      manager.startLunchMenuNoti();
     }else{
-      NotificationManager.stopLunchMenuNoti();
+      manager.stopLunchMenuNoti();
     }
 
     await preferences.setBool("lunchNoti", result);
-
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
