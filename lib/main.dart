@@ -88,61 +88,61 @@ class MainState extends State<Home> {
           //border radius doesn't work when the notch is enabled.
           elevation: 8,
           items: <BubbleBottomBarItem>[
-            BubbleBottomBarItem(
-                backgroundColor: Colors.red,
+            BubbleBottomBarItem(  // HOME
+                backgroundColor: Colors.redAccent,
                 icon: Icon(
-                  Icons.dashboard,
+                  Icons.home_outlined,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.dashboard,
-                  color: Colors.red,
+                  Icons.home_outlined,
+                  color: Colors.redAccent,
                 ),
-                title: Text("Home")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.deepPurple,
+                title: Text("홈")),
+            BubbleBottomBarItem(  // KISH MAGAZINE
+                backgroundColor: Colors.black54,
                 icon: Icon(
-                  Icons.bookmark,
+                  Icons.library_books_outlined,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.bookmark,
-                  color: Colors.deepPurple,
+                  Icons.library_books_outlined,
+                  color: Colors.black54,
                 ),
-                title: Text("kish magazine")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.deepPurple,
-                icon: Icon(
-                  Icons.assignment_outlined,
-                  color: Colors.black,
-                ),
-                activeIcon: Icon(
-                  Icons.assignment_outlined,
-                  color: Colors.deepPurple,
-                ),
-                title: Text("대나무숲")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.indigo,
-                icon: Icon(
-                  Icons.assignment,
-                  color: Colors.black,
-                ),
-                activeIcon: Icon(
-                  Icons.assignment,
-                  color: Colors.indigo,
-                ),
-                title: Text("가정통신문")),
-            BubbleBottomBarItem(
+                title: Text("매거진")),
+            BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
-                  Icons.book,
+                  Icons.chat_bubble_outline,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.book,
+                  Icons.chat_bubble_outline,
                   color: Colors.green,
                 ),
-                title: Text("학교 도서")),
+                title: Text("대나무숲")),
+            BubbleBottomBarItem(  // KISH 가정통신문
+                backgroundColor: Colors.black54,
+                icon: Icon(
+                  Icons.assignment_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.assignment_outlined,
+                  color: Colors.black54,
+                ),
+                title: Text("가정통신문")),
+            BubbleBottomBarItem(  // KISH 도서
+                backgroundColor: Colors.brown,
+                icon: Icon(
+                  Icons.book_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.book_outlined,
+                  color: Colors.brown,
+                ),
+                title: Text("도서")),
           ],
         ),
       ),
