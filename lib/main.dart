@@ -48,7 +48,8 @@ class MainState extends State<Home> {
     pageController.addListener(() {
       currentIndex = pageController.page.toInt();
     });
-    newVersion = NewVersion(context: context);
+    newVersion = NewVersion(context: context,
+        dialogTitle: "업데이트 이용 가능", dismissText: "나중에", updateText: "업데이트 하기");
     newVersion.showAlertIfNecessary();
   }
 
