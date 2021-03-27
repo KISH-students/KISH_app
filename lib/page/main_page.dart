@@ -7,7 +7,6 @@ import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -26,11 +25,7 @@ class _MainPageState extends State<MainPage> {
 
   Icon ddayNotiIcon = new Icon(Icons.sync);
   Icon lunchNotiIcon = new Icon(Icons.sync);
-
-  _MainPageState() {
-    loadDdayNotiIcon();
-    loadLunchNotiIcon();
-  }
+  bool isIconLoaded = false;
 
   //List<Widget> sliderItems = [];
 
@@ -145,6 +140,17 @@ class _MainPageState extends State<MainPage> {
       examFutureBuilder,
     ];*/
     todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!isIconLoaded) {
+        isIconLoaded = true;
+
+        setState(() {
+          loadDdayNotiIcon();
+          loadLunchNotiIcon();
+        });
+      }
+    });
   }
 
   @override
@@ -216,32 +222,27 @@ class _MainPageState extends State<MainPage> {
   void loadDdayNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
 
+    bool enabled = await manager.isDdayEnabled();
+
     ddayNotiIcon = Icon(
-        manager.showDdayNoti ? Icons.notifications_active : Icons
+        enabled ? Icons.notifications_active : Icons
             .notifications_active_outlined);
   }
 
   Future<void> updateDdayNoti() async{
     NotificationManager manager = NotificationManager.getInstance();
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool result = preferences.getBool("ddayNoti");
+    bool result = await manager.isDdayEnabled();
 
-    if(result == null){
+    if (result == null){
       result = true;
-    }else{
+    }else {
       result = !result;
     }
 
-    preferences.setBool("ddayNoti", result);
-    manager.showDdayNoti = result;
-
-    if(result) {
-      manager.startDdayNoti();
-    }else{
-      manager.stopDdayNoti();
+    await manager.setDdayEnabled(result);
+    if(!result) {
+      NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
     }
-
-    await preferences.setBool("ddayNoti", result);
 
     setState(() {
       ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
@@ -250,30 +251,24 @@ class _MainPageState extends State<MainPage> {
 
   void loadLunchNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
-    lunchNotiIcon = Icon(manager.showLunchNoti ? Icons.notifications_active : Icons.notifications_active_outlined);
+    lunchNotiIcon = Icon(await manager.isLunchMenuEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> updateLunchNoti() async{
     NotificationManager manager = NotificationManager.getInstance();
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool result = preferences.getBool("lunchNoti");
+    bool result = await manager.isLunchMenuEnabled();
 
-    if(result == null){
+    if (result == null){
       result = true;
-    }else{
+    }else {
       result = !result;
     }
 
-    preferences.setBool("lunchNoti", result);
-    manager.showLunchNoti = result;
-
-    if(result) {
-      manager.startLunchMenuNoti();
-    }else{
-      manager.stopLunchMenuNoti();
+    await manager.setLunchMenuEnabled(result);
+    if (!result) {
+      NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
     }
 
-    await preferences.setBool("lunchNoti", result);
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });

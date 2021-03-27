@@ -1,3 +1,4 @@
+import 'package:foreground_service/foreground_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:kish2019/tool/api_helper.dart';
@@ -10,11 +11,18 @@ class NotificationManager {
   static final int ID_LUNCH = 0;
   static final int ID_DDAY = 1;
 
+  final List<String> weekdays = ["", "월", "화", "수", "목", "금", "토", "일"];
+
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
-  bool showLunchNoti = false;
-  bool showDdayNoti = false;
+  SharedPreferences preferences;
+
+  int ddayNotiId;
+  String ddayTitle;
+  String ddayText;
+  String lunchMenuTitle;
+  String lunchMenuText;
 
   static NotificationManager getInstance() {
     return instance;
@@ -29,6 +37,8 @@ class NotificationManager {
   Future<void> startNoti() async{
     await _configureLocalTimeZone();
 
+
+
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('kish_icon');
 
@@ -37,12 +47,12 @@ class NotificationManager {
   }
 
   Future<void> checkSettings() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
+/*    SharedPreferences preferences = await SharedPreferences.getInstance();
 
     showDdayNoti = preferences.getBool("ddayNoti");
-    showLunchNoti = preferences.getBool("lunchNoti");
+    showLunchNoti = preferences.getBool("lunchNoti");*/
 
-    if(showDdayNoti == null) showDdayNoti = false;
+    /*if(showDdayNoti == null) showDdayNoti = false;
     if(showLunchNoti == null) showLunchNoti = false;
 
     if (showLunchNoti){
@@ -52,6 +62,36 @@ class NotificationManager {
     if (showDdayNoti){
       startDdayNoti();
     }
+
+    if (this.showDdayNoti || this.showLunchNoti) {
+      main
+    } else {
+      await ForegroundService.stopForegroundService();
+    }*/
+  }
+
+  Future<void> loadSharedPreferences() async{
+    this.preferences = await SharedPreferences.getInstance();
+  }
+
+  Future<bool> isDdayEnabled() async {
+    if(this.preferences == null) await loadSharedPreferences();
+    return preferences.getBool("ddayNoti");
+  }
+
+  Future<bool> isLunchMenuEnabled() async{
+    if(this.preferences == null) await loadSharedPreferences();
+    return preferences.getBool("lunchNoti");
+  }
+
+  Future<void> setDdayEnabled(bool v) async{
+    if(this.preferences == null) await loadSharedPreferences();
+    this.preferences.setBool("ddayNoti", v);
+  }
+
+  Future<void> setLunchMenuEnabled(bool v) async{
+    if(this.preferences == null) await loadSharedPreferences();
+    this.preferences.setBool("lunchNoti", v);
   }
 
   Future<void> _configureLocalTimeZone() async {
@@ -65,9 +105,9 @@ class NotificationManager {
   tz.TZDateTime _nextInstanceOfTenAM() {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate =
-    tz.TZDateTime(tz.local, now.year, now.month, now.day, 2, 28);
+    tz.TZDateTime(tz.local, now.year, now.month, now.day, now.hour);
     if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+      scheduledDate = scheduledDate.add(const Duration(minutes: 1));
     }
     return scheduledDate;
   }
@@ -91,7 +131,7 @@ class NotificationManager {
         matchDateTimeComponents: DateTimeComponents.time);
   }*/
 
-  Future<NotificationDetails> _getOngoingNotification() async {
+  Future<NotificationDetails> getOngoingNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
         '알림 - 종합', '알림 - 종합', '급식 및 dday 알림.',
@@ -101,6 +141,7 @@ class NotificationManager {
         ongoing: true,
         playSound: false,
         autoCancel: false,
+        enableVibration: false,
         icon: "kish_icon");
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -108,21 +149,22 @@ class NotificationManager {
     return platformChannelSpecifics;
   }
 
+/*
   Future<void> startDdayNoti() async {
-    NotificationDetails platformChannelSpecifics = await _getOngoingNotification();
+    NotificationDetails platformChannelSpecifics = await getOngoingNotification();
 
     await flutterLocalNotificationsPlugin.show(ID_DDAY, 'D-DAY : 불러오는 중',
         '잠시만 기다려 주세요', platformChannelSpecifics);
 
-    _showDdayNoti(platformChannelSpecifics);
+    showDdayNotification(platformChannelSpecifics);
 
     while (true) {
       if(!showDdayNoti) {
-        stopLunchMenuNoti();
+        stopDdayNoti();
         break;
       }
       await Future<void>.delayed(const Duration(seconds: 60), () async {
-        _showLunchMenuNoti(platformChannelSpecifics);
+        showDdayNotification(platformChannelSpecifics);
       });
     }
   }
@@ -130,8 +172,9 @@ class NotificationManager {
   Future<void> stopDdayNoti() async {
     await flutterLocalNotificationsPlugin.cancel(ID_DDAY);
   }
+*/
 
-  Future<void> _showDdayNoti (NotificationDetails platformChannelSpecifics) async {
+  Future<void> showDdayNotification () async {
     Map data = await ApiHelper.getExamDDay();
 
     String title;
@@ -149,17 +192,28 @@ class NotificationManager {
       body = (diffDays + 1).toString() + "일 남음";
     }
 
-    flutterLocalNotificationsPlugin.show(ID_DDAY, title ,
-        body, platformChannelSpecifics);
+    int notiId = await this.isLunchMenuEnabled() ? 2 : 1;
+
+    if(title != ddayTitle || body != ddayText || ddayNotiId != notiId) {
+      this.ddayTitle = title;
+      this.ddayText = body;
+      this.ddayNotiId = notiId;
+      dynamic detail = await getOngoingNotification();
+
+      flutterLocalNotificationsPlugin.show(notiId, ddayTitle, ddayText, detail);
+    }
+
+    /*flutterLocalNotificationsPlugin.show(ID_DDAY, title ,
+        body, platformChannelSpecifics);*/
   }
 
-  Future<void> startLunchMenuNoti() async {
-    NotificationDetails platformChannelSpecifics = await _getOngoingNotification();
+/*  Future<void> startLunchMenuNoti() async {
+    NotificationDetails platformChannelSpecifics = await getOngoingNotification();
 
     await flutterLocalNotificationsPlugin.show(ID_LUNCH, '오늘의 급식',
         '가져오는 중', platformChannelSpecifics);
 
-    _showLunchMenuNoti(platformChannelSpecifics);
+    showLunchMenuNotification(platformChannelSpecifics);
 
     while (true) {
       if(!showLunchNoti) {
@@ -167,16 +221,17 @@ class NotificationManager {
         break;
       }
       await Future<void>.delayed(const Duration(seconds: 60), () async {
-        _showLunchMenuNoti(platformChannelSpecifics);
+        //stopLunchMenuNoti();
+        showLunchMenuNotification(platformChannelSpecifics);
       });
     }
-  }
+  }*/
 
-  Future<void> stopLunchMenuNoti() async {
+/*  Future<void> stopLunchMenuNoti() async {
     await flutterLocalNotificationsPlugin.cancel(ID_LUNCH);
-  }
-
-  Future<void> _showLunchMenuNoti(NotificationDetails platformChannelSpecifics) async {
+  }*/
+  int i =1;
+  Future<void> showLunchMenuNotification() async {
     DateTime tmpDate = DateTime.now();
     DateTime today = DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
     int timestamp = (today.millisecondsSinceEpoch / 1000).round();
@@ -189,6 +244,8 @@ class NotificationManager {
       return;
     }
 
+    dynamic detail = await getOngoingNotification();
+
     result.forEach((element) {
       if (found) return;
 
@@ -197,8 +254,18 @@ class NotificationManager {
         String date = data["date"];
         String content = (data["menu"] as String).replaceAll(",", "\n");
 
-        flutterLocalNotificationsPlugin.show(ID_LUNCH, '오늘의 급식 - ' + date ,
-            content, platformChannelSpecifics);
+        String title = "급식 알림 ·" + weekdays[DateTime.tryParse(date).weekday] + "요일";
+        String text = content;
+
+        if(title != ddayTitle || text != ddayText) {
+          this.ddayTitle = title;
+          this.ddayText = text;
+/*
+          ForegroundService.notification.startEditMode();
+          ForegroundService.notification.setTitle(this.notiTitle);
+          ForegroundService.notification.setText(this.notiText);*/
+          flutterLocalNotificationsPlugin.show(1, ddayTitle, ddayText, detail);
+        }
         found = true;
       }
     });

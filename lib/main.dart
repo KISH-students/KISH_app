@@ -11,7 +11,9 @@ import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
+import 'package:foreground_service/foreground_service.dart';
 
+// TODO : 알림 관련 리팩토링 및 clean
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationManager().startNoti();
@@ -27,9 +29,81 @@ Future<void> main() async{
       ),
       builder: EasyLoading.init(),
       home: Home()));
+
+  startForegroundServiceChecking();
+}
+
+void startForegroundServiceChecking() async {
+  NotificationManager manager = NotificationManager.instance;
+
+  ///this exists solely in the main app/isolate,
+  ///so needs to be redone after every app kill+relaunch
+  await ForegroundService.setupIsolateCommunication((data) {
+    //debugPrint("main received: $data");
+  });
+
+  startForegroundUpdate();
+
+  while (true) {
+    await Future<void>.delayed(Duration(seconds: 1), () async {
+      if (await manager.isDdayEnabled() || await manager.isLunchMenuEnabled()) {
+        foregroundServiceStart();
+      } else {
+        ForegroundService.stopForegroundService();
+      }
+    });
+  }
+}
+
+// 앱이 켜져있을 때 포그라운드 서비스를 대신하여 알림을 업데이트 합니다.
+void startForegroundUpdate() async{
+  if (!await ForegroundService.isBackgroundIsolate) {
+    globalForegroundService();
+  }
+
+  while (true) {
+    await Future<void>.delayed(Duration(seconds: 60), () async {
+      if (!await ForegroundService.isBackgroundIsolate) {
+        globalForegroundService();
+      }
+    });
+  }
+}
+
+//use an async method so we can await
+void foregroundServiceStart() async {
+  ///if the app was killed+relaunched, this function will be executed again
+  ///but if the foreground service stayed alive,
+  ///this does not need to be re-done
+  if (!(await ForegroundService.foregroundServiceIsStarted())) {
+    await ForegroundService.setServiceIntervalSeconds(60);
+
+    await ForegroundService.notification.startEditMode();
+    await ForegroundService.notification
+        .setTitle("서비스 시작됨");
+    await ForegroundService.notification
+        .setText("곧 알림이 업데이트됩니다.");
+    await ForegroundService.notification.finishEditMode();
+
+    ForegroundService.notification.setPriority(AndroidNotificationPriority.LOW);
+
+    await ForegroundService.startForegroundService(globalForegroundService);
+    await ForegroundService.getWakeLock();
+  }
 }
 
 
+void globalForegroundService() async{
+  NotificationManager manager = NotificationManager.instance;
+
+  if(manager == null){
+    manager = new NotificationManager();
+    await manager.startNoti();
+  }
+
+  if(await manager.isLunchMenuEnabled()) await manager.showLunchMenuNotification();
+  if(await manager.isDdayEnabled()) await manager.showDdayNotification();
+}
 
 class Home extends StatefulWidget {
   @override
