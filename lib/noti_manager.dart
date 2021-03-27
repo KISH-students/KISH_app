@@ -45,12 +45,16 @@ class NotificationManager {
 
   Future<bool> isDdayEnabled() async {
     if(this.preferences == null) await loadSharedPreferences();
-    return preferences.getBool("ddayNoti");
+    bool result =  preferences.getBool("ddayNoti");
+
+    return result == null ? false : result;
   }
 
   Future<bool> isLunchMenuEnabled() async{
     if(this.preferences == null) await loadSharedPreferences();
-    return preferences.getBool("lunchNoti");
+    bool result = preferences.getBool("lunchNoti");
+
+    return result == null ? false : result;
   }
 
   Future<void> setDdayEnabled(bool v) async{
