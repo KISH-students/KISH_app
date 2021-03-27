@@ -13,10 +13,9 @@ import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
 import 'package:foreground_service/foreground_service.dart';
 
-// TODO : 알림 관련 리팩토링 및 clean
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationManager().startNoti();
+  await NotificationManager().init();
 
   runApp(MaterialApp(
       title: 'KISH',
@@ -98,7 +97,7 @@ void globalForegroundService() async{
 
   if(manager == null){
     manager = new NotificationManager();
-    await manager.startNoti();
+    await manager.init();
   }
 
   if(await manager.isLunchMenuEnabled()) await manager.showLunchMenuNotification();
