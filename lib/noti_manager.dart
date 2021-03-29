@@ -1,4 +1,3 @@
-import 'package:foreground_service/foreground_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:kish2019/tool/api_helper.dart';
@@ -16,6 +15,7 @@ class NotificationManager {
 
   SharedPreferences preferences;
 
+  int ddayStartDay = -1;
   int ddayNotiId;
   String ddayTitle;
   String ddayText;
@@ -73,6 +73,11 @@ class NotificationManager {
     tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
+  Future<void> updateNotifications() async {
+    if(await this.isLunchMenuEnabled()) await this.showLunchMenuNotification();
+    if(await this.isDdayEnabled()) await this.showDdayNotification();
+  }
+
   Future<NotificationDetails> getOngoingAndroidDetails() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
@@ -92,6 +97,10 @@ class NotificationManager {
   }
 
   Future<void> showDdayNotification () async {
+    DateTime now = DateTime.now();
+   /* if(now.day == ddayStartDay) return;
+    ddayStartDay = now.day;*/
+
     Map data = await ApiHelper.getExamDDay();
 
     String title;
@@ -102,7 +111,6 @@ class NotificationManager {
       body = "정보가 없습니다.";
     }else{
       DateTime date = DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000);
-      DateTime now = DateTime.now();
       int diffDays = date.difference(now).inDays;
 
       title = data["label"] + " (" + data["date"] + ")";

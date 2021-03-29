@@ -247,6 +247,8 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
+
+    await manager.updateNotifications();
   }
 
   void loadLunchNotiIcon() async {
@@ -272,6 +274,8 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
+
+    await manager.updateNotifications();
   }
 
   List<Widget> _getIndicator(List items, int index) {
