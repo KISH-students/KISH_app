@@ -143,11 +143,13 @@ class _MainPageState extends State<MainPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!isIconLoaded) {
-        isIconLoaded = true;
+        Future<void>.delayed(Duration(seconds: 0), () {
+          isIconLoaded = true;
 
-        setState(() {
-          loadDdayNotiIcon();
-          loadLunchNotiIcon();
+          setState(() {
+            loadDdayNotiIcon();
+            loadLunchNotiIcon();
+          });
         });
       }
     });
