@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,7 +12,6 @@ import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
-import 'package:workmanager/workmanager.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,30 +29,71 @@ Future<void> main() async{
       builder: EasyLoading.init(),
       home: Home()));
 
-  Workmanager.initialize(
-      callbackDispatcher, // The top level function, aka callbackDispatcher
-      isInDebugMode: false, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  );
-  Workmanager.registerPeriodicTask("2", "알림 갱신 task",
-      constraints: Constraints(
-          networkType: NetworkType.connected,
-      )); // 약 15분마다 갱신
+  // https://github.com/transistorsoft/flutter_background_fetch 에서
+  // BackgroundFetch에 대해 참고할 수 있습니다.
+  //
+  // 추후 IOS 지원시 Background 관련 셋업을 해야합니다..
+  await initPlatformState();
+  await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+  BackgroundFetch.start();
 
   NotificationManager.instance.updateNotifications();
 }
 
-void callbackDispatcher() {
-  Workmanager.executeTask((task, inputData) async {
-    NotificationManager manager = NotificationManager.instance;
+Future<void> notificationUpdateTask() async {
+  NotificationManager manager = NotificationManager.instance;
 
-    if(manager == null){
-      manager = new NotificationManager();
-      await manager.init();
-    }
+  if(manager == null){
+    manager = new NotificationManager();
+    await manager.init();
+  }
 
-    manager.updateNotifications();
-    return Future.value(true);
+  manager.updateNotifications();
+  return Future.value(true);
+}
+
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  print('[BackgroundFetch] Headless event received.');
+  await notificationUpdateTask();
+  print('[BackgroundFetch] JobStarted and FINISHED: $taskId');
+  // Do your work here...
+  BackgroundFetch.finish(taskId);
+}
+
+Future<void> initPlatformState() async {
+  // Configure BackgroundFetch.
+  int status = await BackgroundFetch.configure(BackgroundFetchConfig(
+      minimumFetchInterval: 15,
+      stopOnTerminate: false,
+      enableHeadless: true,
+      requiresBatteryNotLow: false,
+      requiresCharging: false,
+      requiresStorageNotLow: false,
+      requiresDeviceIdle: false,
+      requiredNetworkType: NetworkType.NONE,
+      startOnBoot: true
+  ), (String taskId) async {  // <-- Event handler
+    // This is the fetch-event callback.
+    print('[BackgroundFetch] JobStarted! : $taskId');
+    await notificationUpdateTask();
+    // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+    // for taking too long in the background.
+    BackgroundFetch.finish(taskId);
+  }, (String taskId) async {  // <-- Task timeout handler.
+    // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+    print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+    BackgroundFetch.finish(taskId);
   });
+  print('[BackgroundFetch] configure success: $status');
 }
 
 class Home extends StatefulWidget {
