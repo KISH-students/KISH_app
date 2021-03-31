@@ -167,8 +167,16 @@ class _MainPageState extends State<MainPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            margin: EdgeInsets.only(top: 20.0, left: 17),
+            child: Center(
+              child: FlatButton(
+                onPressed: () { _showAppInfoDialog(context); },
+                child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
+              ),),
+          ),
+          Container(
             margin: EdgeInsets.only(bottom: 25),
-            child: TitleText('오늘의 식단을\n확인하세요'),
+            child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
           ),
           /*CarouselSlider(
             options: CarouselOptions(
@@ -298,4 +306,33 @@ class _MainPageState extends State<MainPage> {
     }
     return list;
   }
+}
+
+Future<void> _showAppInfoDialog(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('KISH'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('개발자', style: TextStyle(fontFamily: "NanumSquareR", fontSize: 20), textAlign: TextAlign.center,),
+              Text("유정욱\n이동주\n이찬영\n김태형\n김나현\n조현정\n김재원\n고성준\n김태운\n김경재\n박지민\n김선우"),
+              Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('뒤로가기'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

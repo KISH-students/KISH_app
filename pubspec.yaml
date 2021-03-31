@@ -54,6 +54,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - images/kish_title_logo.png
   fonts:
     - family: NanumSquareL
       fonts:
