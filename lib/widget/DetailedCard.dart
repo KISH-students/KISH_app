@@ -27,45 +27,49 @@ class DetailedCard extends StatelessWidget {
       CustomOutlinedCard(
         borderColor: Color.fromARGB(85, 155, 155, 155),
         borderWidth: 1.5,
-        child: Container(
+        child:  Container(
           padding: EdgeInsets.only(left: 20, top: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: icon
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.topLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        child: icon
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 5),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title,
+                                style: TextStyle(
+                                    color: Color.fromARGB(220, 43, 43, 43),
+                                    fontSize: 20,
+                                    fontFamily: "CRB")),
+                            Text(
+                              description,
                               style: TextStyle(
-                                  color: Color.fromARGB(220, 43, 43, 43),
-                                  fontSize: 20,
-                                  fontFamily: "CRB")),
-                          Text(
-                            description,
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontFamily: "NanumSquareR",
-                                color: descriptionColor),
-                          ),
-                          Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: Text(
-                                this.content,
-                                style: contentTextStyle,
-                              ))
-                        ]),
-                  ),
-                ],
-              ),
-            ],
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily: "NanumSquareR",
+                                  color: descriptionColor),
+                            ),
+                            Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: Text(
+                                  this.content,
+                                  style: contentTextStyle,
+                                ))
+                          ]),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
