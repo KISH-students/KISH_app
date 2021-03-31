@@ -59,7 +59,7 @@ class DetailedCard extends StatelessWidget {
                                   color: descriptionColor),
                             ),
                             Container(
-                                margin: EdgeInsets.only(top: 10),
+                                margin: EdgeInsets.only(top: 10, bottom: 20),
                                 child: Text(
                                   this.content,
                                   style: contentTextStyle,
