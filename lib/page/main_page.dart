@@ -17,7 +17,7 @@ class MainPage extends StatefulWidget {
   }
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>{
   FutureBuilder lunchFutureBuilder;
   FutureBuilder ddayFutureBuilder;
   String todayDate;
@@ -289,6 +289,9 @@ class _MainPageState extends State<MainPage> {
     }
     return list;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 Future<void> _showAppInfoDialog(BuildContext context) async {

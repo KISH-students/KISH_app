@@ -131,7 +131,7 @@ class Home extends StatefulWidget {
 }
 
 class MainState extends State<Home> {
-  final PageController pageController = PageController(initialPage: 0);
+  final PageController pageController = PageController(initialPage: 0, keepPage: true);
   NewVersion newVersion;
   DateTime currentBackPressTime;
   int currentIndex = 0;

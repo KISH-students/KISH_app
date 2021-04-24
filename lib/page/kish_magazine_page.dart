@@ -17,7 +17,7 @@ class KishMagazinePage extends StatefulWidget {
   }
 }
 
-class _KishMagazinePageState extends State<KishMagazinePage> {
+class _KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAliveClientMixin<KishMagazinePage> {
   Widget yearSelectorWidget = ListTileShimmer();
   Widget articleListWidget = Text("");
   List<Widget> yearButtons = [];
@@ -231,6 +231,9 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
       Expanded(flex: 2, child: articleListWidget),
     ]);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class _CustomYearButton extends StatelessWidget {
