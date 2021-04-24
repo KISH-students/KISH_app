@@ -32,7 +32,7 @@ class ApiHelper {
       }
       saveResult(api + "::" + params.toString(), response.body);
     } catch (e) {
-     /* Fluttertoast.showToast(
+      /* Fluttertoast.showToast(
           msg: "정보를 불러오지 못했습니다.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
@@ -71,7 +71,7 @@ class ApiHelper {
     }
 
     String rsJson =
-        await request(KISHApi.GET_LUNCH, Method.get, {"date": date});
+    await request(KISHApi.GET_LUNCH, Method.get, {"date": date});
     List menuList = json.decode(rsJson);
     return menuList;
   }
@@ -79,31 +79,18 @@ class ApiHelper {
   static Future<Map> getExamDDay() async {
     String resultJson = await request(KISHApi.GET_EXAM_DATES, Method.get, {});
     List examDates = json.decode(resultJson);
+    Map resultMap = examDates.length > 0 ? examDates[0] : null;
 
-    DateTime tmpDate = DateTime.now();
-    DateTime today = DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
-    int timestamp = (today.millisecondsSinceEpoch / 1000).round();
-
-    Map rs;
-
-    examDates.forEach((element) {
-      Map data = element;
-      if (timestamp <= data["timestamp"]) {
-        rs = data;
-        return;
-      }
-    });
-
-    if (rs == null) {
-      rs = {"invalid": true};
+    if (resultMap == null) {
+      resultMap = {"invalid": true};
     }
 
-    return rs;
+    return resultMap;
   }
 
   static Future<List> getArticleList({String path: ""}) async {
     String resultJson =
-        await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
+    await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
     return json.decode(resultJson);
   }
 }
