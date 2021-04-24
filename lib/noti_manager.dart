@@ -8,19 +8,15 @@ import 'package:timezone/timezone.dart' as tz;
 class NotificationManager {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
-
   static NotificationManager instance;
-
-  final List<String> weekdays = ["", "월", "화", "수", "목", "금", "토", "일"];
+  static const List<String> weekdays = ["", "월", "화", "수", "목", "금", "토", "일"];
+  static const DDAY_NOTIFICATION_ID = 2;
+  static const LUNCH_NOTIFICATION_ID = 3;
 
   SharedPreferences preferences;
 
-  int ddayStartDay = -1;
-  int ddayNotiId;
   String ddayTitle;
   String ddayText;
-  String lunchMenuTitle;
-  String lunchMenuText;
 
   static NotificationManager getInstance() {
     return instance;
@@ -48,6 +44,22 @@ class NotificationManager {
     bool result =  preferences.getBool("ddayNoti");
 
     return result == null ? false : result;
+  }
+
+  Future<bool> toggleDday() async {
+    bool result = !(await isDdayEnabled());
+    await this.setDdayEnabled(result);
+
+    if (!result) flutterLocalNotificationsPlugin.cancel(DDAY_NOTIFICATION_ID);
+    return result;
+  }
+
+  Future<bool> toggleLunch() async {
+    bool result = !(await isLunchMenuEnabled());
+    await this.setLunchMenuEnabled(result);
+
+    if (!result) flutterLocalNotificationsPlugin.cancel(LUNCH_NOTIFICATION_ID);
+    return result;
   }
 
   Future<bool> isLunchMenuEnabled() async{
@@ -124,15 +136,12 @@ class NotificationManager {
       }
     }
 
-    int notificationId = await this.isLunchMenuEnabled() ? 2 : 1;
-
-    if(title != ddayTitle || body != ddayText || ddayNotiId != notificationId) {
+    if(title != ddayTitle || body != ddayText) {
       this.ddayTitle = title;
       this.ddayText = body;
-      this.ddayNotiId = notificationId;
       dynamic detail = await getOngoingAndroidDetails();
 
-      flutterLocalNotificationsPlugin.show(notificationId, ddayTitle, ddayText, detail);
+      flutterLocalNotificationsPlugin.show(DDAY_NOTIFICATION_ID, ddayTitle, ddayText, detail);
     }
   }
 
@@ -166,7 +175,7 @@ class NotificationManager {
           this.ddayTitle = title;
           this.ddayText = text;
 
-          flutterLocalNotificationsPlugin.show(1, ddayTitle, ddayText, detail);
+          flutterLocalNotificationsPlugin.show(LUNCH_NOTIFICATION_ID, ddayTitle, ddayText, detail);
         }
         isFound = true;
       }

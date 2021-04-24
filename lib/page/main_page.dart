@@ -241,22 +241,8 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> updateDdayNoti() async{
     NotificationManager manager = NotificationManager.getInstance();
-    bool result = await manager.isDdayEnabled();
 
-    if (result == null){
-      result = true;
-    }else {
-      result = !result;
-    }
-
-    await manager.setDdayEnabled(result);
-    if (!result) {
-      if (await manager.isLunchMenuEnabled()) {
-        NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
-      } else {
-        NotificationManager.flutterLocalNotificationsPlugin.cancel(1);
-      }
-    }
+    bool result = await manager.toggleDday();
 
     setState(() {
       ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
@@ -272,22 +258,8 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> updateLunchNoti() async{
     NotificationManager manager = NotificationManager.getInstance();
-    bool result = await manager.isLunchMenuEnabled();
 
-    if (result == null){
-      result = true;
-    }else {
-      result = !result;
-    }
-
-    await manager.setLunchMenuEnabled(result);
-    if (!result) {
-      if (await manager.isDdayEnabled()) {
-        NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
-      } else {
-        NotificationManager.flutterLocalNotificationsPlugin.cancel(1);
-      }
-    }
+    bool result = await manager.toggleLunch();
 
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
