@@ -153,8 +153,8 @@ class MainState extends State<Home> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           //border radius doesn't work when the notch is enabled.
           elevation: 8,
-          items: <BubbleBottomBarItem>[
-            BubbleBottomBarItem(  // HOME
+          items: const <BubbleBottomBarItem>[
+            const BubbleBottomBarItem(  // HOME
                 backgroundColor: Colors.redAccent,
                 icon: Icon(
                   Icons.home_outlined,
@@ -165,7 +165,7 @@ class MainState extends State<Home> {
                   color: Colors.redAccent,
                 ),
                 title: Text("홈")),
-            BubbleBottomBarItem(  // KISH MAGAZINE
+            const BubbleBottomBarItem(  // KISH MAGAZINE
                 backgroundColor: Colors.black54,
                 icon: Icon(
                   Icons.library_books_outlined,
@@ -176,7 +176,7 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("매거진")),
-            BubbleBottomBarItem(  // KISH 대나무숲
+            const BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
                   Icons.chat_bubble_outline,
@@ -187,7 +187,7 @@ class MainState extends State<Home> {
                   color: Colors.green,
                 ),
                 title: Text("대나무숲")),
-            BubbleBottomBarItem(  // KISH 가정통신문
+            const BubbleBottomBarItem(  // KISH 가정통신문
                 backgroundColor: Colors.black54,
                 icon: Icon(
                   Icons.assignment_outlined,
@@ -198,7 +198,7 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("가정통신문")),
-            BubbleBottomBarItem(  // KISH 도서
+            const BubbleBottomBarItem(  // KISH 도서
                 backgroundColor: Colors.brown,
                 icon: Icon(
                   Icons.book_outlined,
@@ -208,7 +208,7 @@ class MainState extends State<Home> {
                   Icons.book_outlined,
                   color: Colors.brown,
                 ),
-                title: Text("도서")),
+                title: const Text("도서")),
           ],
         ),
       ),

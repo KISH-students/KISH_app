@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:kish2019/widget/custom_outlined_card.dart';
 
 class DDayCard extends StatelessWidget {
-  static Color grey = new Color(0xFF4B515D);
-  static Color red = new Color(0xFFfc5151);
-  static Color orange = new Color(0xFFffba2f);
-  static Color green = new Color(0xFF00C851);
+  static final Color grey = new Color(0xFF4B515D);
+  static final Color red = new Color(0xFFfc5151);
+  static final Color orange = new Color(0xFFffba2f);
+  static final Color green = new Color(0xFF00C851);
 
   String description;
   Color color;

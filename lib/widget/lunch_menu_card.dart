@@ -6,7 +6,7 @@ class LunchMenuCard extends StatelessWidget {
   final String menu;
   final String detail;
 
-  LunchMenuCard({this.menu, this.detail = ""});
+  const LunchMenuCard({this.menu, this.detail = ""});
 
   @override
   Widget build(BuildContext context) {

@@ -4,15 +4,15 @@ import 'package:kish2019/widget/custom_outlined_card.dart';
 import 'description_text.dart';
 
 class DetailedCard extends StatelessWidget {
-  String bottomTitle;
-  String title;
-  String description;
-  String content;
-  TextStyle contentTextStyle;
-  Color descriptionColor;
-  Widget icon;
+  final String bottomTitle;
+  final String title;
+  final String description;
+  final String content;
+  final TextStyle contentTextStyle;
+  final Color descriptionColor;
+  final Widget icon;
 
-  DetailedCard(
+  const DetailedCard(
       {this.title = "",
         this.bottomTitle = "",
         this.descriptionColor = Colors.black,

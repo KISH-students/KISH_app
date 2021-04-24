@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
                     content: (data["menu"] as String).replaceAll(",", "\n"),
                     icon: Container(),
                     descriptionColor: Colors.black87,
-                    contentTextStyle: TextStyle(
+                    contentTextStyle: const TextStyle(
                         fontFamily: "NanumSquareL",
                         color: Color.fromARGB(255, 135, 135, 135),
                         fontWeight: FontWeight.w600),
@@ -204,7 +204,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.topRight,
                         child: FlatButton.icon(onPressed: () { updateDdayNoti(); },
                           icon: ddayNotiIcon,
-                          label: Text("DDay 알림"),)),
+                          label: const Text("DDay 알림"),)),
                     ddayFutureBuilder,
                   ]
               )
@@ -218,7 +218,7 @@ class _MainPageState extends State<MainPage> {
                       alignment: Alignment.topRight,
                       child: FlatButton.icon(onPressed: updateLunchNoti,
                         icon: this.lunchNotiIcon,
-                        label: Text("식단 알림"),)),
+                        label: const Text("식단 알림"),)),
                   Container(
                       child: lunchFutureBuilder),
                 ],

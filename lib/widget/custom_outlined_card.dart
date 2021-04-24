@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomOutlinedCard extends StatelessWidget {
-  String description;
-  Color borderColor;
-  Widget child;
-  double borderWidth;
+  final Color borderColor;
+  final Widget child;
+  final double borderWidth;
 
-  CustomOutlinedCard({this.borderColor = Colors.redAccent, this.borderWidth = 0.5, this.child}) {
-    if (this.child == null) this.child = new Column();
-  }
+  const CustomOutlinedCard({
+    this.borderColor = Colors.redAccent,
+    this.borderWidth = 0.5,
+    this.child = const Text("")});
 
   @override
   Widget build(BuildContext context) {

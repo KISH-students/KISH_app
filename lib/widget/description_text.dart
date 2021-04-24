@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
 class DescriptionText extends StatelessWidget {
-  String data;
-  EdgeInsets margin;
+  final String data;
+  final EdgeInsets margin;
 
-  DescriptionText(String data,
-      {this.margin = const EdgeInsets.only(top: 20, left: 25)}) {
-    this.data = data;
-  }
+  const DescriptionText(this.data,
+      {this.margin = const EdgeInsets.only(top: 20, left: 25)});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: margin,
       child: Text(data,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 13,
               fontFamily: 'NanumSquareL',
               fontWeight: FontWeight.bold,
