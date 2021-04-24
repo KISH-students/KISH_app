@@ -1,9 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class NotificationManager {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -29,8 +26,6 @@ class NotificationManager {
   }
 
   Future<void> init() async{
-    await _configureLocalTimeZone();
-
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('kish_icon');
   }
@@ -77,12 +72,6 @@ class NotificationManager {
   Future<void> setLunchMenuEnabled(bool v) async{
     if(this.preferences == null) await loadSharedPreferences();
     this.preferences.setBool("lunchNoti", v);
-  }
-
-  Future<void> _configureLocalTimeZone() async {
-    tz.initializeTimeZones();
-    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
   Future<void> updateNotifications() async {
