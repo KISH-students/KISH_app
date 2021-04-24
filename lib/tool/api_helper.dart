@@ -12,17 +12,17 @@ enum Method { get, post }
 class ApiHelper {
   static Future<String> request(
       String api, Method method, Map<String, dynamic> params) async {
-    String url;
+    String url = api;
     var response;
 
     if (method == Method.get) {
-      api += "?";
+      url += "?";
 
       params.forEach((key, value) {
-        api += key + "=" + value + "&";
+        url += key + "=" + value + "&";
       });
     }
-    url = Uri.encodeFull(api);
+    url = Uri.encodeFull(url);
 
     try {
       if (method == Method.get) {
@@ -30,7 +30,8 @@ class ApiHelper {
       } else {
         response = await http.post(url, body: params);
       }
-      saveResult(api + "::" + params.toString(), response.body);
+
+      saveResult(getCacheKey(api, params), response.body);
     } catch (e) {
       /* Fluttertoast.showToast(
           msg: "정보를 불러오지 못했습니다.",
@@ -39,7 +40,7 @@ class ApiHelper {
           backgroundColor: Colors.black54,
           textColor: Colors.white,
           fontSize: 16.0);*/
-      String cache = await getCachedResult(api+"::"+params.toString());
+      String cache = await getCachedResult(getCacheKey(api, params));
       if(cache != null) return cache;
     }
     return response.body;
@@ -47,27 +48,34 @@ class ApiHelper {
 
   static void saveResult(String key, String json) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("cache_" + key, json);
+    prefs.setString(key, json);
   }
 
   static Future<String> getCachedResult(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("cache_" + key);
+    return prefs.getString(key);
+  }
+
+  static String getCacheKey(String api, Map<String, dynamic> params) {
+    return "cache_" + api + "::" + params.toString();
+  }
+
+  static String getTodayDateForLunch() {
+    String ym;
+    String ymd;
+    DateFormat formatter = new DateFormat('yyyy-MM-dd');
+    DateTime now = DateTime.now();
+
+    ymd = formatter.format(now);
+    formatter = new DateFormat('yyyy-MM');
+    ym = formatter.format(now);
+
+    return ymd;
   }
 
   static Future<List> getLunch({date: ""}) async {
-    String ym;
-    String ymd;
-
     if (date == "") {
-      DateFormat formatter = new DateFormat('yyyy-MM-dd');
-      DateTime now = DateTime.now();
-
-      ymd = formatter.format(now);
-      formatter = new DateFormat('yyyy-MM');
-      ym = formatter.format(now);
-
-      date = ymd;
+     date = getTodayDateForLunch();
     }
 
     String rsJson =
