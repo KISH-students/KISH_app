@@ -25,7 +25,6 @@ class _MainPageState extends State<MainPage> {
 
   Icon ddayNotiIcon = new Icon(Icons.sync);
   Icon lunchNotiIcon = new Icon(Icons.sync);
-  bool isIconLoaded = false;
 
   //List<Widget> sliderItems = [];
 
@@ -142,17 +141,21 @@ class _MainPageState extends State<MainPage> {
     todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!isIconLoaded) {
-        Future<void>.delayed(Duration(seconds: 0), () {
-          isIconLoaded = true;
-
-          setState(() {
-            loadDdayNotiIcon();
-            loadLunchNotiIcon();
-          });
-        });
-      }
+      reloadNotiIcon();
     });
+  }
+
+  void reloadNotiIcon() {
+    if (!this.mounted) {
+      Future<void>.delayed(Duration(milliseconds: 10), () {
+        reloadNotiIcon();
+      });
+    } else {
+      setState(() {
+        loadDdayNotiIcon();
+        loadLunchNotiIcon();
+      });
+    }
   }
 
   @override
