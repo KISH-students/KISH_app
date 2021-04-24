@@ -98,7 +98,7 @@ class NotificationManager {
 
   Future<void> showDdayNotification () async {
     DateTime now = DateTime.now();
-   /* if(now.day == ddayStartDay) return;
+    /* if(now.day == ddayStartDay) return;
     ddayStartDay = now.day;*/
 
     Map data = await ApiHelper.getExamDDay();
@@ -109,12 +109,19 @@ class NotificationManager {
     if (data["invalid"] != null) {
       title = "D-Day : 정보 없음";
       body = "정보가 없습니다.";
-    }else{
+    } else {
       DateTime date = DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000);
-      int diffDays = date.difference(now).inDays;
-
       title = data["label"] + " (" + data["date"] + ")";
-      body = (diffDays + 1).toString() + "일 남음";
+
+      if (date.month == now.month && date.day == now.day) {
+        body = "D - DAY";
+      } else {
+        int diffDays = date
+            .difference(now)
+            .inDays;
+
+        body = (diffDays + 1).toString() + "일 남음";
+      }
     }
 
     int notificationId = await this.isLunchMenuEnabled() ? 2 : 1;
