@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/page/maintenance_page.dart';

@@ -6,7 +6,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/main_page.dart';
@@ -32,7 +32,6 @@ Future<void> main() async{
         fontFamily: 'NanumSquareL',
         primarySwatch: Colors.blue,
       ),
-      builder: EasyLoading.init(),
       home: Home()));
 
   // https://github.com/transistorsoft/flutter_background_fetch 에서
@@ -44,6 +43,30 @@ Future<void> main() async{
   BackgroundFetch.start();
 
   NotificationManager.instance.updateNotifications();
+}
+
+Future<void> setDisplayMode() async{
+  try {
+    DisplayMode current = await FlutterDisplayMode.current;
+    DisplayMode newMode;
+    double maxFreq = -1;
+
+    (await FlutterDisplayMode.supported).forEach((element) {
+      if (element.width == current.width
+          && element.height == current.height) {
+        if (element.refreshRate > maxFreq) {
+          newMode = element;
+          maxFreq = element.refreshRate;
+        }
+      }
+    });
+
+    if (newMode != null) {
+      FlutterDisplayMode.setMode(newMode);
+    }
+  } catch (e) {   // API가 지원되지 않을경우 예외가 발생할 수 있습니다.
+    print ("디스플레이 모드 설정 실패");
+  }
 }
 
 Future<void> notificationUpdateTask() async {
@@ -122,6 +145,10 @@ class MainState extends State<Home> {
     newVersion = NewVersion(context: context,
         dialogTitle: "업데이트 이용 가능", dismissText: "나중에", updateText: "업데이트 하기");
     newVersion.showAlertIfNecessary();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await setDisplayMode();
+    });
   }
 
   @override
