@@ -4,6 +4,7 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +16,11 @@ import 'package:new_version/new_version.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
+  //ensureInitialized 호출시 GestureBinding의 instance가 초기화 되는지 확인하지 못하였습니다.
+  if (GestureBinding.instance != null) {
+    GestureBinding.instance.resamplingEnabled = true;
+  }
   await NotificationManager().init();
 
   runApp(MaterialApp(
