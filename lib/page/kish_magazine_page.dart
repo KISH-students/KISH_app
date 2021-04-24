@@ -30,33 +30,32 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
   void initState() {
     //loadButtons();
     super.initState();
-
-    loadYearButtons();
-    EasyLoading.instance.indicatorType = EasyLoadingIndicatorType.cubeGrid;
-    EasyLoading.instance.loadingStyle = EasyLoadingStyle.dark;
-    EasyLoading.instance.maskType = EasyLoadingMaskType.black;
-    //EasyLoading.show(status: '불러오는 중');
-    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      loadYearButtons();
+    });
   }
+
 
   @override
   void dispose() {
     super.dispose();
   }
 
-  void loadYearButtons() async {
+  Future<void> loadYearButtons() async {
     List resultList;
     yearButtons = [];
 
     try {
       resultList = await ApiHelper.getArticleList();
     } catch (e) {
-      setState(() {
-        this.yearSelectorWidget = DDayCard(
-          color: Colors.redAccent,
-          content: "불러올 수 없어요",
-        );
-      });
+      if (this.mounted) {
+        setState(() {
+          this.yearSelectorWidget = DDayCard(
+            color: Colors.redAccent,
+            content: "불러올 수 없어요",
+          );
+        });
+      }
     }
 
     if (resultList.length > 0) {
@@ -80,21 +79,23 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
   }
 
   void rebuildYearSelector() {
-    setState(() {
-      this.yearSelectorWidget = Container(
-          height: 80,
-          child: Container(
-            margin: EdgeInsets.fromLTRB(10, 30, 10, 0),
+    if (this.mounted) {
+      setState(() {
+        this.yearSelectorWidget = Container(
+            height: 80,
             child: Container(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: yearButtons.length,
-                itemBuilder: (context, index) => yearButtons[index],
+              margin: EdgeInsets.fromLTRB(10, 30, 10, 0),
+              child: Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: yearButtons.length,
+                  itemBuilder: (context, index) => yearButtons[index],
+                ),
               ),
-            ),
-          ));
-    });
+            ));
+      });
+    }
   }
 
   void addHomeButton() {
@@ -123,12 +124,14 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
     }
   }
 
-  void reloadArticleList() async {
-    setState(() {
-      this.articleListWidget = ListTileShimmer(
-        isPurplishMode: true,
-      );
-    });
+  Future<void> reloadArticleList() async {
+    if (this.mounted) {
+      setState(() {
+        this.articleListWidget = ListTileShimmer(
+          isPurplishMode: true,
+        );
+      });
+    }
     List articleList = (await ApiHelper.getArticleList(path: nowPath));
     List<Widget> resultArticleList = [];
     List<Widget> resultFolderList = [];
@@ -145,9 +148,10 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => PdfPage(
-                          KISHApi.HOST + element["url"],
-                          title: element["name"])));
+                      builder: (context) =>
+                          PdfPage(
+                              KISHApi.HOST + element["url"],
+                              title: element["name"])));
             }, backgroundColor),
           );
         } else if (element["type"] == "dir") {
@@ -169,28 +173,35 @@ class _KishMagazinePageState extends State<KishMagazinePage> {
       resultWidgetList.addAll(resultFolderList);
       resultWidgetList.addAll(resultArticleList);
 
-      setState(() {
-        this.articleListWidget = this.articleListWidget = Container(
-            child: Card(
-          //color: Colors.white70,
-          //borderOnForeground: true,
-          margin: EdgeInsets.all(4),
-          elevation: 0,
-          child: GridView.count(
-            crossAxisCount: min(
-                max((MediaQuery.of(context).size.width / 400), 2).round(), 5),
-            mainAxisSpacing: 1.0,
-            crossAxisSpacing: 1.0,
-            childAspectRatio: 564 / 348,
-            children: resultWidgetList,
-          ),
-        ));
-      });
-    } else {
-      setState(() {
-        this.articleListWidget =
-            MaintenancePage(title: "Empty :(", description: "기사를 찾을 수 없어요");
-      });
+      if (this.mounted) {
+        setState(() {
+          this.articleListWidget = this.articleListWidget = Container(
+              child: Card(
+                //color: Colors.white70,
+                //borderOnForeground: true,
+                margin: EdgeInsets.all(4),
+                elevation: 0,
+                child: GridView.count(
+                  crossAxisCount: min(
+                      max((MediaQuery
+                          .of(context)
+                          .size
+                          .width / 400), 2).round(), 5),
+                  mainAxisSpacing: 1.0,
+                  crossAxisSpacing: 1.0,
+                  childAspectRatio: 564 / 348,
+                  children: resultWidgetList,
+                ),
+              ));
+        });
+      } else {
+        if (this.mounted) {
+          setState(() {
+            this.articleListWidget =
+                MaintenancePage(title: "Empty :(", description: "기사를 찾을 수 없어요");
+          });
+        }
+      }
     }
   }
 
