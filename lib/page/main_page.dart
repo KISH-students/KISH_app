@@ -250,8 +250,12 @@ class _MainPageState extends State<MainPage> {
     }
 
     await manager.setDdayEnabled(result);
-    if(!result) {
-      NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
+    if (!result) {
+      if (await manager.isLunchMenuEnabled()) {
+        NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
+      } else {
+        NotificationManager.flutterLocalNotificationsPlugin.cancel(1);
+      }
     }
 
     setState(() {
@@ -278,7 +282,11 @@ class _MainPageState extends State<MainPage> {
 
     await manager.setLunchMenuEnabled(result);
     if (!result) {
-      NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
+      if (await manager.isDdayEnabled()) {
+        NotificationManager.flutterLocalNotificationsPlugin.cancel(2);
+      } else {
+        NotificationManager.flutterLocalNotificationsPlugin.cancel(1);
+      }
     }
 
     setState(() {
