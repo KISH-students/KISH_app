@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
@@ -11,7 +9,7 @@ enum Method { get, post }
 
 class ApiHelper {
   static Future<String> request(
-      String api, Method method, Map<String, dynamic> params) async {
+      String api, Method method, Map<String, dynamic> params, {doCache: true}) async {
     String url = api;
     var response;
 
@@ -19,6 +17,7 @@ class ApiHelper {
       url += "?";
 
       params.forEach((key, value) {
+        assert (value != null);
         url += key + "=" + value + "&";
       });
     }
@@ -31,7 +30,9 @@ class ApiHelper {
         response = await http.post(url, body: params);
       }
 
-      saveResult(getCacheKey(api, params), response.body);
+      if (doCache) {
+        saveResult(getCacheKey(api, params), response.body);
+      }
     } catch (e) {
       /* Fluttertoast.showToast(
           msg: "정보를 불러오지 못했습니다.",
@@ -100,5 +101,20 @@ class ApiHelper {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
     return json.decode(resultJson);
+  }
+
+  static Future<List> searchPost(String keyword, int index) async {
+    String result = await request(KISHApi.SEARCH_POST, Method.get, {"keyword": keyword, "index": index.toString()}, doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<List> getPostsByMenu(String menu, String index) async {
+    String result = await request(KISHApi.GET_POSTS_BY_MENU, Method.get, {"menu": menu, "page": index}, doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<List> getLastUpdatedMenuList() async {
+    String result = await request(KISHApi.GET_LAST_UPDATED_MENU_LIST, Method.get, {}, doCache: false);
+    return json.decode(result);
   }
 }

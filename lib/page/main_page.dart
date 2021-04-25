@@ -55,11 +55,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   Future<void> initWidgets() async {
     if (!this.mounted) {
       await Future<void>.delayed(Duration(milliseconds: 10), () {
-        print("재시도");
         initWidgets();
       });
     } else {
-      print("시작");
       setState(() {
         loadDdayNotiIcon();
         loadLunchNotiIcon();

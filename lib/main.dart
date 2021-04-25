@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
+import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
@@ -168,9 +169,7 @@ class MainState extends State<Home> {
             MaintenancePage(
               description: "대나무숲에서 익명으로 사연을 공유하세요",
             ),
-            MaintenancePage(
-              description: "학교 가정통신문을 빠르게 확인하세요",
-            ),
+            KishPostListPage(),
             MaintenancePage(
               description: "도서 대출 현황을 쉽게 확인하세요",
             ),

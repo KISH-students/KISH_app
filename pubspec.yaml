@@ -42,6 +42,8 @@ dependencies:
   background_fetch: ^0.7.1
   cached_network_image: ^2.5.0
   flutter_displaymode: 0.1.1
+  webview_flutter: ^1.0.7
+  infinite_scroll_pagination: ^2.3.0
 
 dev_dependencies:
   flutter_test:
