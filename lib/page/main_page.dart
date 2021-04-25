@@ -166,6 +166,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
