@@ -9,6 +9,7 @@ class NotificationManager {
   static const List<String> weekdays = ["", "월", "화", "수", "목", "금", "토", "일"];
   static const DDAY_NOTIFICATION_ID = 2;
   static const LUNCH_NOTIFICATION_ID = 3;
+  static const DINNER_NOTIFICATION_ID = 4;
 
   SharedPreferences preferences;
 
@@ -50,32 +51,54 @@ class NotificationManager {
   }
 
   Future<bool> toggleLunch() async {
-    bool result = !(await isLunchMenuEnabled());
-    await this.setLunchMenuEnabled(result);
+    bool result = !(await isLunchEnabled());
+    await this.setLunchEnabled(result);
 
     if (!result) flutterLocalNotificationsPlugin.cancel(LUNCH_NOTIFICATION_ID);
     return result;
   }
 
-  Future<bool> isLunchMenuEnabled() async{
+  Future<bool> toggleDinner() async {
+    bool result = !(await isDinnerEnabled());
+    await this.setDinnerEnabled(result);
+
+    if (!result) flutterLocalNotificationsPlugin.cancel(DINNER_NOTIFICATION_ID);
+    return result;
+  }
+
+
+  Future<bool> isLunchEnabled() async{
     if(this.preferences == null) await loadSharedPreferences();
     bool result = preferences.getBool("lunchNoti");
 
     return result == null ? false : result;
   }
 
+  Future<bool> isDinnerEnabled() async{
+    if(this.preferences == null) await loadSharedPreferences();
+    bool result = preferences.getBool("dinnerNoti");
+
+    return result == null ? false : result;
+  }
+
+
   Future<void> setDdayEnabled(bool v) async{
     if(this.preferences == null) await loadSharedPreferences();
     this.preferences.setBool("ddayNoti", v);
   }
 
-  Future<void> setLunchMenuEnabled(bool v) async{
+  Future<void> setLunchEnabled(bool v) async{
     if(this.preferences == null) await loadSharedPreferences();
     this.preferences.setBool("lunchNoti", v);
   }
 
+  Future<void> setDinnerEnabled(bool v) async{
+    if(this.preferences == null) await loadSharedPreferences();
+    this.preferences.setBool("dinnerNoti", v);
+  }
+
   Future<void> updateNotifications() async {
-    if(await this.isLunchMenuEnabled()) await this.showLunchMenuNotification();
+    if(await this.isLunchEnabled() || await this.isDinnerEnabled()) await this.showLunchMenuNotification();
     if(await this.isDdayEnabled()) await this.showDdayNotification();
   }
 
@@ -149,22 +172,25 @@ class NotificationManager {
 
     dynamic detail = await getOngoingAndroidDetails();
 
-    result.forEach((element) {
+    result.forEach((element) async {
       if (isFound) return;
 
       Map data = element;
       if (timestamp <= data["timestamp"]) {
         String date = data["date"];
-        String content = (data["menu"] as String).replaceAll(",", "\n");
+        String title = weekdays[DateTime.tryParse(date).weekday] + "요일";
+        String content;
 
-        String title = "급식 알림 ·" + weekdays[DateTime.tryParse(date).weekday] + "요일";
-        String text = content;
+        if (await isLunchEnabled()) {
+          content = (data["menu"] as String).replaceAll(",", "\n");
+          flutterLocalNotificationsPlugin.show(
+              LUNCH_NOTIFICATION_ID, "급식 알림 · " + title, content, detail);
+        }
 
-        if(title != ddayTitle || text != ddayText) {
-          this.ddayTitle = title;
-          this.ddayText = text;
-
-          flutterLocalNotificationsPlugin.show(LUNCH_NOTIFICATION_ID, ddayTitle, ddayText, detail);
+        if (await isDinnerEnabled()) {
+          content = (data["dinnerMenu"] as String).replaceAll(",", "\n");
+          flutterLocalNotificationsPlugin.show(
+              DINNER_NOTIFICATION_ID, "석식 알림 · " + title, content, detail);
         }
         isFound = true;
       }

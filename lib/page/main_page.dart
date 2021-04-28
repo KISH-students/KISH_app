@@ -28,6 +28,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
   Icon ddayNotiIcon = new Icon(Icons.sync);
   Icon lunchNotiIcon = new Icon(Icons.sync);
+  Icon dinnerNotiIcon = new Icon(Icons.sync);
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       setState(() {
         loadDdayNotiIcon();
         loadLunchNotiIcon();
+        loadDinnerNotiIcon();
       });
 
       if (NotificationManager.instance.preferences == null) {
@@ -72,7 +74,15 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                return getLunchWidget(snapshot.data);
+                return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      getLunchWidget("오늘의 중식", snapshot.data),
+                      getLunchWidget("오늘의 석식", snapshot.data,
+                          containerMargin: EdgeInsets.only(left: 10),
+                          isDinner: true),
+                    ]
+                );
               } else {
                 return DDayCard(
                   color: Colors.redAccent,
@@ -97,7 +107,15 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                         padding: EdgeInsets.only(left: 40, right: 40),
                         child: LinearProgressIndicator(backgroundColor: Colors.orangeAccent),
                       ),
-                      getLunchWidget(data),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            getLunchWidget("오늘의 중식", data),
+                            getLunchWidget("오늘의 석식", data,
+                                containerMargin: EdgeInsets.only(left: 10),
+                                isDinner: true),
+                          ]
+                      ),
                     ]);
               }
               return YoutubeShimmer();
@@ -216,11 +234,25 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
               child: Column(
                 children: [
                   Container(
-                      margin: EdgeInsets.only(top: 30),
-                      alignment: Alignment.topRight,
-                      child: FlatButton.icon(onPressed: updateLunchNoti,
-                        icon: this.lunchNotiIcon,
-                        label: const Text("식단 알림"),)),
+                    margin: EdgeInsets.only(top: 30),
+                    child: Stack(
+                        children: [
+                          Container(
+                              alignment: Alignment.topLeft,
+                              child: FlatButton.icon(
+                                onPressed: updateLunchNoti,
+                                icon: this.lunchNotiIcon,
+                                label: const Text("중식 알림"),)),
+                          Container(
+                              alignment: Alignment.topRight,
+                              child: FlatButton.icon(
+                                onPressed: updateDinnerNoti,
+                                icon: this.dinnerNotiIcon,
+                                label: const Text("석식 알림"),)),
+
+                        ]
+                    ),
+                  ),
                   Container(
                       child: lunchFutureBuilder),
                 ],
@@ -231,7 +263,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     );
   }
 
-  Widget getLunchWidget(List data) {
+  Widget getLunchWidget(String cardTitle, List data, {EdgeInsets containerMargin, bool isDinner = false}) {
     if (data != null) {
       Widget menuWidget;
 
@@ -240,21 +272,20 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
       int timestamp = (today.millisecondsSinceEpoch / 1000).round();
       int count = 0;
-      //print("our : " + today.millisecondsSinceEpoch.toString());
 
       data.forEach((element) {
         if (count > 0) return;
 
         Map data = element;
-        /*print("-------");
-                          print(data["timestamp"] * 1000);
-                          print(DateTime.fromMillisecondsSinceEpoch(data["timestamp"] * 1000).toString());*/
+        // 석식 : dinnerMenu | 중식 : "menu"
+        String menu = (isDinner ? data["dinnerMenu"] : data["menu"]) as String;
+
         if (timestamp <= data["timestamp"]) {
           menuWidget = DetailedCard(
             bottomTitle: "",
-            title: "오늘의 급식",
+            title: cardTitle,
             description: data["date"],
-            content: (data["menu"] as String).replaceAll(",", "\n"),
+            content: menu.replaceAll(",", "\n"),
             icon: Container(),
             descriptionColor: Colors.black87,
             contentTextStyle: const TextStyle(
@@ -267,8 +298,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       });
 
       return Container(
+          margin: containerMargin,
           child: menuWidget,
-          width: MediaQuery.of(context).size.width * 0.9);
+          width: (MediaQuery.of(context).size.width * 0.9) / 2
+      );
     } else {
       return DDayCard(
         color: Colors.redAccent,
@@ -338,7 +371,24 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
   void loadLunchNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
-    lunchNotiIcon = Icon(await manager.isLunchMenuEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+    lunchNotiIcon = Icon(await manager.isLunchEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+  }
+
+  void loadDinnerNotiIcon() async {
+    NotificationManager manager = NotificationManager.getInstance();
+    dinnerNotiIcon = Icon(await manager.isDinnerEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+  }
+
+  Future<void> updateDinnerNoti() async{
+    NotificationManager manager = NotificationManager.getInstance();
+
+    bool result = await manager.toggleDinner();
+
+    setState(() {
+      dinnerNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
+
+    await manager.updateNotifications();
   }
 
   Future<void> updateLunchNoti() async{
