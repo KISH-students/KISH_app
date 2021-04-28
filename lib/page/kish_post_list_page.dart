@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:kish2019/kish_api.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
-import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/widget/post_webview.dart';
 
 class KishPostListPage extends StatefulWidget {
@@ -20,21 +23,21 @@ class KishPostListPage extends StatefulWidget {
 }
 
 class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepAliveClientMixin<KishPostListPage> {
-  final PagingController<int, Widget> _pagingController =
-  PagingController(firstPageKey: 0);
+  static int mode = 1;
+  static String menu = "";
+  static Widget body = Container();
+
+  PagingController<int, Widget> _pagingController;
   String currentKeyword;
   List<PostInfo> postList = [];
   int searchIndex = 1;
 
   Widget loading = Container();
-  Widget body = Container();
+  Widget backButtonWidget = Container();
 
   @override
   void initState() {
     super.initState();
-    _pagingController.addPageRequestListener((pageKey) {
-      search(currentKeyword, pageKey);
-    });
     setBody2Normal();
   }
 
@@ -45,15 +48,30 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   }
 
   void setBody2PagedListView() {
+    _pagingController = PagingController(firstPageKey: 0);
+    _pagingController.addPageRequestListener((pageKey) {
+      search(currentKeyword, pageKey);
+    });
+
     setState(() {
-      this.body = Expanded(
+      backButtonWidget = FlatButton.icon(
+          onPressed: (){ setBody2Normal(); },
+          icon: const Icon(CupertinoIcons.back),
+          label: const Text("뒤로가기"));
+
+      body = Expanded(
         child: PagedListView<int, Widget>(
           shrinkWrap: true,
           physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
+              parent: const AlwaysScrollableScrollPhysics()),
           pagingController: _pagingController,
           builderDelegate: PagedChildBuilderDelegate<Widget>(
-              itemBuilder: (context, item, index) => postList[index]
+              itemBuilder: (context, item, index) {
+                if (index > postList.length - 1) {    // 왜 자꾸 index를 넘어갈까요?
+                  return SizedBox.shrink();
+                }
+                return postList[index];
+              }
           ),
         ),);
     });
@@ -61,30 +79,59 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 
   void setBody2Normal() {
     setState(() {
+      backButtonWidget = Container();
       body = Expanded(
           child: SingleChildScrollView(
               child: FutureBuilder(
-                  future: ApiHelper.getLastUpdatedMenuList(),
+                  future: ApiHelper.getPostListHomeSummary(),
                   builder: (context, snapshot) {
+                    List data = null;
+                    loading = SizedBox.shrink();
+
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        List data = snapshot.data;
-                        List<Widget> widgets = [];
-                        Widget resultWidget = Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widgets,
-                        );
-
-                        data.forEach((element) {
-                          widgets.add(_PostList(menu: element["id"], menuTitle: element["name"],));
-                        });
-
-                        return resultWidget;
+                        data = snapshot.data;
                       } else {
                         return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
                       }
                     }
 
+                    if (data == null) {
+                      loading = LinearProgressIndicator(backgroundColor: Colors.grey);
+
+                      if (NotificationManager.instance.preferences != null) {
+                        String key = ApiHelper.getCacheKey(
+                            KISHApi.GET_POST_LIST_HOME_SUMMARY, {});
+                        String jsonData = NotificationManager.instance
+                            .preferences.getString(key);
+
+                        if (jsonData != null) {
+                          try {
+                            data = json.decode(jsonData);
+                          } catch (e) {
+                            print(e);
+                          }
+                        }
+                      }
+                    }
+
+                    if (data != null) {
+                      List<Widget> widgets = [];
+                      data.forEach((element) {
+                        widgets.add(_PostList(this,
+                          menu: element["menu"].toString(), menuTitle: element["title"], postList: element["posts"],));
+                      });
+
+                      Widget resultWidget = ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: widgets.length,
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        itemBuilder: (context, index) {return widgets[index];},
+                      );
+
+                      return resultWidget;
+                    }
                     return YoutubeShimmer();
                   }
               )
@@ -95,96 +142,99 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     return Container(
+        color: Color.fromARGB(255, 252, 252, 252),
         child: Column(
             children: [
               Container(
-                margin: EdgeInsets.only(top: 20, left: 30, right: 30),
-                child:
-                TextFormField(
+                margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
+                child: TextFormField(
                     cursorColor: Colors.black38,
-                    decoration: InputDecoration(
-                      icon: Icon(CupertinoIcons.search),
+                    decoration: const InputDecoration(
+                      icon: const Icon(CupertinoIcons.search),
                       fillColor: Colors.grey,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
-                      border: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(30.0))),
+                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30.0))),
                       labelText: "검색어를 입력하세요",
                     ),
                     onChanged: (text){
+                      mode = 1;
                       search(text, 1);
                     }
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 5),
-                decoration: BoxDecoration(color: Colors.black12),
+                margin: const EdgeInsets.only(top: 5),
+                decoration: const BoxDecoration(color: Colors.black12),
                 height: 2,
               ),
               loading,
-              Row(
-                  children: [
-                    Icon(CupertinoIcons.lab_flask, color: Colors.black,),
-                    Text("이 페이지는 아직 실험적으로 작동됩니다.", style: TextStyle(color: Colors.redAccent)),
-                  ]),
+              backButtonWidget,
               body,
             ])
     );
   }
 
   Future<void> search(String keyword, int pageIndex) async{
-    keyword = keyword.trim();
-    setState(() {
-      loading = LinearProgressIndicator(backgroundColor: Colors.orangeAccent);
-    });
+    loading = LinearProgressIndicator(backgroundColor: Colors.orangeAccent);
 
-    if (currentKeyword != keyword) {
-      currentKeyword = keyword;
-      searchIndex = -1;
-      pageIndex = 0;
-      _pagingController.itemList = [];
-    }
-    if (keyword == null || keyword.isEmpty) {
-      _pagingController.appendLastPage([]);
-      setBody2Normal();
-      return;
-    } else {
-      setBody2PagedListView();
+    if(mode == 1) {
+      keyword = keyword.trim();
+
+      if (keyword == null || keyword.isEmpty) {
+        setBody2Normal();
+        loading = Container();
+        return;
+      } else if(keyword.length == 1) {
+        setBody2PagedListView();
+      }
+
+      if (currentKeyword != keyword) {
+        currentKeyword = keyword;
+        searchIndex = -1;
+        pageIndex = 0;
+        _pagingController.itemList = [];
+      }
+
+      await Future<void>.delayed(Duration(milliseconds: 200), (){});
+      if (currentKeyword != keyword) return;
     }
 
     searchIndex ++;
     print (searchIndex.toString() + "??");
 
-    await Future<void>.delayed(Duration(milliseconds: 200), (){});
-    if (currentKeyword != keyword) return;
-
     try {
-      List result = await ApiHelper.searchPost(keyword, searchIndex);
+      List result;
+      List<PostInfo> newWidgetList = [];
+
+      if (mode == 1) {
+        result = await ApiHelper.searchPost(keyword, searchIndex);
+      } else if (mode == 2) {
+        result = await ApiHelper.getPostsByMenu(menu, searchIndex.toString());
+      }
 
       if (currentKeyword != keyword) return;
-      List<PostInfo> newPostList = [];
 
       result.forEach((element) {
-        newPostList.add(PostInfo(
+        newWidgetList.add(PostInfo(
             title: element["title"],
             author: element["author"],
             date: element["postDate"],
             menu: element["menu"],
             id: element["id"]));
       });
-
-      if (newPostList.length == 0 || newPostList.length < 10) {
-        _pagingController.appendLastPage(newPostList);
+      if (searchIndex == 1) {
+        this.postList = newWidgetList;
       } else {
-        _pagingController.appendPage(
-            newPostList, pageIndex - 1 + newPostList.length);
+        this.postList.addAll(newWidgetList);
       }
 
-      setState(() {
-        if (searchIndex == 1) {
-          this.postList = newPostList;
-        } else {
-          this.postList.addAll(newPostList);
-        }
-      });
+      if (newWidgetList.length == 0 || newWidgetList.length < 10) {
+        _pagingController.appendLastPage(newWidgetList);
+      } else {
+        _pagingController.appendPage(
+            newWidgetList, pageIndex + (newWidgetList.length - 1));
+      }
+
     } finally {
       loading = Container(height: 2);
     }
@@ -200,6 +250,7 @@ class PostInfo extends StatelessWidget {
   String date;
   int menu;
   int id;
+
   PostInfo({this.title, this.author, this.date, this.menu, this.id, Key key}) : super(key: key);
 
   @override
@@ -207,19 +258,38 @@ class PostInfo extends StatelessWidget {
     return FlatButton(
       padding: EdgeInsets.zero,
       child : Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title),
-              Text("작성자 : " + author),
-              Text("작성일 : " + date),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                height: 2,
-                color: Colors.black38,
-              )
-            ]),
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 10, bottom: 10),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 10,
+          shadowColor: Colors.black38,
+          child: Container(
+              padding: const EdgeInsets.only(left: 12, right: 8, top: 10, bottom: 10),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 5),
+                      child: Text(title, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16)),
+                    ),
+                    Row(
+                        children: [
+                          const Icon(CupertinoIcons.person, color: Colors.grey),
+                          Text(author, style: TextStyle(color: Colors.grey)),
+                        ]),
+                    Container(
+                      width: double.infinity,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            const Icon(CupertinoIcons.clock, color: Colors.grey),
+                            Text(date, style: TextStyle(color: Colors.grey)),
+                          ]),
+                    ),
+                  ])
+          ),
+        ),
       ),
       onPressed: () {
         Navigator.push(
@@ -231,85 +301,91 @@ class PostInfo extends StatelessWidget {
   }
 }
 
-class _PostList extends StatefulWidget {
-  String menuTitle;
-  int menu;
 
-  _PostList({this.menuTitle, this.menu});
+class _PostList extends StatelessWidget {
+  final _KishPostListPageState listPageState;
+  final String menuTitle;
+  final String menu;
+  final List postList;
 
-  @override
-  _PostListState createState() {
-    return _PostListState();
-  }
-}
-
-class _PostListState extends State<_PostList> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+  _PostList(this.listPageState, {this.menuTitle, this.menu, this.postList}) {
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TitleText(widget.menuTitle, top: 10,),
-          Container(
-            color: Colors.black38,
-            height: 2,
+      margin: const EdgeInsets.only(top: 30, right: 5, left: 5),
+      child: Card(
+        color: Color.fromARGB(255, 253, 253, 253),
+        elevation: 1,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 10, left: 16, bottom: 10),
+                      child: Text(menuTitle, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 22.5, color: Colors.black87),)
+                  )),
+              Container(
+                  margin: const EdgeInsets.only(bottom: 5, top: 5),
+                  width: double.infinity,
+                  child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      elevation: 2,
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: postList.length,
+                        itemBuilder: (context, index) {
+                          if (index > 5) return SizedBox.shrink();
+                          Map element = postList[index];
+
+                          return FlatButton(
+                            padding: EdgeInsets.zero,
+                            minWidth: double.infinity,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    PostWebView(
+                                        menu: element["menu"].toString(),
+                                        id: element["id"].toString())),
+                              );
+                            },
+                            child: Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(left: 8, right: 8),
+                                child: Text(element["title"])
+                            ),
+                          );
+                        },
+                      ))),
+
+              Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      FlatButton(
+                          onPressed: (){
+                            _KishPostListPageState.mode = 2;
+                            _KishPostListPageState.menu = menu.toString();
+                            listPageState.setBody2PagedListView();
+                          },
+                          child: const Text("더 보기", style: TextStyle(color: Colors.blueAccent),)
+                      )
+                    ],
+                  )
+              )
+            ],
           ),
-          FutureBuilder(
-              future: ApiHelper.getPostsByMenu(widget.menu.toString(), 0.toString()),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    List result = snapshot.data;
-                    List<Widget> widgets = [];
-
-                    int index = 0;
-                    result.forEach((element) {
-                      if (index == 5) return;
-                      widgets.add(
-                          FlatButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) =>
-                                      PostWebView(
-                                          menu: element["menu"].toString(),
-                                          id: element["id"].toString())),
-                                );
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(top: 1),
-                                child: Text(element["title"]),
-                              ))
-                      );
-                      index ++;
-                    });
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: widgets,
-                    );
-                  } else {
-                    return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
-                  }
-                } else {
-                  return YoutubeShimmer();
-                }
-              }
-          )
-        ],
+        ),
       ),
     );
   }

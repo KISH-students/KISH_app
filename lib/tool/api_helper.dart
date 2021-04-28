@@ -11,7 +11,7 @@ class ApiHelper {
   static Future<String> request(
       String api, Method method, Map<String, dynamic> params, {doCache: true}) async {
     String url = api;
-    var response;
+    http.Response response;
 
     if (method == Method.get) {
       url += "?";
@@ -115,6 +115,16 @@ class ApiHelper {
 
   static Future<List> getLastUpdatedMenuList() async {
     String result = await request(KISHApi.GET_LAST_UPDATED_MENU_LIST, Method.get, {}, doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<List> getPostAttachments(String menu, String id) async {
+    String result = await request(KISHApi.GET_POST_ATTACHMENTS, Method.get, {"menu": menu, "id": id}, doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<List> getPostListHomeSummary() async {
+    String result = await request(KISHApi.GET_POST_LIST_HOME_SUMMARY, Method.get, {});
     return json.decode(result);
   }
 }

@@ -11,6 +11,8 @@ class KISHApi {
   static const String GET_POSTS_BY_MENU = POST_ROOT + "getPostsByMenu";
   static const String GET_LAST_UPDATED_MENU_LIST = POST_ROOT + "getLastUpdatedMenuList";
   static const String GET_POST_CONTENT_HTML = POST_ROOT + "getPostContentHtml";
+  static const String GET_POST_ATTACHMENTS = POST_ROOT + "getPostAttachments";
+  static const String GET_POST_LIST_HOME_SUMMARY = POST_ROOT + "getPostListHomeSummary";
 
   static const String GET_MAGAZINE_ARTICLE = MAGAZINE_ROOT + "getArticleList";
 }
