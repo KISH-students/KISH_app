@@ -1,11 +1,9 @@
-import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:kish2019/kish_api.dart';
-import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/post_webview.dart';
@@ -27,7 +25,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   static String menu = "";
   static Widget body = Container();
 
-  PagingController<int, Widget> _pagingController;
+  PagingController<int, Widget> _pagingController = PagingController(firstPageKey: 0);
   String currentKeyword;
   List<PostInfo> postList = [];
   int searchIndex = 1;
@@ -80,23 +78,27 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   void setBody2Normal() {
     setState(() {
       backButtonWidget = Container();
-      body = Expanded(
-          child: SingleChildScrollView(
-              child: FutureBuilder(
-                  future: ApiHelper.getPostListHomeSummary(),
-                  builder: (context, snapshot) {
-                    List data = null;
-                    loading = SizedBox.shrink();
+      _pagingController.itemList = [];
+      _pagingController.nextPageKey = 0;
+      if(_pagingController != null) {
+        _pagingController.dispose();
+      }
 
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasData) {
-                        data = snapshot.data;
-                      } else {
-                        return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
-                      }
-                    }
+      body = FutureBuilder(
+          future: ApiHelper.getPostListHomeSummary(),
+          builder: (context, snapshot) {
+            List data = null;
+            loading = SizedBox.shrink();
 
-                    if (data == null) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                data = snapshot.data;
+              } else {
+                return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
+              }
+            }
+
+            /*if (data == null) {
                       loading = LinearProgressIndicator(backgroundColor: Colors.grey);
 
                       if (NotificationManager.instance.preferences != null) {
@@ -113,29 +115,29 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                           }
                         }
                       }
-                    }
+                    }*/
 
-                    if (data != null) {
-                      List<Widget> widgets = [];
-                      data.forEach((element) {
-                        widgets.add(_PostList(this,
-                          menu: element["menu"].toString(), menuTitle: element["title"], postList: element["posts"],));
-                      });
+            if (data != null) {
+              List<Widget> widgets = [];
+              data.forEach((element) {
+                widgets.add(_PostList(this,
+                  menu: element["menu"].toString(), menuTitle: element["title"], postList: element["posts"],));
+              });
 
-                      Widget resultWidget = ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
+              Widget resultWidget = Expanded(
+                  child: AspectRatio(
+                      aspectRatio: 1/1,
+                      child: ListView.builder(
+                        shrinkWrap: false,
                         itemCount: widgets.length,
-                        //crossAxisAlignment: CrossAxisAlignment.start,
                         itemBuilder: (context, index) {return widgets[index];},
-                      );
+                      )));
 
-                      return resultWidget;
-                    }
-                    return YoutubeShimmer();
-                  }
-              )
-          ));
+              return resultWidget;
+            }
+            return YoutubeShimmer();
+          }
+      );
     });
   }
 
@@ -245,13 +247,13 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 }
 
 class PostInfo extends StatelessWidget {
-  String title;
-  String author;
-  String date;
-  int menu;
-  int id;
+  final String title;
+  final String author;
+  final String date;
+  final int menu;
+  final int id;
 
-  PostInfo({this.title, this.author, this.date, this.menu, this.id, Key key}) : super(key: key);
+  const PostInfo({this.title, this.author, this.date, this.menu, this.id, Key key});
 
   @override
   Widget build(BuildContext context) {
@@ -309,6 +311,7 @@ class _PostList extends StatelessWidget {
   final List postList;
 
   _PostList(this.listPageState, {this.menuTitle, this.menu, this.postList}) {
+    this.postList.length = min(5, this.postList.length);
   }
 
   @override
@@ -323,48 +326,45 @@ class _PostList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  child: Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(top: 10, left: 16, bottom: 10),
-                      child: Text(menuTitle, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 22.5, color: Colors.black87),)
-                  )),
               Container(
-                  margin: const EdgeInsets.only(bottom: 5, top: 5),
                   width: double.infinity,
-                  child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 2,
-                      child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: postList.length,
-                        itemBuilder: (context, index) {
-                          if (index > 5) return SizedBox.shrink();
-                          Map element = postList[index];
+                  margin: const EdgeInsets.only(top: 10, left: 16, bottom: 10),
+                  child: Center(
+                      child: Text(menuTitle, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 22.5, color: Colors.black87),)
+                  )
+              ),
+              Container(
+                  margin: const EdgeInsets.only(bottom: 5, top: 1),
+                  width: double.infinity,
+                  child: ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: postList.length,
+                    itemBuilder: (context, index) {
+                      if (index > 5) return SizedBox.shrink();
+                      Map element = postList[index];
 
-                          return FlatButton(
-                            padding: EdgeInsets.zero,
-                            minWidth: double.infinity,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    PostWebView(
-                                        menu: element["menu"].toString(),
-                                        id: element["id"].toString())),
-                              );
-                            },
-                            child: Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(left: 8, right: 8),
-                                child: Text(element["title"])
-                            ),
+                      return FlatButton(
+                        padding: EdgeInsets.zero,
+                        minWidth: double.infinity,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                PostWebView(
+                                    menu: element["menu"].toString(),
+                                    id: element["id"].toString())),
                           );
                         },
-                      ))),
+                        child: Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.only(left: 8, right: 8),
+                            child: Text(element["title"])
+                        ),
+                      );
+                    },
+                  )
+              ),
 
               Container(
                   width: double.infinity,
