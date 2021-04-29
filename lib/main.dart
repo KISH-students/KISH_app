@@ -167,9 +167,9 @@ class MainState extends State<Home> {
           children: [
             MainPage(),
             KishMagazinePage(),
-            MaintenancePage(
+            /*MaintenancePage(
               description: "대나무숲에서 익명으로 사연을 공유하세요",
-            ),
+            ),*/
             KishPostListPage(),
             MaintenancePage(
               description: "도서 대출 현황을 쉽게 확인하세요",
@@ -209,7 +209,7 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("매거진")),
-            const BubbleBottomBarItem(  // KISH 대나무숲
+            /*const BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
                   Icons.chat_bubble_outline,
@@ -219,7 +219,7 @@ class MainState extends State<Home> {
                   Icons.chat_bubble_outline,
                   color: Colors.green,
                 ),
-                title: Text("대나무숲")),
+                title: Text("대나무숲")),*/
             const BubbleBottomBarItem(  // KISH 가정통신문
                 backgroundColor: Colors.black54,
                 icon: Icon(
