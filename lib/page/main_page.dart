@@ -105,7 +105,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                     children: [
                       Container(
                         padding: EdgeInsets.only(left: 40, right: 40),
-                        child: LinearProgressIndicator(backgroundColor: Colors.orangeAccent),
+                        child: LinearProgressIndicator(backgroundColor: Colors.blueGrey, minHeight: 1,),
                       ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +146,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 children: [
                   Container(
                     padding: EdgeInsets.only(left: 40, right: 40),
-                    child: LinearProgressIndicator(backgroundColor: Colors.orangeAccent),
+                    child: LinearProgressIndicator(backgroundColor: Colors.orangeAccent,  minHeight: 1),
                   ),
                   getDdayWidget(data[0]),
                 ]
