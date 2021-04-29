@@ -80,6 +80,9 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
       backButtonWidget = Container();
       _pagingController.itemList = [];
       _pagingController.nextPageKey = 0;
+      searchIndex = -1;
+      _pagingController.itemList = [];
+      postList = [];
       if(_pagingController != null) {
         _pagingController.dispose();
       }
