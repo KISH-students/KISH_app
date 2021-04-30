@@ -264,48 +264,68 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Widget getLunchWidget(String cardTitle, dynamic data, {EdgeInsets containerMargin, bool isDinner = false}) {
-    if (data != null) {
-      Widget menuWidget;
+    try {
+      if (data != null) {
+        Widget menuWidget;
 
-      DateTime tmpDate = DateTime.now();
-      DateTime today =
-      DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
-      int timestamp = (today.millisecondsSinceEpoch / 1000).round();
-      int count = 0;
+        DateTime tmpDate = DateTime.now();
+        DateTime today =
+        DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
+        int timestamp = (today.millisecondsSinceEpoch / 1000).round();
+        int count = 0;
 
-      data.forEach((element) {
-        if (count > 0) return;
+        data.forEach((element) {
+          if (count > 0) return;
 
-        Map data = element;
-        // 석식 : dinnerMenu | 중식 : "menu"
-        String menu = (isDinner ? data["dinnerMenu"] : data["menu"]) as String;
+          Map data = element;
+          // 석식 : dinnerMenu | 중식 : "menu"
+          String menu = (isDinner
+              ? data["dinnerMenu"]
+              : data["menu"]) as String;
 
-        if (timestamp <= data["timestamp"]) {
-          menuWidget = DetailedCard(
-            bottomTitle: "",
-            title: cardTitle,
-            description: data["date"],
-            content: menu.replaceAll(",", "\n"),
-            icon: Container(),
-            descriptionColor: Colors.black87,
-            contentTextStyle: const TextStyle(
-                fontFamily: "NanumSquareL",
-                color: Color.fromARGB(255, 135, 135, 135),
-                fontWeight: FontWeight.w600),
-          );
-          count++;
-        }
-      });
+          if (timestamp <= data["timestamp"]) {
+            menuWidget = DetailedCard(
+              bottomTitle: "",
+              title: cardTitle,
+              description: data["date"],
+              content: menu.replaceAll(",", "\n"),
+              icon: Container(),
+              descriptionColor: Colors.black87,
+              contentTextStyle: const TextStyle(
+                  fontFamily: "NanumSquareL",
+                  color: Color.fromARGB(255, 135, 135, 135),
+                  fontWeight: FontWeight.w600),
+            );
+            count++;
+          }
+        });
 
-      return Container(
-          margin: containerMargin,
-          child: menuWidget,
-          width: (MediaQuery.of(context).size.width * 0.9) / 2
-      );
-    } else {
-      return DDayCard(
-        color: Colors.redAccent,
-        content: "불러올 수 없음",
+        return Container(
+            margin: containerMargin,
+            child: menuWidget,
+            width: (MediaQuery
+                .of(context)
+                .size
+                .width * 0.9) / 2
+        );
+      } else {
+        return DDayCard(
+          color: Colors.redAccent,
+          content: "불러올 수 없음",
+        );
+      }
+    } catch (e) {
+      return DetailedCard(
+        bottomTitle: "",
+        title: cardTitle,
+        description: "",
+        content: "오류가 발생하였습니다.",
+        icon: Container(),
+        descriptionColor: Colors.black87,
+        contentTextStyle: const TextStyle(
+            fontFamily: "NanumSquareL",
+            color: Color.fromARGB(255, 135, 135, 135),
+            fontWeight: FontWeight.w600),
       );
     }
   }
