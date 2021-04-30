@@ -46,7 +46,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   }
 
   void setBody2PagedListView() {
-    _pagingController = PagingController(firstPageKey: 0);
+    _pagingController = PagingController(firstPageKey: 1);
     _pagingController.addPageRequestListener((pageKey) {
       search(currentKeyword, pageKey);
     });
@@ -227,7 +227,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
             menu: element["menu"],
             id: element["id"]));
       });
-      if (searchIndex == 1) {
+      if (searchIndex == 0) {
         this.postList = newWidgetList;
       } else {
         this.postList.addAll(newWidgetList);
