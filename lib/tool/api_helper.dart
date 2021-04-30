@@ -27,9 +27,9 @@ class ApiHelper {
 
     try {
       if (method == Method.get) {
-        response = await http.get(url);
+        response = await http.get(url).timeout(Duration(seconds: timeout));
       } else {
-        response = await http.post(url, body: params);
+        response = await http.post(url, body: params).timeout(Duration(seconds: timeout));
       }
 
       if (doCache) {
@@ -167,7 +167,8 @@ class ApiHelper {
         KISHApi.LIBRARY_REGISTER,
         Method.post,
         {"uuid": uuid, "seq": seq, "id": id, "pwd": pw, "ck": ck},
-        doCache: false);
+        doCache: false,
+        timeout: 10);
     return json.decode(result);
   }
 
@@ -176,7 +177,8 @@ class ApiHelper {
         KISHApi.IS_LIBRARY_Member,
         Method.post,
         {"seq": seq, "name": name},
-        doCache: false);
+        doCache: false,
+        timeout: 10);
     return json.decode(result);
   }
 }
