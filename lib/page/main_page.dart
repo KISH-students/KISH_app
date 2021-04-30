@@ -263,7 +263,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     );
   }
 
-  Widget getLunchWidget(String cardTitle, List data, {EdgeInsets containerMargin, bool isDinner = false}) {
+  Widget getLunchWidget(String cardTitle, dynamic data, {EdgeInsets containerMargin, bool isDinner = false}) {
     if (data != null) {
       Widget menuWidget;
 
