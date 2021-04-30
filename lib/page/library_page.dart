@@ -357,6 +357,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                         return;
                       }
 
+                      Fluttertoast.showToast(msg: "회원 확인 중...");
                       Map isMemberData = await ApiHelper.isLibraryMember(
                           seqController.text, nameController.text);
 
@@ -364,7 +365,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                         if (isMemberData["result"] == "1") {
                           Fluttertoast.showToast(
                               msg: "회원을 찾을 수 없습니다.\n"
-                                  "성명과 대출카드번호를 확인해주세요.");
+                                  "성명과 대출카드번호를 확인해주세요.", toastLength: Toast.LENGTH_LONG);
                         } else {
                           Fluttertoast.showToast(msg: isMemberData["message"]);
                         }
@@ -372,7 +373,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                         return;
                       }
 
-
+                      Fluttertoast.showToast(msg: "회원가입 중...");
                       Map registerData = await ApiHelper.registerToLibrary(
                           seqController.text,
                           idController.text,
@@ -380,7 +381,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                           ckController.text);
 
                       if (registerData["result"] != "0") {
-                        Fluttertoast.showToast(msg: registerData["message"]);
+                        Fluttertoast.showToast(msg: registerData["message"], toastLength: Toast.LENGTH_LONG);
                       } else {
                         await storage.write(key: "id", value: idController.text.trim());
                         await storage.write(key: "pw", value: pwController.text.trim());
