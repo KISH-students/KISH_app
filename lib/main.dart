@@ -10,9 +10,11 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
+import 'package:kish2019/page/library_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
+import 'package:kish2019/tool/api_helper.dart';
 import 'package:new_version/new_version.dart';
 
 // URL LAUNCHER 추후 IOS 작업 해야합니다.
@@ -171,9 +173,10 @@ class MainState extends State<Home> {
               description: "대나무숲에서 익명으로 사연을 공유하세요",
             ),*/
             KishPostListPage(),
-            MaintenancePage(
+            LibraryPage(),
+            /*MaintenancePage(
               description: "도서 대출 현황을 쉽게 확인하세요",
-            ),
+            ),*/
           ],
         ), // PageView
 

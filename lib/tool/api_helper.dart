@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
@@ -9,7 +11,7 @@ enum Method { get, post }
 
 class ApiHelper {
   static Future<String> request(
-      String api, Method method, Map<String, dynamic> params, {doCache: true}) async {
+      String api, Method method, Map<String, dynamic> params, {doCache: true, int timeout = 999999}) async {
     String url = api;
     http.Response response;
 
@@ -61,6 +63,21 @@ class ApiHelper {
     return "cache_" + api + "::" + params.toString();
   }
 
+  static Future<String> getUuid() async {
+    var deviceInfo = DeviceInfoPlugin();
+    String uuid;
+
+    if (Platform.isIOS) {
+      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+      uuid = iosDeviceInfo.identifierForVendor;
+    } else {
+      AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
+      uuid = androidDeviceInfo.androidId;
+    }
+
+    return uuid;
+  }
+
   static String getTodayDateForLunch() {
     String ym;
     String ymd;
@@ -76,7 +93,7 @@ class ApiHelper {
 
   static Future<List> getLunch({date: ""}) async {
     if (date == "") {
-     date = getTodayDateForLunch();
+      date = getTodayDateForLunch();
     }
 
     String rsJson =
@@ -125,6 +142,41 @@ class ApiHelper {
 
   static Future<List> getPostListHomeSummary() async {
     String result = await request(KISHApi.GET_POST_LIST_HOME_SUMMARY, Method.get, {});
+    return json.decode(result);
+  }
+
+  static Future<Map> loginToLibrary(String id, String pw) async {
+    String uuid = await getUuid();
+
+    String result = await request(KISHApi.LIBRARY_LOGIN, Method.post, {"uuid": uuid, "id": id, "pwd": pw}, doCache: false);
+    print (result + "??!?" + uuid);
+    return json.decode(result);
+  }
+
+  static Future<Map> getLibraryMyInfo() async {
+    String uuid = await getUuid();
+
+    String result = await request(KISHApi.LIBRARY_MY_INFO, Method.get, {"uuid": uuid}, doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<Map> registerToLibrary(String seq, String id, String pw, String ck) async {
+    String uuid = await getUuid();
+
+    String result = await request(
+        KISHApi.LIBRARY_REGISTER,
+        Method.post,
+        {"uuid": uuid, "seq": seq, "id": id, "pwd": pw, "ck": ck},
+        doCache: false);
+    return json.decode(result);
+  }
+
+  static Future<Map> isLibraryMember(String seq, String name) async {
+    String result = await request(
+        KISHApi.IS_LIBRARY_Member,
+        Method.post,
+        {"seq": seq, "name": name},
+        doCache: false);
     return json.decode(result);
   }
 }
