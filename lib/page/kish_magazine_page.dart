@@ -12,361 +12,399 @@ class KishMagazinePage extends StatefulWidget {
   KishMagazinePage({Key key}) : super(key: key);
 
   @override
-  _KishMagazinePageState createState() {
-    return _KishMagazinePageState();
+  KishMagazinePageState createState() {
+    return KishMagazinePageState();
   }
 }
 
-class _KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAliveClientMixin<KishMagazinePage> {
-  Widget yearSelectorWidget = ListTileShimmer();
-  Widget articleListWidget = Text("");
-  List<Widget> yearButtons = [];
-  List<Widget> articleList = [];
-  String nowPath = "";
-  String rootPath = "";
+class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAliveClientMixin<KishMagazinePage> {
+  String parent;
+  String category;
+
+  Widget body = CircularProgressIndicator();
+  Widget parentDropdown = CircularProgressIndicator();
+  Widget categoryDropdown = CircularProgressIndicator();
 
   @override
   void initState() {
-    //loadButtons();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      loadYearButtons();
+      initWidgets();
     });
   }
 
+  Future<void> initWidgets() async {
+    if (!this.mounted) {
+      await Future<void>.delayed(Duration(milliseconds: 10), () {
+        initWidgets();
+      });
+    } else {
+      loadParent();
+    }
+  }
 
   @override
   void dispose() {
     super.dispose();
   }
 
-  Future<void> loadYearButtons() async {
-    List resultList;
-    yearButtons = [];
-
-    try {
-      resultList = await ApiHelper.getArticleList();
-    } catch (e) {
-      if (this.mounted) {
-        setState(() {
-          this.yearSelectorWidget = DDayCard(
-            color: Colors.redAccent,
-            content: "불러올 수 없어요",
-          );
-        });
-      }
-    }
-
-    if (resultList.length > 0) {
-      nowPath = resultList[0]["path"];
-
-      resultList.forEach((map) {
-        yearButtons.add(_CustomYearButton(map["name"], () {
-          this.nowPath = map["path"];
-          this.rootPath = this.nowPath;
-          reloadArticleList();
-        },
-            textColor: Colors.white,
-            backgroundColor: Color.fromARGB(255, 48, 48, 48),
-            borderColor: Color.fromARGB(255, 48, 48, 48),
-            borderSize: 0));
-      });
-    }
-
-    rebuildYearSelector();
-    reloadArticleList();
-  }
-
-  void rebuildYearSelector() {
-    if (this.mounted) {
+  void loadBody() {
+    Future<void>.delayed(Duration(seconds: 0), () {
       setState(() {
-        this.yearSelectorWidget = Container(
-            height: 80,
-            child: Container(
-              margin: EdgeInsets.fromLTRB(10, 30, 10, 0),
-              child: Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: yearButtons.length,
-                  itemBuilder: (context, index) => yearButtons[index],
-                ),
-              ),
-            ));
-      });
-    }
-  }
+        this.body = FutureBuilder(
+          future: ApiHelper.getLibraryHome(parent: parent, category: category),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                List items;
+                if (!(snapshot.data is List)) {
+                  items = snapshot.data.toList();
+                } else {
+                  items = snapshot.data;
+                }
 
-  void addHomeButton() {
-    if (this.yearButtons.length > 0) {
-      _CustomYearButton button = this.yearButtons[0];
+                return Expanded(
+                    child: ListView.builder(
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          Map item = items[index];
+                          String type = item["type"];
 
-      if (button.content != "처음으로") {
-        setState(() {
-          this.yearButtons.insert(
-              0,
-              _CustomYearButton(
-                "처음으로",
-                () {
-                  this.nowPath = this.rootPath;
-                  this.yearButtons.removeAt(0);
-                  this.rebuildYearSelector();
-                  this.reloadArticleList();
-                },
-                borderColor: Colors.blueAccent,
-                textColor: Colors.indigo,
-                borderSize: 1.5,
-              ));
-          this.rebuildYearSelector();
-        });
-      }
-    }
-  }
+                          item["title"] = item["title"] is String
+                              ? item["title"].replaceAll("\n", " ")
+                              : item["title"];
 
-  Future<void> reloadArticleList() async {
-    if (this.mounted) {
-      setState(() {
-        this.articleListWidget = ListTileShimmer(
-          isPurplishMode: true,
+                          item["summary"] = item["summary"] is String
+                              ? "\n" + item["summary"].replaceAll("\n", " ")
+                              : item["summary"];
+
+                          if (type == "TextArticleWithImg") return TextArticleWithImg(item);
+                          else if (type == "ImgArticle") return ImgArticle(item);
+                          else return TextArticle(item);
+                        }
+                    )
+                );
+              } else {
+                return Text("로드 실패");
+              }
+            } else {
+              return CircularProgressIndicator(backgroundColor: Colors.orangeAccent);
+            }
+          },
         );
       });
-    }
-    List articleList = (await ApiHelper.getArticleList(path: nowPath));
-    List<Widget> resultArticleList = [];
-    List<Widget> resultFolderList = [];
-    List<Widget> resultWidgetList = [];
+    });
+  }
 
-    Color backgroundColor = ArticleFolder.BACKGROUND_COLORS[
-        Random.secure().nextInt(ArticleFolder.BACKGROUND_COLORS.length)];
+  void loadParent() {
+    Future<void>.delayed(Duration(seconds: 0), () {
+      setState(() {
+        this.parentDropdown = FutureBuilder(
+          future: ApiHelper.getLibraryParentList(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                List items;
+                if (!(snapshot.data is List)) {
+                  items = snapshot.data.toList();
+                } else {
+                  items = snapshot.data;
+                }
+                this.parent = items[0];
+                Future<void>.delayed(Duration(seconds: 0), () {
+                  setState(() {
+                    loadCategory();
+                  });
+                });
 
-    if (articleList.length > 0) {
-      articleList.forEach((element) {
-        if (element["type"] == "file") {
-          resultArticleList.add(
-            Article(element["name"], element["author"], () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          PdfPage(
-                              KISHApi.HOST + element["url"],
-                              title: element["name"])));
-            }, backgroundColor),
-          );
-        } else if (element["type"] == "dir") {
-          String desc;
-          if (element["custom_desc"] != null)
-            desc = element["custom_desc"];
-          else
-            desc =
-                "기사" + (element["subfileName"] as List).length.toString() + "개";
-
-          resultFolderList.add(ArticleFolder(element["name"], desc, () {
-            this.nowPath = element["path"];
-            addHomeButton();
-            this.reloadArticleList();
-          }, backgroundColor));
-        }
+                return ParentDropdown(this, items);
+              } else {
+                return Text("로드 실패");
+              }
+            } else {
+              return CircularProgressIndicator(
+                  backgroundColor: Colors.orangeAccent);
+            }
+          },
+        );
       });
+    });
+  }
 
-      resultWidgetList.addAll(resultFolderList);
-      resultWidgetList.addAll(resultArticleList);
+  void loadCategory() {
+    Future<void>.delayed(Duration(seconds: 0), () {
+      setState(() {
+        this.categoryDropdown = FutureBuilder(
+          future: ApiHelper.getLibraryCategoryList(parent: parent),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                List items;
+                if (!(snapshot.data is List)) {
+                  items = snapshot.data.toList();
+                } else {
+                  items = snapshot.data as List;
+                }
+                items.insert(0, "all");
+                this.category = items[0];
+                Future<void>.delayed(Duration(seconds: 0), () {
+                  setState(() {
+                    loadBody();
+                  });
+                });
 
-      if (this.mounted) {
-        setState(() {
-          this.articleListWidget = this.articleListWidget = Container(
-              child: Card(
-                //color: Colors.white70,
-                //borderOnForeground: true,
-                margin: EdgeInsets.all(4),
-                elevation: 0,
-                child: GridView.count(
-                  crossAxisCount: min(
-                      max((MediaQuery
-                          .of(context)
-                          .size
-                          .width / 400), 2).round(), 5),
-                  mainAxisSpacing: 1.0,
-                  crossAxisSpacing: 1.0,
-                  childAspectRatio: 564 / 348,
-                  children: resultWidgetList,
-                ),
-              ));
-        });
-      } else {
-        if (this.mounted) {
-          setState(() {
-            this.articleListWidget =
-                MaintenancePage(title: "Empty :(", description: "기사를 찾을 수 없어요");
-          });
-        }
-      }
-    }
+                return CategoryDropdown(this, items);
+              } else {
+                return Text("로드 실패");
+              }
+            } else {
+              return CircularProgressIndicator(
+                  backgroundColor: Colors.orangeAccent);
+            }
+          },
+        );
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      //TitleText("KISH\nMAGAZINE", top: 60.0),
-      //DescriptionText("KISH Magazine에 오셨습니다"),
-      Container(
-          decoration: BoxDecoration(color: Colors.white),
-          child: Container(
-              margin: EdgeInsets.only(top: 50, bottom: 10),
-              child: Center(
-                child: Text(
-                  "KISH Magazine",
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 71, 71, 71),
-                      fontFamily: "Cinzel",
-                      fontSize: 30),
-                ),
-              ))),
-      Container(
-          decoration: BoxDecoration(color: Colors.black54),
-          child: Row(
-            children: [Container(margin: EdgeInsets.only(top: 3))],
-          )),
-      Container(child: yearSelectorWidget),
-      Expanded(flex: 2, child: articleListWidget),
-    ]);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+              decoration: BoxDecoration(color: Colors.white),
+              child: Container(
+                  margin: EdgeInsets.only(top: 50, bottom: 10),
+                  child: Center(
+                    child: Text(
+                      "KISH Magazine",
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 71, 71, 71),
+                          fontFamily: "Cinzel",
+                          fontSize: 30),
+                    ),
+                  )
+              )
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [parentDropdown, Text(" · "), categoryDropdown],
+          ),
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [Text("Inspired by the New York Times")]
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 3),
+            height: 3,
+            decoration: BoxDecoration(color: Colors.black54),
+          ),
+          body
+        ]);
   }
 
   @override
   bool get wantKeepAlive => true;
 }
 
-class _CustomYearButton extends StatelessWidget {
-  String content;
-  VoidCallback onPressed;
-  Color borderColor;
-  Color textColor;
-  Color backgroundColor;
-  double borderSize;
-
-  _CustomYearButton(this.content, this.onPressed,
-      {this.borderColor = Colors.redAccent,
-      this.textColor = Colors.red,
-      this.backgroundColor = Colors.white,
-      this.borderSize = 0.8})
-      : super(key: UniqueKey());
+class TextArticle extends StatelessWidget {
+  Map data;
+  TextArticle(this.data, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: OutlinedButton(
-        onPressed: onPressed,
-        child: Text(
-          content,
-          style: TextStyle(fontFamily: "CRB", fontSize: 16),
-        ),
-        style: OutlinedButton.styleFrom(
-          primary: textColor,
-          side: BorderSide(width: borderSize, color: borderColor),
-          backgroundColor: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-        ),
-      ),
-      margin: EdgeInsets.only(right: 5, top: 5, bottom: 5),
-    );
-    return null;
-  }
-}
-
-class ArticleFolder extends StatelessWidget {
-  /*static const List<List<Color>> BACKGROUND_COLORS = [
-    [Color.fromARGB(255, 42, 8, 69), Color.fromARGB(255, 100, 65, 165)],
-    // 보라
-    [Color.fromARGB(255, 24, 90, 157), Color.fromARGB(255, 67, 206, 162)],
-    // 블루오션
-    [Color.fromARGB(255, 72, 85, 99), Color.fromARGB(255, 41, 50, 60)],
-    // 회색
-    [Color.fromARGB(255, 96, 108, 136), Color.fromARGB(255, 63, 76, 107)],
-    // ASH
-  ];*/
-
-  static const List<Color> BACKGROUND_COLORS = [
-    Color.fromARGB(255, 41, 41, 41),
-  ];
-
-  String title = "";
-  String description = "";
-  VoidCallback onPressed;
-  Color backgroundColor;
-
-  ArticleFolder(
-      this.title, this.description, this.onPressed, this.backgroundColor);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      child: FlatButton(
-        padding: EdgeInsets.all(0),
-        onPressed: onPressed,
-        child: Card(
-          color: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          elevation: 0,
-          child: SizedBox.expand(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                    margin: EdgeInsets.only(top: 30),
-                    decoration: BoxDecoration(color: backgroundColor),
-                    padding: EdgeInsets.only(left: 10, right: 5),
-                    child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: "CRB",
-                              fontSize: max(
-                                  (MediaQuery.of(context).size.width / 96),
-                                  13)),
-                          textAlign: TextAlign.start,
-                        )
-                        //),
-                        )),
-                Container(
-                  margin: EdgeInsets.only(top: 9, left: 10, bottom: 9),
-                  child: Text(
-                    description,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontFamily: "CRB",
-                        fontSize:
-                            max((MediaQuery.of(context).size.width / 96), 15) -
-                                3.0),
-                  ),
-                )
-              ],
+    return FlatButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PdfPage(
+                      KISHApi.HOST + data["url"],
+                      title: data["title"])
+              )
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 17)),
+            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+            Container(
+              margin: EdgeInsets.only(top: 20, bottom: 12),
+              height: 1,
+              decoration: BoxDecoration(color: Colors.black54),
             ),
-          ),
-        ),
-      ),
+          ],
+        )
     );
   }
 }
 
-class Article extends StatelessWidget {
-  String articleName;
-  String author;
-  VoidCallback onPressed;
-  Color backgroundColor;
-
-  Article(this.articleName, this.author, this.onPressed, this.backgroundColor);
+class TextArticleWithImg extends StatelessWidget {
+  Map data;
+  TextArticleWithImg(this.data, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ArticleFolder(
-        articleName, this.author, this.onPressed, backgroundColor);
+    return FlatButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PdfPage(
+                      KISHApi.HOST + data["url"],
+                      title: data["title"])
+              )
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
+            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+            Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(top: 10, bottom: 15),
+                child: Center(
+                    child: Image.network(
+                      KISHApi.HOST + data["img"],
+                      width: MediaQuery.of(context).size.width / 2,
+                      loadingBuilder: (context, child, progress) {
+                        return progress == null
+                            ? child
+                            : CircularProgressIndicator();
+                      },
+                    )
+                )
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 24),
+              height: 1,
+              decoration: BoxDecoration(color: Colors.black54),
+            ),
+          ],
+        )
+    );
+  }
+}
+
+class ImgArticle extends StatelessWidget {
+  Map data;
+  ImgArticle(this.data, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PdfPage(
+                      KISHApi.HOST + data["url"],
+                      title: data["title"])
+              )
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
+            Text(data["author"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(top: 10, bottom: 15),
+              child: Center(
+                  child: Image.network(
+                    KISHApi.HOST + data["img"],
+                    width: MediaQuery.of(context).size.width / 2,
+                    loadingBuilder: (context, child, progress) {
+                      return progress == null
+                          ? child
+                          : CircularProgressIndicator();
+                    },
+                  )
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 13, bottom: 24),
+              height: 1,
+              decoration: BoxDecoration(color: Colors.black54),
+            ),
+          ],
+        )
+    );
+  }
+}
+
+class ParentDropdown extends StatefulWidget {
+  KishMagazinePageState main;
+  List data;
+  ParentDropdown(this.main, this.data, {Key key}) : super(key: key);
+
+  @override
+  _ParentDropdownState createState() {
+    return _ParentDropdownState();
+  }
+}
+
+class _ParentDropdownState extends State<ParentDropdown> {
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: widget.main.parent,
+      icon: const Icon(Icons.arrow_drop_down),
+      iconSize: 24,
+      style: const TextStyle(color: Colors.black),
+      onChanged: (String v) {
+        setState(() {
+          widget.main.parent = v;
+          widget.main.body = CircularProgressIndicator();
+        });
+        widget.main.loadCategory();
+      },
+      items: widget.data.map<DropdownMenuItem<String>>((value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class CategoryDropdown extends StatefulWidget {
+  KishMagazinePageState main;
+  List data;
+  CategoryDropdown(this.main, this.data, {Key key}) : super(key: key);
+
+  @override
+  _CategoryDropdownState createState() {
+    return _CategoryDropdownState();
+  }
+}
+
+class _CategoryDropdownState extends State<CategoryDropdown> {
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: widget.main.category,
+      icon: const Icon(Icons.arrow_drop_down),
+      iconSize: 24,
+      style: const TextStyle(color: Colors.black),
+      onChanged: (String v) {
+        setState(() {
+          widget.main.category = v;
+        });
+        widget.main.loadBody();
+      },
+      items: widget.data.map<DropdownMenuItem<String>>((value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
   }
 }

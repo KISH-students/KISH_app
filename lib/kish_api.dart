@@ -21,4 +21,7 @@ class KISHApi {
   static const String IS_LIBRARY_Member = LIBRARY_ROOT + "isMember";
 
   static const String GET_MAGAZINE_ARTICLE = MAGAZINE_ROOT + "getArticleList";
+  static const String GET_MAGAZINE_HOME = MAGAZINE_ROOT + "home";
+  static const String GET_MAGAZINE_PARENT_LIST = MAGAZINE_ROOT + "getParentList";
+  static const String GET_MAGAZINE_CATEGORY_LIST = MAGAZINE_ROOT + "getCategoryList";
 }
