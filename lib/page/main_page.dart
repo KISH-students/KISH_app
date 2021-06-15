@@ -307,7 +307,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
             bottomTitle: "",
             title: cardTitle,
             description: "",
-            content: "정보 없음\n\n시간대가 옳바른지\n확인하십시오.",
+            content: "정보 없음\n\n시간대가 올바른지\n확인하십시오.",
             icon: Container(),
             descriptionColor: Colors.black87,
             contentTextStyle: const TextStyle(
