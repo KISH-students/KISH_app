@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Method { get, post }
@@ -119,6 +120,18 @@ class ApiHelper {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
     return json.decode(resultJson);
+  }
+
+  static Future<void> subscribeNoti(String topic) async {
+    await request(KISHApi.SUBCRIBE_NOTI, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
+  }
+
+  static Future<void> unsubscribeNoti(String topic) async {
+    await request(KISHApi.UNSUBCRIBE_NOTI, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
+  }
+
+  static Future<void> checkSubscription(String topic) async {
+    await request(KISHApi.CHECK_SUBSCRIPTION, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
   }
 
   static Future<List> getLibraryHome({String parent, String category}) async {

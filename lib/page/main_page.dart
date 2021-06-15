@@ -27,9 +27,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   String todayDate;
   int sliderIdx = 0;
 
-  Icon ddayNotiIcon = new Icon(Icons.sync);
-  Icon lunchNotiIcon = new Icon(Icons.sync);
-  Icon dinnerNotiIcon = new Icon(Icons.sync);
+  Widget ddayNotiIcon = CircularProgressIndicator();
+  Widget lunchNotiIcon = CircularProgressIndicator();
+  Widget dinnerNotiIcon = CircularProgressIndicator();
 
   @override
   void initState() {
@@ -402,8 +402,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     bool enabled = await manager.isDdayEnabled();
 
     ddayNotiIcon = Icon(
-        enabled ? Icons.notifications_active : Icons
-            .notifications_active_outlined);
+        enabled
+            ? Icons.notifications_active
+            : Icons.notifications_active_outlined);
   }
 
   Future<void> updateDdayNoti() async{
@@ -416,7 +417,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     bool result = await manager.toggleDday();
 
     setState(() {
-      ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+      loadDdayNotiIcon();
     });
 
     await manager.updateNotifications();

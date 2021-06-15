@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:device_info/device_info.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +13,10 @@ import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
 import 'package:kish2019/page/main_page.dart';
-import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/noti_manager.dart';
-import 'package:kish2019/tool/api_helper.dart';
 import 'package:new_version/new_version.dart';
+
+FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 // URL LAUNCHER 추후 IOS 작업 해야합니다.
 Future<void> main() async{
@@ -42,11 +43,13 @@ Future<void> main() async{
   // BackgroundFetch에 대해 참고할 수 있습니다.
   //
   // 추후 IOS 지원시 Background 관련 셋업을 해야합니다..
-  await initPlatformState();
-  await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-  BackgroundFetch.start();
+  if (Platform.isAndroid) {
+    await initPlatformState();
+    await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+    BackgroundFetch.start();
 
-  NotificationManager.instance.updateNotifications();
+    NotificationManager.instance.updateNotifications();
+  }
 }
 
 Future<void> setDisplayMode() async{
@@ -71,6 +74,24 @@ Future<void> setDisplayMode() async{
   } catch (e) {   // API가 지원되지 않을경우 예외가 발생할 수 있습니다.
     print ("디스플레이 모드 설정 실패");
   }
+}
+
+void firebaseCloudMessaging_Listeners() {
+  _firebaseMessaging.getToken().then((token){
+    NotificationManager.FcmToken = token;
+  });
+
+  _firebaseMessaging.configure(
+    onMessage: (Map<String, dynamic> message) async {
+      print('on message $message');
+    },
+    onResume: (Map<String, dynamic> message) async {
+      print('on resume $message');
+    },
+    onLaunch: (Map<String, dynamic> message) async {
+      print('on launch $message');
+    },
+  );
 }
 
 Future<void> notificationUpdateTask() async {
