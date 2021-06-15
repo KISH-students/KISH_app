@@ -148,7 +148,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                     padding: EdgeInsets.only(left: 40, right: 40),
                     child: LinearProgressIndicator(backgroundColor: Colors.orangeAccent,  minHeight: 1),
                   ),
-                  getDdayWidget(data[0]),
+                  getDdayWidget(data.isEmpty ? null : data[0]),
                 ]
             );
           }
