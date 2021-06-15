@@ -10,6 +10,7 @@ import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/kish_api.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -382,6 +383,19 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     }
   }
 
+  Future<bool> checkIosNotificationPermission() async {
+    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    return permissionStatus == PermissionStatus.granted;
+  }
+
+  Future<void> requestIosNotificationPermission() async {
+    await NotificationPermissions.requestNotificationPermissions(iosSettings: const NotificationSettingsIos(
+      sound: true,
+      badge: true,
+      alert: true
+    ), openSettings: true);
+  }
+
   void loadDdayNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
 
@@ -393,6 +407,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateDdayNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDday();
@@ -415,6 +433,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateDinnerNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDinner();
@@ -427,6 +449,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateLunchNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleLunch();
