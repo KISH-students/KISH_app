@@ -8,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
@@ -17,9 +18,13 @@ import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:new_version/new_version.dart';
 
+const String GROUP_ID = "group.com.Hancho.KISH.kish2019.HomeWidget";
+
 // URL LAUNCHER 추후 IOS 작업 해야합니다.
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
+  HomeWidget.setAppGroupId(GROUP_ID);
 
   //ensureInitialized 호출시 GestureBinding의 instance가 초기화 되는지 확인하지 못하였습니다.
   if (GestureBinding.instance != null) {
@@ -74,6 +79,32 @@ Future<void> setDisplayMode() async{
 }
 
 Future<void> notificationUpdateTask() async {
+  if (Platform.isIOS) {
+    DateTime tmpDate = DateTime.now();
+    bool isFound = false;
+    DateTime today = DateTime(tmpDate.year, tmpDate.month, tmpDate.day);
+    int timestamp = (today.millisecondsSinceEpoch / 1000).round();
+    List result;
+    try {
+      result = await ApiHelper.getLunch();
+    } catch (ignore) {
+      return;
+    }
+
+    result.forEach((element) async {
+      if (isFound) return;
+
+      Map data = element;
+      String content;
+      if (timestamp <= data["timestamp"]) {
+        String date = data["date"];
+        //String title = weekdays[DateTime.tryParse(date).weekday] + "요일";
+        content = (data["menu"] as String).replaceAll(",", "\n");
+        HomeWidget.saveWidgetData("lunch_content", content + tmpDate.microsecond.toString());
+      }
+    });
+    return;
+  }
   NotificationManager manager = NotificationManager.instance;
 
   if(manager == null){

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
@@ -282,6 +283,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
           String menu = (isDinner
               ? data["dinnerMenu"]
               : data["menu"]) as String;
+          HomeWidget.saveWidgetData("lunch_content", menu + tmpDate.microsecond.toString());
 
           if (timestamp <= data["timestamp"]) {
             menuWidget = DetailedCard(
