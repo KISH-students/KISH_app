@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Method { get, post }

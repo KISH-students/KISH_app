@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationManager {
+  static String FcmToken = "";
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
   static NotificationManager instance;
@@ -35,11 +39,15 @@ class NotificationManager {
     this.preferences = await SharedPreferences.getInstance();
   }
 
-  Future<bool> isDdayEnabled() async {
-    if(this.preferences == null) await loadSharedPreferences();
-    bool result =  preferences.getBool("ddayNoti");
+  Future<bool> isPropertyEnabled(String key) async {
+    if (this.preferences == null) await loadSharedPreferences();
+    bool result = preferences.getBool(key);
 
     return result == null ? false : result;
+  }
+
+  Future<bool> isDdayEnabled() async {
+    return await isPropertyEnabled("ddayNoti");
   }
 
   Future<bool> toggleDday() async {
@@ -68,33 +76,32 @@ class NotificationManager {
 
 
   Future<bool> isLunchEnabled() async{
-    if(this.preferences == null) await loadSharedPreferences();
-    bool result = preferences.getBool("lunchNoti");
-
-    return result == null ? false : result;
+    return await isPropertyEnabled("lunchNoti");
   }
 
   Future<bool> isDinnerEnabled() async{
-    if(this.preferences == null) await loadSharedPreferences();
-    bool result = preferences.getBool("dinnerNoti");
-
-    return result == null ? false : result;
+    return await isPropertyEnabled("dinnerNoti");
   }
 
+  Future<void> setProperty(String key, bool v) async {
+    if (this.preferences == null) await loadSharedPreferences();
+    this.preferences.setBool(key, v);
+    if (Platform.isIOS) {
+      if (v) FirebaseMessaging.instance.subscribeToTopic(key);
+      else FirebaseMessaging.instance.unsubscribeFromTopic(key);
+    }
+  }
 
   Future<void> setDdayEnabled(bool v) async{
-    if(this.preferences == null) await loadSharedPreferences();
-    this.preferences.setBool("ddayNoti", v);
+    return await setProperty("ddayNoti", v);
   }
 
   Future<void> setLunchEnabled(bool v) async{
-    if(this.preferences == null) await loadSharedPreferences();
-    this.preferences.setBool("lunchNoti", v);
+    return await setProperty("lunchNoti", v);
   }
 
   Future<void> setDinnerEnabled(bool v) async{
-    if(this.preferences == null) await loadSharedPreferences();
-    this.preferences.setBool("dinnerNoti", v);
+    return await setProperty("dinnerNoti", v);
   }
 
   Future<void> updateNotifications() async {

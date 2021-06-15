@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
@@ -10,6 +11,7 @@ import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/kish_api.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -26,9 +28,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   String todayDate;
   int sliderIdx = 0;
 
-  Icon ddayNotiIcon = new Icon(Icons.sync);
-  Icon lunchNotiIcon = new Icon(Icons.sync);
-  Icon dinnerNotiIcon = new Icon(Icons.sync);
+  Widget ddayNotiIcon = CircularProgressIndicator();
+  Widget lunchNotiIcon = CircularProgressIndicator();
+  Widget dinnerNotiIcon = CircularProgressIndicator();
 
   @override
   void initState() {
@@ -382,23 +384,43 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     }
   }
 
+  Future<bool> checkIosNotificationPermission() async {
+    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    return permissionStatus == PermissionStatus.granted;
+  }
+
+  Future<void> requestIosNotificationPermission() async {
+    await NotificationPermissions.requestNotificationPermissions(iosSettings: const NotificationSettingsIos(
+      sound: true,
+      badge: true,
+      alert: true
+    ), openSettings: true);
+  }
+
   void loadDdayNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
 
     bool enabled = await manager.isDdayEnabled();
 
     ddayNotiIcon = Icon(
-        enabled ? Icons.notifications_active : Icons
-            .notifications_active_outlined);
+        enabled
+            ? Icons.notifications_active
+            : Icons.notifications_active_outlined);
   }
 
   Future<void> updateDdayNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDday();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아이폰의 경우 아직 알림이 모두 구현되지 않았습니다.\n아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
-      ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+      loadDdayNotiIcon();
     });
 
     await manager.updateNotifications();
@@ -415,10 +437,16 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateDinnerNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDinner();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
       dinnerNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
@@ -427,10 +455,16 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateLunchNoti() async{
+    if (await checkIosNotificationPermission() == false) {
+      requestIosNotificationPermission();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleLunch();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
