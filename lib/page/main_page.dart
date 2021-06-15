@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
@@ -415,7 +416,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDday();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아이폰의 경우 아직 알림이 모두 구현되지 않았습니다.\n아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
       loadDdayNotiIcon();
     });
@@ -441,7 +444,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDinner();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
       dinnerNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
@@ -457,7 +462,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleLunch();
-
+    if (result) {
+      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
+    }
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });

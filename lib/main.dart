@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:device_info/device_info.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -16,7 +17,7 @@ import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:new_version/new_version.dart';
 
-FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 // URL LAUNCHER 추후 IOS 작업 해야합니다.
 Future<void> main() async{

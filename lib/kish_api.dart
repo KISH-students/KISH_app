@@ -7,9 +7,6 @@ class KISHApi {
 
   static const String GET_EXAM_DATES = API_ROOT + "getExamDates";
   static const String GET_LUNCH = API_ROOT + "getLunch";
-  static const String SUBCRIBE_NOTI = API_ROOT + "subscribeNotification";
-  static const String UNSUBCRIBE_NOTI = API_ROOT + "unsubscribeNotification";
-  static const String CHECK_SUBSCRIPTION = API_ROOT + "checkSubscription";
 
   static const String SEARCH_POST = POST_ROOT + "searchPost";
   static const String GET_POSTS_BY_MENU = POST_ROOT + "getPostsByMenu";

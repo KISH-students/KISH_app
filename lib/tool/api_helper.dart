@@ -122,18 +122,6 @@ class ApiHelper {
     return json.decode(resultJson);
   }
 
-  static Future<void> subscribeNoti(String topic) async {
-    await request(KISHApi.SUBCRIBE_NOTI, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
-  }
-
-  static Future<void> unsubscribeNoti(String topic) async {
-    await request(KISHApi.UNSUBCRIBE_NOTI, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
-  }
-
-  static Future<void> checkSubscription(String topic) async {
-    await request(KISHApi.CHECK_SUBSCRIPTION, Method.get, {"topic": topic, "token": NotificationManager.FcmToken});
-  }
-
   static Future<List> getLibraryHome({String parent, String category}) async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_HOME, Method.get, {"parent": parent, "category": category});

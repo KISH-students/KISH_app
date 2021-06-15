@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,14 +40,10 @@ class NotificationManager {
   }
 
   Future<bool> isPropertyEnabled(String key) async {
-    if (Platform.isAndroid) {
-      if (this.preferences == null) await loadSharedPreferences();
-      bool result = preferences.getBool(key);
+    if (this.preferences == null) await loadSharedPreferences();
+    bool result = preferences.getBool(key);
 
-      return result == null ? false : result;
-    } else if (Platform.isIOS) {
-      ApiHelper.checkSubscription(key);
-    }
+    return result == null ? false : result;
   }
 
   Future<bool> isDdayEnabled() async {
@@ -87,12 +84,11 @@ class NotificationManager {
   }
 
   Future<void> setProperty(String key, bool v) async {
-    if (Platform.isAndroid) {
-      if (this.preferences == null) await loadSharedPreferences();
-      this.preferences.setBool(key, v);
-    } else if (Platform.isIOS) {
-      if (v) await ApiHelper.subscribeNoti(key);
-      else await ApiHelper.unsubscribeNoti(key);
+    if (this.preferences == null) await loadSharedPreferences();
+    this.preferences.setBool(key, v);
+    if (Platform.isIOS) {
+      if (v) FirebaseMessaging.instance.subscribeToTopic(key);
+      else FirebaseMessaging.instance.unsubscribeFromTopic(key);
     }
   }
 
