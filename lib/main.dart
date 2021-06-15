@@ -21,11 +21,13 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 // URL LAUNCHER 추후 IOS 작업 해야합니다.
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp();
   //ensureInitialized 호출시 GestureBinding의 instance가 초기화 되는지 확인하지 못하였습니다.
   if (GestureBinding.instance != null) {
     GestureBinding.instance.resamplingEnabled = true;
   }
+  firebaseCloudMessaging_Listeners();
+
   await NotificationManager().init();
 
   runApp(MaterialApp(
@@ -80,18 +82,6 @@ void firebaseCloudMessaging_Listeners() {
   _firebaseMessaging.getToken().then((token){
     NotificationManager.FcmToken = token;
   });
-
-  _firebaseMessaging.configure(
-    onMessage: (Map<String, dynamic> message) async {
-      print('on message $message');
-    },
-    onResume: (Map<String, dynamic> message) async {
-      print('on resume $message');
-    },
-    onLaunch: (Map<String, dynamic> message) async {
-      print('on launch $message');
-    },
-  );
 }
 
 Future<void> notificationUpdateTask() async {
