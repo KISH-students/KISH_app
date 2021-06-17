@@ -66,6 +66,13 @@ class NotificationManager {
     return result;
   }
 
+  Future<bool> toggleNewKishPost() async {
+    bool result = !(await isNewKishPostEnabled());
+    await this.setNewKishPostEnabled(result);
+
+    return result;
+  }
+
   Future<bool> toggleDinner() async {
     bool result = !(await isDinnerEnabled());
     await this.setDinnerEnabled(result);
@@ -74,6 +81,9 @@ class NotificationManager {
     return result;
   }
 
+  Future<bool> isNewKishPostEnabled() async{
+    return await isPropertyEnabled("newKishPostNoti");
+  }
 
   Future<bool> isLunchEnabled() async{
     return await isPropertyEnabled("lunchNoti");
@@ -83,10 +93,10 @@ class NotificationManager {
     return await isPropertyEnabled("dinnerNoti");
   }
 
-  Future<void> setProperty(String key, bool v) async {
+  Future<void> setProperty(String key, bool v, {bool  subTopic = false}) async {
     if (this.preferences == null) await loadSharedPreferences();
     this.preferences.setBool(key, v);
-    if (Platform.isIOS) {
+    if (Platform.isIOS || subTopic) {
       if (v) FirebaseMessaging.instance.subscribeToTopic(key);
       else FirebaseMessaging.instance.unsubscribeFromTopic(key);
     }
@@ -94,6 +104,10 @@ class NotificationManager {
 
   Future<void> setDdayEnabled(bool v) async{
     return await setProperty("ddayNoti", v);
+  }
+
+  Future<void> setNewKishPostEnabled(bool v) async{
+    return await setProperty("newKishPostNoti", v, subTopic: true);
   }
 
   Future<void> setLunchEnabled(bool v) async{

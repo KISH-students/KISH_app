@@ -7,6 +7,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/post_webview.dart';
+import 'package:kish2019/noti_manager.dart';
 
 class KishPostListPage extends StatefulWidget {
   static int mode = 0;
@@ -32,11 +33,24 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 
   Widget loading = Container();
   Widget backButtonWidget = Container();
+  Icon newKishPostNotiIcon = new Icon(Icons.sync);
 
   @override
   void initState() {
     super.initState();
     setBody2Normal();
+    initWidgets();
+  }
+
+  Future<void> initWidgets() async {
+    if (!this.mounted) {
+      await Future<void>.delayed(Duration(milliseconds: 10), () {
+        initWidgets();
+      });
+    } else {
+      await loadNewKishPostNotiIcon();
+      setState(() {});
+    }
   }
 
   @override
@@ -172,11 +186,33 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                 decoration: const BoxDecoration(color: Colors.black12),
                 height: 2,
               ),
+              Center(
+                  child: FlatButton.icon(
+                      onPressed: updateNewKishPostNoti,
+                      icon: this.newKishPostNotiIcon,
+                      label: const Text("새 글 알림")
+                  )
+              ),
               loading,
               backButtonWidget,
               body,
             ])
     );
+  }
+
+  Future<void> loadNewKishPostNotiIcon() async {
+    NotificationManager manager = NotificationManager.getInstance();
+    newKishPostNotiIcon = Icon(await manager.isNewKishPostEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+  }
+
+  Future<void> updateNewKishPostNoti() async{
+    NotificationManager manager = NotificationManager.getInstance();
+
+    bool result = await manager.toggleNewKishPost();
+
+    setState(() {
+      newKishPostNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
   }
 
   Future<void> search(String keyword, int pageIndex) async{

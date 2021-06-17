@@ -61,11 +61,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
         initWidgets();
       });
     } else {
-      setState(() {
-        loadDdayNotiIcon();
-        loadLunchNotiIcon();
-        loadDinnerNotiIcon();
-      });
+      await loadDdayNotiIcon();
+      await loadLunchNotiIcon();
+      await loadDinnerNotiIcon();
+      setState(() {});
 
       if (NotificationManager.instance.preferences == null) {
         await NotificationManager.instance.loadSharedPreferences();
@@ -397,7 +396,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     ), openSettings: true);
   }
 
-  void loadDdayNotiIcon() async {
+  Future<void> loadDdayNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
 
     bool enabled = await manager.isDdayEnabled();
@@ -426,12 +425,12 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     await manager.updateNotifications();
   }
 
-  void loadLunchNotiIcon() async {
+  Future<void> loadLunchNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
     lunchNotiIcon = Icon(await manager.isLunchEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
-  void loadDinnerNotiIcon() async {
+  Future<void> loadDinnerNotiIcon() async {
     NotificationManager manager = NotificationManager.getInstance();
     dinnerNotiIcon = Icon(await manager.isDinnerEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
