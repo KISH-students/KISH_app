@@ -37,6 +37,7 @@ class _PdfPageState extends State<PdfPage> {
         ),
         body: PDF(
           swipeHorizontal: false,
+          fitPolicy: FitPolicy.HEIGHT
         ).cachedFromUrl(
           widget.url,
           placeholder: (progress) => Padding(
