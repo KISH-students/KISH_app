@@ -33,7 +33,7 @@ class _PdfPageState extends State<PdfPage> {
     return Scaffold(
         appBar: AppBar(
           title: Center(child: Text(widget.title.replaceAll("\n", " "))),
-          backgroundColor: Colors.black12,
+          backgroundColor: Colors.black,
         ),
         body: PDF(
           swipeHorizontal: false,
