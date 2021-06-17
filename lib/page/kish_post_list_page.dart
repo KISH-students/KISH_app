@@ -165,7 +165,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
         child: Column(
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
+                margin: const EdgeInsets.only(top: 30, left: 30, right: 30),
                 child: TextFormField(
                     cursorColor: Colors.black38,
                     decoration: const InputDecoration(
