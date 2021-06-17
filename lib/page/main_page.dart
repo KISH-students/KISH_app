@@ -417,7 +417,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDday();
-    if (result) {
+    if (result && Platform.isIOS) {
       Fluttertoast.showToast(msg: "아이폰의 경우 아직 알림이 모두 구현되지 않았습니다.\n아침 8시에 알림이 전송됩니다");
     }
     setState(() {
@@ -450,7 +450,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleDinner();
-    if (result) {
+    if (result && Platform.isIOS) {
       Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
     }
     setState(() {
@@ -468,7 +468,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     NotificationManager manager = NotificationManager.getInstance();
 
     bool result = await manager.toggleLunch();
-    if (result) {
+    if (result && Platform.isIOS) {
       Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
     }
     setState(() {
