@@ -49,7 +49,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
     Future<void>.delayed(Duration(seconds: 0), () {
       setState(() {
         this.body = FutureBuilder(
-          future: ApiHelper.getLibraryHome(parent: parent, category: category),
+          future: ApiHelper.getMagazineHome(parent: parent, category: category),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
@@ -97,7 +97,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
     Future<void>.delayed(Duration(seconds: 0), () {
       setState(() {
         this.parentDropdown = FutureBuilder(
-          future: ApiHelper.getLibraryParentList(),
+          future: ApiHelper.getMagazineParentList(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
@@ -132,7 +132,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
     Future<void>.delayed(Duration(seconds: 0), () {
       setState(() {
         this.categoryDropdown = FutureBuilder(
-          future: ApiHelper.getLibraryCategoryList(parent: parent),
+          future: ApiHelper.getMagazineCategoryList(parent: parent),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
