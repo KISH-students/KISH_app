@@ -323,7 +323,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                                 fillColor: Colors.redAccent,
                                 floatingLabelBehavior: FloatingLabelBehavior.never,
                                 border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                                labelText: "대출카드번호")));
+                                labelText: "학생증 ID")));
 
                         newFields.add(TextFormField(
                             key: UniqueKey(),
@@ -365,7 +365,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                         if (isMemberData["result"] == "1") {
                           Fluttertoast.showToast(
                               msg: "회원을 찾을 수 없습니다.\n"
-                                  "성명과 대출카드번호를 확인해주세요.", toastLength: Toast.LENGTH_LONG);
+                                  "성명과 학생증 ID 확인해주세요.", toastLength: Toast.LENGTH_LONG);
                         } else {
                           Fluttertoast.showToast(msg: isMemberData["message"]);
                         }
