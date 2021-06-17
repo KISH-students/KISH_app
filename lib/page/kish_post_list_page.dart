@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
@@ -189,7 +190,9 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
               Container(
                   alignment: Alignment.center,
                   child: FlatButton.icon(
-                      onPressed: updateNewKishPostNoti,
+                      onPressed: NotificationManager.isFcmSupported
+                          ? updateNewKishPostNoti
+                          : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
                       icon: this.newKishPostNotiIcon,
                       label: const Text("새 글 알림")
                   )

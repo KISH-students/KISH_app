@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
@@ -223,7 +224,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                   children: [
                     Container(
                         alignment: Alignment.topRight,
-                        child: FlatButton.icon(onPressed: () { updateDdayNoti(); },
+                        child: FlatButton.icon(
+                          onPressed: NotificationManager.isFcmSupported ? updateDdayNoti : fcmIsNotsupported,
                           icon: ddayNotiIcon,
                           label: const Text("DDay 알림"),)),
                     ddayFutureBuilder,
@@ -241,13 +243,13 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                           Container(
                               alignment: Alignment.topLeft,
                               child: FlatButton.icon(
-                                onPressed: updateLunchNoti,
+                                onPressed: NotificationManager.isFcmSupported ? updateLunchNoti : fcmIsNotsupported,
                                 icon: this.lunchNotiIcon,
                                 label: const Text("중식 알림"),)),
                           Container(
                               alignment: Alignment.topRight,
                               child: FlatButton.icon(
-                                onPressed: updateDinnerNoti,
+                                onPressed: NotificationManager.isFcmSupported ? updateDinnerNoti : fcmIsNotsupported,
                                 icon: this.dinnerNotiIcon,
                                 label: const Text("석식 알림"),)),
 
@@ -423,6 +425,11 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     });
 
     await manager.updateNotifications();
+  }
+
+  // IOS에서 FCM이 작동하지 않습니다.
+  void fcmIsNotsupported() {
+    Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");
   }
 
   Future<void> loadLunchNotiIcon() async {

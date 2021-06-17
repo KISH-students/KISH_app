@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/tool/api_helper.dart';
@@ -14,6 +15,8 @@ class NotificationManager {
   static const DDAY_NOTIFICATION_ID = 2;
   static const LUNCH_NOTIFICATION_ID = 3;
   static const DINNER_NOTIFICATION_ID = 4;
+
+  static bool isFcmSupported = true;
 
   SharedPreferences preferences;
 
@@ -33,6 +36,11 @@ class NotificationManager {
   Future<void> init() async{
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('kish_icon');
+    if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await DeviceInfoPlugin().iosInfo;
+      var version = iosInfo.systemVersion;
+      isFcmSupported = !version.startsWith("9."); // ios 9에서 FCM이 작동하지 않습니다.
+    }
   }
 
   Future<void> loadSharedPreferences() async{
