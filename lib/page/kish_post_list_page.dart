@@ -186,7 +186,8 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                 decoration: const BoxDecoration(color: Colors.black12),
                 height: 2,
               ),
-              Center(
+              Container(
+                  alignment: Alignment.center,
                   child: FlatButton.icon(
                       onPressed: updateNewKishPostNoti,
                       icon: this.newKishPostNotiIcon,
@@ -299,37 +300,36 @@ class PostInfo extends StatelessWidget {
     return FlatButton(
       padding: EdgeInsets.zero,
       child : Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            border: Border.all(width: 1, color: Colors.black.withOpacity(0.1))
+        ),
         width: double.infinity,
-        margin: const EdgeInsets.only(top: 10, bottom: 10),
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 10,
-          shadowColor: Colors.black38,
-          child: Container(
-              padding: const EdgeInsets.only(left: 12, right: 8, top: 10, bottom: 10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      child: Text(title, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16)),
-                    ),
-                    Row(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Container(
+            padding: const EdgeInsets.only(left: 12, right: 8, top: 10, bottom: 10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    child: Text(title, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16, fontWeight: FontWeight.w500)),
+                  ),
+                  Row(
+                      children: [
+                        Text("작성자 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
+                        Text(author, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
+                      ]),
+                  Container(
+                    width: double.infinity,
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Icon(CupertinoIcons.person, color: Colors.grey),
-                          Text(author, style: TextStyle(color: Colors.grey)),
+                          Text("작성일 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
+                          Text(date, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
                         ]),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const Icon(CupertinoIcons.clock, color: Colors.grey),
-                            Text(date, style: TextStyle(color: Colors.grey)),
-                          ]),
-                    ),
-                  ])
-          ),
+                  ),
+                ])
         ),
       ),
       onPressed: () {
@@ -356,10 +356,12 @@ class _PostList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 30, right: 5, left: 5),
-      child: Card(
-        color: Color.fromARGB(255, 253, 253, 253),
-        elevation: 1,
+      margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            border: Border.all(width: 1, color: Colors.black.withOpacity(0.1))
+        ),
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -380,7 +382,7 @@ class _PostList extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: postList.length,
                     itemBuilder: (context, index) {
-                      if (index > 5) return SizedBox.shrink();
+                      if (index > 2) return SizedBox.shrink();
                       Map element = postList[index];
 
                       return FlatButton(
@@ -398,7 +400,7 @@ class _PostList extends StatelessWidget {
                         child: Container(
                             alignment: Alignment.topLeft,
                             margin: EdgeInsets.only(left: 8, right: 8),
-                            child: Text(element["title"])
+                            child: Text(element["title"], style: TextStyle(fontWeight: FontWeight.bold),)
                         ),
                       );
                     },
@@ -417,7 +419,7 @@ class _PostList extends StatelessWidget {
                             _KishPostListPageState.menu = menu.toString();
                             listPageState.setBody2PagedListView();
                           },
-                          child: const Text("더 보기", style: TextStyle(color: Colors.blueAccent),)
+                          child: const Text("더 보기", style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),)
                       )
                     ],
                   )
