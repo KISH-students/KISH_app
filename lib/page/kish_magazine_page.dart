@@ -1,12 +1,9 @@
-import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:kish2019/kish_api.dart';
-import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
-import 'package:kish2019/widget/dday_card.dart';
 
 class KishMagazinePage extends StatefulWidget {
   KishMagazinePage({Key key}) : super(key: key);
@@ -194,6 +191,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [parentDropdown, Text(" · "), categoryDropdown],
                     ),
+                    Text(Platform.isIOS ? "\nCovid-19 또는 민감한 정보를 다루는 기사를 열람할 수 없습니다\n" : ""),
                   ]),
               elevation: 3
           ),
