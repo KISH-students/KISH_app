@@ -118,13 +118,13 @@ class ApiHelper {
   @Deprecated("더이상 사용되지 않는 API입니다.")
   static Future<List> getArticleList({String path: ""}) async {
     String resultJson =
-    await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path});
+    await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path, "ios": Platform.isIOS});
     return json.decode(resultJson);
   }
 
   static Future<List> getLibraryHome({String parent, String category}) async {
     String resultJson =
-    await request(KISHApi.GET_MAGAZINE_HOME, Method.get, {"parent": parent, "category": category});
+    await request(KISHApi.GET_MAGAZINE_HOME, Method.get, {"parent": parent, "category": category, "ios": Platform.isIOS});
     print({"parent": parent, "category": category});
     return json.decode(resultJson);
   }
