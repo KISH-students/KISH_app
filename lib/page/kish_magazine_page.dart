@@ -172,33 +172,30 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-              decoration: BoxDecoration(color: Colors.white),
-              child: Container(
-                  margin: EdgeInsets.only(top: 50, bottom: 10),
-                  child: Center(
-                    child: Text(
-                      "KISH Magazine",
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 71, 71, 71),
-                          fontFamily: "Cinzel",
-                          fontSize: 30),
+          Card(
+              child: Column(
+                  children : [
+                    Container(
+                        decoration: BoxDecoration(color: Colors.white),
+                        child: Container(
+                            margin: EdgeInsets.only(top: 50, bottom: 10),
+                            child: Center(
+                              child: Text(
+                                "KISH Magazine",
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 71, 71, 71),
+                                    fontFamily: "Cinzel",
+                                    fontSize: 30),
+                              ),
+                            )
+                        )
                     ),
-                  )
-              )
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [parentDropdown, Text(" · "), categoryDropdown],
-          ),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [Text("Inspired by the New York Times")]
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 3),
-            height: 3,
-            decoration: BoxDecoration(color: Colors.black54),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [parentDropdown, Text(" · "), categoryDropdown],
+                    ),
+                  ]),
+              elevation: 3
           ),
           body
         ]);
@@ -229,9 +226,12 @@ class TextArticle extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 17)),
-            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+            Text(data["summary"],
+                style: TextStyle(
+                    fontSize: 13, color: Color.fromARGB(255, 28, 28, 28),
+                    fontFamily: "Times New Roman", fontWeight: FontWeight.w300)),
             Container(
-              margin: EdgeInsets.only(top: 20, bottom: 12),
+              margin: EdgeInsets.only(top: 20, bottom: 16),
               height: 1,
               decoration: BoxDecoration(color: Colors.black54),
             ),
@@ -262,7 +262,7 @@ class TextArticleWithImg extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
-            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28), fontFamily: "Times New Roman")),
             Container(
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 10, bottom: 15),
@@ -279,7 +279,7 @@ class TextArticleWithImg extends StatelessWidget {
                 )
             ),
             Container(
-              margin: EdgeInsets.only(bottom: 24),
+              margin: EdgeInsets.only(bottom: 28),
               height: 1,
               decoration: BoxDecoration(color: Colors.black54),
             ),
@@ -327,7 +327,7 @@ class ImgArticle extends StatelessWidget {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 13, bottom: 24),
+              margin: EdgeInsets.only(top: 13, bottom: 28),
               height: 1,
               decoration: BoxDecoration(color: Colors.black54),
             ),
