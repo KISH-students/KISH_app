@@ -159,7 +159,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
   Widget getLoggedInBody() {
     return SingleChildScrollView(
         child: Container(
-            margin: EdgeInsets.only(top: 20),
+            margin: EdgeInsets.only(top: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
