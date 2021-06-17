@@ -20,7 +20,7 @@ class _PdfPageState extends State<PdfPage> {
   void initState() {
     super.initState();
     Fluttertoast.showToast(
-        msg: "페이지를 넘기려면 오른쪽으로 스와이프하세요", toastLength: Toast.LENGTH_LONG);
+        msg: "페이지를 넘기려면 화면을 아래로 미세요", toastLength: Toast.LENGTH_LONG);
   }
 
   @override
@@ -36,7 +36,7 @@ class _PdfPageState extends State<PdfPage> {
           backgroundColor: Colors.black12,
         ),
         body: PDF(
-          swipeHorizontal: true,
+          swipeHorizontal: false,
         ).cachedFromUrl(
           widget.url,
           placeholder: (progress) => Padding(
