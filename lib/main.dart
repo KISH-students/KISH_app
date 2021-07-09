@@ -6,7 +6,6 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,10 +22,6 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  //ensureInitialized 호출시 GestureBinding의 instance가 초기화 되는지 확인하지 못하였습니다.
-  if (GestureBinding.instance != null) {
-    GestureBinding.instance.resamplingEnabled = true;
-  }
   firebaseCloudMessaging_Listeners();
 
   await NotificationManager().init();
