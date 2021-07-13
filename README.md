@@ -9,4 +9,4 @@ KISH APP을 통해 급식, 시험 일정과 같은 정보를 간편하게 확인
 
 ## 플랫폼
 - [안드로이드 6.0(마시멜로) 이상](https://play.google.com/store/apps/details?id=com.Hancho.KISH.kish2019&hl=ko&gl=US)
-- IOS (지원 예정)
+- [IOS (9.0이상)](https://apps.apple.com/kr/app/kish-%ED%95%98%EB%85%B8%EC%9D%B4%ED%95%9C%EA%B5%AD%EA%B5%AD%EC%A0%9C%ED%95%99%EA%B5%90/id1548809823)
