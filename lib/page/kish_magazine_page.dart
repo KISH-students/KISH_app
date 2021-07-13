@@ -6,7 +6,7 @@ import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 
 class KishMagazinePage extends StatefulWidget {
-  KishMagazinePage({Key key}) : super(key: key);
+  KishMagazinePage({Key? key}) : super(key: key);
 
   @override
   KishMagazinePageState createState() {
@@ -15,8 +15,8 @@ class KishMagazinePage extends StatefulWidget {
 }
 
 class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAliveClientMixin<KishMagazinePage> {
-  String parent;
-  String category;
+  String? parent;
+  String? category;
 
   Widget body = CircularProgressIndicator();
   Widget parentDropdown = CircularProgressIndicator();
@@ -25,7 +25,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       initWidgets();
     });
   }
@@ -53,19 +53,24 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                List items;
-                if (!(snapshot.data is List)) {
-                  items = snapshot.data.toList();
+                List? items;
+                if (snapshot.data != null) {
+                  if (!(snapshot.data is List)) {
+                    dynamic mapData = snapshot.data;
+                    items = mapData.toList();
+                  } else {
+                    items = snapshot.data as List?;
+                  }
                 } else {
-                  items = snapshot.data;
+                  items = [];
                 }
 
                 return Expanded(
                     child: ListView.builder(
-                        itemCount: items.length,
+                        itemCount: items!.length,
                         itemBuilder: (context, index) {
-                          Map item = items[index];
-                          String type = item["type"];
+                          Map item = items![index];
+                          String? type = item["type"];
 
                           item["title"] = item["title"] is String
                               ? item["title"].replaceAll("\n", " ")
@@ -101,13 +106,14 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                List items;
+                List? items;
                 if (!(snapshot.data is List)) {
-                  items = snapshot.data.toList();
+                  dynamic mapData = snapshot.data;
+                  items = mapData.toList();
                 } else {
-                  items = snapshot.data;
+                  items = snapshot.data as List?;
                 }
-                this.parent = items[0];
+                this.parent = items![0];
                 Future<void>.delayed(Duration(seconds: 0), () {
                   setState(() {
                     loadCategory();
@@ -136,13 +142,14 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                List items;
+                List? items;
                 if (!(snapshot.data is List)) {
-                  items = snapshot.data.toList();
+                  dynamic mapData = snapshot.data;
+                  items = mapData.toList();
                 } else {
-                  items = snapshot.data as List;
+                  items = snapshot.data as List?;
                 }
-                items.insert(0, "all");
+                items!.insert(0, "all");
                 this.category = items[0];
                 Future<void>.delayed(Duration(seconds: 0), () {
                   setState(() {
@@ -205,7 +212,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
 
 class TextArticle extends StatelessWidget {
   Map data;
-  TextArticle(this.data, {Key key}) : super(key: key);
+  TextArticle(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +248,7 @@ class TextArticle extends StatelessWidget {
 
 class TextArticleWithImg extends StatelessWidget {
   Map data;
-  TextArticleWithImg(this.data, {Key key}) : super(key: key);
+  TextArticleWithImg(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +296,7 @@ class TextArticleWithImg extends StatelessWidget {
 
 class ImgArticle extends StatelessWidget {
   Map data;
-  ImgArticle(this.data, {Key key}) : super(key: key);
+  ImgArticle(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -337,8 +344,8 @@ class ImgArticle extends StatelessWidget {
 
 class ParentDropdown extends StatefulWidget {
   KishMagazinePageState main;
-  List data;
-  ParentDropdown(this.main, this.data, {Key key}) : super(key: key);
+  List? data;
+  ParentDropdown(this.main, this.data, {Key? key}) : super(key: key);
 
   @override
   _ParentDropdownState createState() {
@@ -354,14 +361,14 @@ class _ParentDropdownState extends State<ParentDropdown> {
       icon: const Icon(Icons.arrow_drop_down),
       iconSize: 24,
       style: const TextStyle(color: Colors.black),
-      onChanged: (String v) {
+      onChanged: (String? v) {
         setState(() {
           widget.main.parent = v;
           widget.main.body = CircularProgressIndicator();
         });
         widget.main.loadCategory();
       },
-      items: widget.data.map<DropdownMenuItem<String>>((value) {
+      items: widget.data!.map<DropdownMenuItem<String>>((value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
@@ -373,8 +380,8 @@ class _ParentDropdownState extends State<ParentDropdown> {
 
 class CategoryDropdown extends StatefulWidget {
   KishMagazinePageState main;
-  List data;
-  CategoryDropdown(this.main, this.data, {Key key}) : super(key: key);
+  List? data;
+  CategoryDropdown(this.main, this.data, {Key? key}) : super(key: key);
 
   @override
   _CategoryDropdownState createState() {
@@ -391,13 +398,13 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
       icon: const Icon(Icons.arrow_drop_down),
       iconSize: 24,
       style: const TextStyle(color: Colors.black),
-      onChanged: (String v) {
+      onChanged: (String? v) {
         setState(() {
           widget.main.category = v;
         });
         widget.main.loadBody();
       },
-      items: widget.data.map<DropdownMenuItem<String>>((value) {
+      items: widget.data!.map<DropdownMenuItem<String>>((value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),

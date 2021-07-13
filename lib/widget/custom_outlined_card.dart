@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomOutlinedCard extends StatelessWidget {
-  final Color borderColor;
+  final Color? borderColor;
   final Widget child;
   final double borderWidth;
 
@@ -18,7 +18,7 @@ class CustomOutlinedCard extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15)),
-            border: Border.all(width: borderWidth, color: borderColor)),
+            border: Border.all(width: borderWidth, color: borderColor!)),
         child: child);
   }
 }

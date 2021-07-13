@@ -37,13 +37,13 @@ Future<void> main() async{
     await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     BackgroundFetch.start();
 
-    NotificationManager.instance.updateNotifications();
+    NotificationManager.instance!.updateNotifications();
   }
 }
 
 class MyApp extends StatelessWidget {
   static final navigatorKey = GlobalKey<NavigatorState>();
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,31 +61,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-Future<void> setDisplayMode() async{
-  try {
-    DisplayMode current = await FlutterDisplayMode.current;
-    DisplayMode newMode;
-    double maxFreq = -1;
-
-    (await FlutterDisplayMode.supported).forEach((element) {
-      if (element.width == current.width
-          && element.height == current.height) {
-        if (element.refreshRate > maxFreq) {
-          newMode = element;
-          maxFreq = element.refreshRate;
-        }
-      }
-    });
-
-    if (newMode != null) {
-      FlutterDisplayMode.setMode(newMode);
-    }
-  } catch (e) {   // API가 지원되지 않을경우 예외가 발생할 수 있습니다.
-    print ("디스플레이 모드 설정 실패");
-  }
-}
-
 void firebaseCloudMessagingListeners() {
   _firebaseMessaging.getToken().then((token){
     NotificationManager.FcmToken = token;
@@ -93,7 +68,7 @@ void firebaseCloudMessagingListeners() {
 }
 
 Future<void> notificationUpdateTask() async {
-  NotificationManager manager = NotificationManager.instance;
+  NotificationManager? manager = NotificationManager.instance;
 
   if(manager == null){
     manager = new NotificationManager();
@@ -155,22 +130,30 @@ class Home extends StatefulWidget {
 
 class MainState extends State<Home> {
   final PageController pageController = PageController(initialPage: 0, keepPage: true);
-  NewVersion newVersion;
-  DateTime currentBackPressTime;
+  late NewVersion newVersion;
+  DateTime? currentBackPressTime;
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     pageController.addListener(() {
-      currentIndex = pageController.page.toInt();
+      currentIndex = pageController.page!.toInt();
     });
-    newVersion = NewVersion(context: context,
-        dialogTitle: "업데이트 이용 가능", dismissText: "나중에", updateText: "업데이트 하기");
-    newVersion.showAlertIfNecessary();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await setDisplayMode();
+    Future.delayed(Duration(seconds: 0), () async {
+      final VersionStatus? status = await newVersion.getVersionStatus();
+      if(status != null) {
+        if (status.canUpdate) {
+          newVersion.showUpdateDialog(
+            context: context,
+            versionStatus: status,
+            dialogTitle: '업데이트 가능',
+            dialogText: '어플 업데이트 가능합니다. 원활한 어플 이용을 위해 업데이트 해주세요.',
+            updateButtonText: '할래요',
+            dismissButtonText: '나중에 할래요',
+          );
+        }
+      }
     });
   }
 
@@ -270,8 +253,9 @@ class MainState extends State<Home> {
     );
   }
 
-  void changePage(int index) {
+  void changePage(int? index) {
     setState(() {
+      if (index == null) return;
       currentIndex = index;
       pageController.animateToPage(index,
           duration: Duration(milliseconds: 500), curve: Curves.easeInOutQuad);
@@ -283,23 +267,11 @@ class MainState extends State<Home> {
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
       currentBackPressTime = now;
       Fluttertoast.showToast(msg: "종료하려면 한번 더 누르세요");
       return Future.value(false);
     }
     return Future.value(true);
-  }
-
-  Future<String> _getId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      // import 'dart:io'
-      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-      print(iosDeviceInfo.identifierForVendor); // unique ID on iOS
-    } else {
-      AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-      print(androidDeviceInfo.androidId + "이게 uuid"); // unique ID on Android
-    }
   }
 }

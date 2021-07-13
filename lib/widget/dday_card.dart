@@ -8,15 +8,15 @@ class DDayCard extends StatelessWidget {
   static final Color orange = new Color(0xFFffba2f);
   static final Color green = new Color(0xFF00C851);
 
-  String description;
-  Color color;
-  num timestamp;
-  Text textWidget;
+  String? description;
+  Color? color;
+  num? timestamp;
+  late Text textWidget;
 
   DDayCard(
-      {this.timestamp = 0, this.description = "", this.color, String content}) {
-    if (timestamp != null && !timestamp.isNaN) {
-      DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+      {this.timestamp = 0, this.description = "", this.color, String? content}) {
+    if (timestamp != null && !timestamp!.isNaN) {
+      DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000 as int);
       DateTime now = DateTime.now();
       int diffDays = date.difference(now).inDays;
 
@@ -60,7 +60,7 @@ class DDayCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[textWidget, Text(description)],
+          children: <Widget>[textWidget, Text(description!)],
         ));
   }
 }

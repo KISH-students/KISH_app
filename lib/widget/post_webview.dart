@@ -8,8 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PostWebView extends StatefulWidget {
-  String menu;
-  String id;
+  String? menu;
+  String? id;
   PostWebView({this.menu, this.id});
 
   @override
@@ -54,7 +54,7 @@ class _PostWebViewState extends State<PostWebView> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.done) {
                                 if (snapshot.hasData) {
-                                  List data = snapshot.data;
+                                  List data = snapshot.data as List;
                                   List<Widget> widgets = [];
 
                                   data.forEach((element) {
@@ -88,7 +88,7 @@ class _PostWebViewState extends State<PostWebView> {
                   loadingWidget,
                   Expanded(
                       child: WebView(
-                        initialUrl: KISHApi.GET_POST_CONTENT_HTML + "?menu=" + widget.menu + "&id=" + widget.id,
+                        initialUrl: KISHApi.GET_POST_CONTENT_HTML + "?menu=" + widget.menu! + "&id=" + widget.id!,
                         onWebViewCreated: (url){
                           setState(() {
                             loadingWidget = LinearProgressIndicator(backgroundColor: Colors.grey);

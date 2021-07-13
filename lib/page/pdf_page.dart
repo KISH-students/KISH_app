@@ -5,9 +5,9 @@ import 'package:progress_indicators/progress_indicators.dart';
 
 class PdfPage extends StatefulWidget {
   String url;
-  String title;
+  String? title;
 
-  PdfPage(this.url, {this.title: "", Key key}) : super(key: key);
+  PdfPage(this.url, {this.title: "", Key? key}) : super(key: key);
 
   @override
   _PdfPageState createState() {
@@ -32,7 +32,7 @@ class _PdfPageState extends State<PdfPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Center(child: Text(widget.title.replaceAll("\n", " "))),
+          title: Center(child: Text(widget.title!.replaceAll("\n", " "))),
           backgroundColor: Colors.black,
         ),
         body: PDF(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MaintenancePage extends StatelessWidget {
-  String title;
-  String des;
+  late String title;
+  late String des;
 
   MaintenancePage({title: "COMMING\nSOON", description: ""}) {
     this.title = title;

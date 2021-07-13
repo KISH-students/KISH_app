@@ -7,10 +7,10 @@ import 'package:kish2019/tool/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationManager {
-  static String FcmToken = "";
+  static String? FcmToken = "";
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
-  static NotificationManager instance;
+  static NotificationManager? instance;
   static const List<String> weekdays = ["", "월", "화", "수", "목", "금", "토", "일"];
   static const DDAY_NOTIFICATION_ID = 2;
   static const LUNCH_NOTIFICATION_ID = 3;
@@ -18,12 +18,12 @@ class NotificationManager {
 
   static bool isFcmSupported = true;
 
-  SharedPreferences preferences;
+  SharedPreferences? preferences;
 
-  String ddayTitle;
-  String ddayText;
+  String? ddayTitle;
+  String? ddayText;
 
-  static NotificationManager getInstance() {
+  static NotificationManager? getInstance() {
     return instance;
   }
 
@@ -49,7 +49,7 @@ class NotificationManager {
 
   Future<bool> isPropertyEnabled(String key) async {
     if (this.preferences == null) await loadSharedPreferences();
-    bool result = preferences.getBool(key);
+    bool? result = preferences!.getBool(key);
 
     return result == null ? false : result;
   }
@@ -103,7 +103,7 @@ class NotificationManager {
 
   Future<void> setProperty(String key, bool v, {bool  subTopic = false}) async {
     if (this.preferences == null) await loadSharedPreferences();
-    this.preferences.setBool(key, v);
+    this.preferences!.setBool(key, v);
     if (Platform.isIOS || subTopic) {
       if (v) FirebaseMessaging.instance.subscribeToTopic(key);
       else FirebaseMessaging.instance.unsubscribeFromTopic(key);
@@ -156,7 +156,7 @@ class NotificationManager {
 
     Map data = await ApiHelper.getExamDDay();
 
-    String title;
+    String? title;
     String body;
 
     if (data["invalid"] != null) {
@@ -192,7 +192,7 @@ class NotificationManager {
     int timestamp = (today.millisecondsSinceEpoch / 1000).round();
     bool isFound = false;
 
-    List result;
+    List? result;
     try {
       result = await ApiHelper.getLunch();
     } catch (ignore) {
@@ -201,13 +201,13 @@ class NotificationManager {
 
     dynamic detail = await getOngoingAndroidDetails();
 
-    result.forEach((element) async {
+    result!.forEach((element) async {
       if (isFound) return;
 
       Map data = element;
       if (timestamp <= data["timestamp"]) {
         String date = data["date"];
-        String title = weekdays[DateTime.tryParse(date).weekday] + "요일";
+        String title = weekdays[DateTime.tryParse(date)!.weekday] + "요일";
         String content;
 
         if (await isLunchEnabled()) {

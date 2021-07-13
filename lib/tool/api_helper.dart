@@ -14,7 +14,7 @@ class ApiHelper {
   static Future<String> request(
       String api, Method method, Map<String, dynamic> params, {doCache: true, int timeout = 999999}) async {
     String url = api;
-    http.Response response;
+    late http.Response response;
 
     if (method == Method.get) {
       url += "?";
@@ -25,12 +25,13 @@ class ApiHelper {
       });
     }
     url = Uri.encodeFull(url);
+    Uri uri = Uri.parse(url);
 
     try {
       if (method == Method.get) {
-        response = await http.get(url).timeout(Duration(seconds: timeout));
+        response = await http.get(uri).timeout(Duration(seconds: timeout));
       } else {
-        response = await http.post(url, body: params).timeout(Duration(seconds: timeout));
+        response = await http.post(uri, body: params).timeout(Duration(seconds: timeout));
       }
 
       if (doCache) {
@@ -44,7 +45,7 @@ class ApiHelper {
           backgroundColor: Colors.black54,
           textColor: Colors.white,
           fontSize: 16.0);*/
-      String cache = await getCachedResult(getCacheKey(api, params));
+      String? cache = await getCachedResult(getCacheKey(api, params));
       if(cache != null) return cache;
     }
     return response.body;
@@ -55,7 +56,7 @@ class ApiHelper {
     prefs.setString(key, json);
   }
 
-  static Future<String> getCachedResult(String key) async {
+  static Future<String?> getCachedResult(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
@@ -92,21 +93,21 @@ class ApiHelper {
     return ymd;
   }
 
-  static Future<List> getLunch({date: ""}) async {
+  static Future<List?> getLunch({date: ""}) async {
     if (date == "") {
       date = getTodayDateForLunch();
     }
 
     String rsJson =
     await request(KISHApi.GET_LUNCH, Method.get, {"date": date});
-    List menuList = json.decode(rsJson);
+    List? menuList = json.decode(rsJson);
     return menuList;
   }
 
   static Future<Map> getExamDDay() async {
     String resultJson = await request(KISHApi.GET_EXAM_DATES, Method.get, {});
     List examDates = json.decode(resultJson);
-    Map resultMap = examDates.length > 0 ? examDates[0] : null;
+    Map? resultMap = examDates.length > 0 ? examDates[0] : null;
 
     if (resultMap == null) {
       resultMap = {"invalid": true};
@@ -116,57 +117,57 @@ class ApiHelper {
   }
 
   @Deprecated("더이상 사용되지 않는 API입니다.")
-  static Future<List> getMagazineArticleList({String path: ""}) async {
+  static Future<List?> getMagazineArticleList({String path: ""}) async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_ARTICLE, Method.get, {"path": path, "ios": Platform.isIOS.toString()});
     return json.decode(resultJson);
   }
 
-  static Future<List> getMagazineHome({String parent, String category}) async {
+  static Future<List?> getMagazineHome({String? parent, String? category}) async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_HOME, Method.get, {"parent": parent, "category": category, "ios": Platform.isIOS.toString()});
     print({"parent": parent, "category": category});
     return json.decode(resultJson);
   }
 
-  static Future<List> getMagazineParentList() async {
+  static Future<List?> getMagazineParentList() async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_PARENT_LIST, Method.get, {});
     return json.decode(resultJson);
   }
 
-  static Future<List> getMagazineCategoryList({String parent}) async {
+  static Future<List?> getMagazineCategoryList({String? parent}) async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_CATEGORY_LIST, Method.get, {"parent": parent});
     return json.decode(resultJson);
   }
 
-  static Future<List> searchPost(String keyword, int index) async {
+  static Future<List?> searchPost(String? keyword, int index) async {
     String result = await request(KISHApi.SEARCH_POST, Method.get, {"keyword": keyword, "index": index.toString()}, doCache: false);
     return json.decode(result);
   }
 
-  static Future<List> getPostsByMenu(String menu, String index) async {
+  static Future<List?> getPostsByMenu(String menu, String index) async {
     String result = await request(KISHApi.GET_POSTS_BY_MENU, Method.get, {"menu": menu, "page": index}, doCache: false);
     return json.decode(result);
   }
 
-  static Future<List> getLastUpdatedMenuList() async {
+  static Future<List?> getLastUpdatedMenuList() async {
     String result = await request(KISHApi.GET_LAST_UPDATED_MENU_LIST, Method.get, {}, doCache: false);
     return json.decode(result);
   }
 
-  static Future<List> getPostAttachments(String menu, String id) async {
+  static Future<List?> getPostAttachments(String? menu, String? id) async {
     String result = await request(KISHApi.GET_POST_ATTACHMENTS, Method.get, {"menu": menu, "id": id}, doCache: false);
     return json.decode(result);
   }
 
-  static Future<List> getPostListHomeSummary() async {
+  static Future<List?> getPostListHomeSummary() async {
     String result = await request(KISHApi.GET_POST_LIST_HOME_SUMMARY, Method.get, {});
     return json.decode(result);
   }
 
-  static Future<Map> loginToLibrary(String id, String pw) async {
+  static Future<Map?> loginToLibrary(String? id, String? pw) async {
     String uuid = await getUuid();
 
     String result = await request(KISHApi.LIBRARY_LOGIN, Method.post, {"uuid": uuid, "id": id, "pwd": pw}, doCache: false);
@@ -174,14 +175,14 @@ class ApiHelper {
     return json.decode(result);
   }
 
-  static Future<Map> getLibraryMyInfo() async {
+  static Future<Map?> getLibraryMyInfo() async {
     String uuid = await getUuid();
 
     String result = await request(KISHApi.LIBRARY_MY_INFO, Method.get, {"uuid": uuid}, doCache: false);
     return json.decode(result);
   }
 
-  static Future<Map> registerToLibrary(String seq, String id, String pw, String ck) async {
+  static Future<Map?> registerToLibrary(String seq, String id, String pw, String ck) async {
     String uuid = await getUuid();
 
     String result = await request(
@@ -193,7 +194,7 @@ class ApiHelper {
     return json.decode(result);
   }
 
-  static Future<Map> isLibraryMember(String seq, String name) async {
+  static Future<Map?> isLibraryMember(String seq, String name) async {
     String result = await request(
         KISHApi.IS_LIBRARY_Member,
         Method.post,

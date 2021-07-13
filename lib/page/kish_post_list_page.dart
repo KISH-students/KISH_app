@@ -14,7 +14,7 @@ class KishPostListPage extends StatefulWidget {
   static int mode = 0;
   static int menu = 0;
 
-  KishPostListPage({Key key}) : super(key: key);
+  KishPostListPage({Key? key}) : super(key: key);
 
   @override
   _KishPostListPageState createState() {
@@ -28,7 +28,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   static Widget body = Container();
 
   PagingController<int, Widget> _pagingController = PagingController(firstPageKey: 0);
-  String currentKeyword;
+  String? currentKeyword;
   List<PostInfo> postList = [];
   int searchIndex = 1;
 
@@ -105,12 +105,12 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
       body = FutureBuilder(
           future: ApiHelper.getPostListHomeSummary(),
           builder: (context, snapshot) {
-            List data = null;
+            List? data;
             loading = SizedBox.shrink();
 
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                data = snapshot.data;
+                data = snapshot.data as List;
               } else {
                 return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
               }
@@ -205,12 +205,12 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   }
 
   Future<void> loadNewKishPostNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
     newKishPostNotiIcon = Icon(await manager.isNewKishPostEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> updateNewKishPostNoti() async{
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
 
     bool result = await manager.toggleNewKishPost();
 
@@ -219,11 +219,11 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     });
   }
 
-  Future<void> search(String keyword, int pageIndex) async{
+  Future<void> search(String? keyword, int pageIndex) async{
     loading = LinearProgressIndicator(backgroundColor: Colors.orangeAccent);
 
     if(mode == 1) {
-      keyword = keyword.trim();
+      keyword = keyword!.trim();
 
       if (keyword == null || keyword.isEmpty) {
         setBody2Normal();
@@ -248,7 +248,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     print (searchIndex.toString() + "??");
 
     try {
-      List result;
+      List? result;
       List<PostInfo> newWidgetList = [];
 
       if (mode == 1) {
@@ -259,7 +259,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 
       if (currentKeyword != keyword) return;
 
-      result.forEach((element) {
+      result!.forEach((element) {
         newWidgetList.add(PostInfo(
             title: element["title"],
             author: element["author"],
@@ -290,13 +290,13 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 }
 
 class PostInfo extends StatelessWidget {
-  final String title;
-  final String author;
-  final String date;
-  final int menu;
-  final int id;
+  final String? title;
+  final String? author;
+  final String? date;
+  final int? menu;
+  final int? id;
 
-  const PostInfo({this.title, this.author, this.date, this.menu, this.id, Key key});
+  const PostInfo({this.title, this.author, this.date, this.menu, this.id, Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -316,12 +316,12 @@ class PostInfo extends StatelessWidget {
                 children: [
                   Container(
                     margin: const EdgeInsets.only(bottom: 5),
-                    child: Text(title, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16, fontWeight: FontWeight.w500)),
+                    child: Text(title!, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16, fontWeight: FontWeight.w500)),
                   ),
                   Row(
                       children: [
                         Text("작성자 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
-                        Text(author, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
+                        Text(author!, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
                       ]),
                   Container(
                     width: double.infinity,
@@ -329,7 +329,7 @@ class PostInfo extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text("작성일 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
-                          Text(date, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
+                          Text(date!, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
                         ]),
                   ),
                 ])
@@ -348,12 +348,12 @@ class PostInfo extends StatelessWidget {
 
 class _PostList extends StatelessWidget {
   final _KishPostListPageState listPageState;
-  final String menuTitle;
-  final String menu;
-  final List postList;
+  final String? menuTitle;
+  final String? menu;
+  final List? postList;
 
   _PostList(this.listPageState, {this.menuTitle, this.menu, this.postList}) {
-    this.postList.length = min(5, this.postList.length);
+    this.postList!.length = min(5, this.postList!.length);
   }
 
   @override
@@ -374,7 +374,7 @@ class _PostList extends StatelessWidget {
                   width: double.infinity,
                   margin: const EdgeInsets.only(top: 10, left: 16, bottom: 10),
                   child: Center(
-                      child: Text(menuTitle, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 22.5, color: Colors.black87),)
+                      child: Text(menuTitle!, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 22.5, color: Colors.black87),)
                   )
               ),
               Container(
@@ -383,10 +383,10 @@ class _PostList extends StatelessWidget {
                   child: ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: postList.length,
+                    itemCount: postList!.length,
                     itemBuilder: (context, index) {
                       if (index > 2) return SizedBox.shrink();
-                      Map element = postList[index];
+                      Map element = postList![index];
 
                       return FlatButton(
                         padding: EdgeInsets.zero,

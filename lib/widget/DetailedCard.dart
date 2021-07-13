@@ -6,11 +6,11 @@ import 'description_text.dart';
 class DetailedCard extends StatelessWidget {
   final String bottomTitle;
   final String title;
-  final String description;
+  final String? description;
   final String content;
   final TextStyle contentTextStyle;
   final Color descriptionColor;
-  final Widget icon;
+  final Widget? icon;
 
   const DetailedCard(
       {this.title = "",
@@ -52,7 +52,7 @@ class DetailedCard extends StatelessWidget {
                                     fontSize: 20,
                                     fontFamily: "CRB")),
                             Text(
-                              description,
+                              description!,
                               style: TextStyle(
                                   fontWeight: FontWeight.normal,
                                   fontFamily: "NanumSquareR",

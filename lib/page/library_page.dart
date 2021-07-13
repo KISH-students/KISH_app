@@ -3,15 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kish2019/page/maintenance_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/title_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:slimy_card/slimy_card.dart';
 
 class LibraryPage extends StatefulWidget {
-  LibraryPage({Key key}) : super(key: key);
+  LibraryPage({Key? key}) : super(key: key);
 
   @override
   _LibraryPageState createState() {
@@ -22,16 +19,16 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClientMixin<LibraryPage>{
   final FlutterSecureStorage storage = new FlutterSecureStorage();
 
-  Widget body;
-  List<Widget> fieldList = [];
+  late Widget body;
+  List<Widget?> fieldList = [];
 
-  TextFormField idField;
-  TextFormField pwField;
-  TextEditingController idController;
-  TextEditingController pwController;
-  TextEditingController ckController;
-  TextEditingController nameController;
-  TextEditingController seqController;
+  TextFormField? idField;
+  TextFormField? pwField;
+  TextEditingController? idController;
+  TextEditingController? pwController;
+  TextEditingController? ckController;
+  TextEditingController? nameController;
+  TextEditingController? seqController;
 
   bool isResistering = false;
   bool isLogining = false;
@@ -103,11 +100,11 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
     super.dispose();
 
     if (idController != null) {
-      idController.dispose();
-      pwController.dispose();
-      seqController.dispose();
-      ckController.dispose();
-      nameController.dispose();
+      idController!.dispose();
+      pwController!.dispose();
+      seqController!.dispose();
+      ckController!.dispose();
+      nameController!.dispose();
     }
   }
 
@@ -117,8 +114,8 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
   }
 
   Future<void> loadBodyWidget() async {
-    String id = await storage.read(key: "id");
-    String pw = await storage.read(key: "pw");
+    String? id = await storage.read(key: "id");
+    String? pw = await storage.read(key: "pw");
 
     if(id == null || pw == null) {
       setState(() {
@@ -137,13 +134,13 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
     }
     isLogining = true;
 
-    String id = await storage.read(key: "id");
-    String pw = await storage.read(key: "pw");
+    String? id = await storage.read(key: "id");
+    String? pw = await storage.read(key: "pw");
 
-    Map result = await ApiHelper.loginToLibrary(id, pw);
+    Map? result = await ApiHelper.loginToLibrary(id, pw);
 
     setState(() {
-      if (result["result"] != "0") {
+      if (result!["result"] != "0") {
         Fluttertoast.showToast(msg: result["message"]);
         initFields();
         body = getLoginForm();
@@ -183,7 +180,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done){
             if (snapshot.hasData) {
-              Map data = snapshot.data;
+              Map data = snapshot.data as Map;
 
               dynamic resultCode = data["result"];
               if (data["result"] != "0") {
@@ -197,22 +194,12 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
 
               return Container(
                   width: double.infinity,
-                  child: SlimyCard(
+                  child: Container(
                     //color: Color.fromARGB(255, 87, 113, 255),
                     color: Color.fromARGB(255, 11, 15, 33),
+                    margin: EdgeInsets.symmetric(vertical: 50),
                     width: 300,
-                    topCardHeight: 200,
-                    bottomCardHeight: 200,
-                    borderRadius: 15,
-                    topCardWidget: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("환영합니다", style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: "CRB")),
-                          Text("${data["name"]}님", style: TextStyle(color: Colors.white, fontSize: 22, fontFamily: "CRB")),
-                        ]
-                    ),
-                    bottomCardWidget: Container(
+                    child: Container(
                         width: double.infinity,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,6 +208,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                               Container(
                                 margin: EdgeInsets.only(left: 5),
                                 child: Text(
+                                  "이름 : ${data["name"]}\n"
                                   "대출가능권수 : ${data["numberLoanableBooks"]}\n"
                                       "대출제한일 : ${data["loanRestrictionDate"]}\n"
                                       "대출권수 : ${data["numberLoanBooks"]}\n"
@@ -248,7 +236,6 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                             ]
                         )
                     ),
-                    slimeEnabled: true,
                   )
               );
             } else {
@@ -278,14 +265,14 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                 shrinkWrap: true,
                 itemCount: fieldList.length,
                 itemBuilder: (context, index) {
-                  return fieldList[index];
+                  return fieldList[index]!;
                 },
               ),
 
               RaisedButton(
                   onPressed: () async {
-                    await storage.write(key: "id", value: idController.text.trim());
-                    await storage.write(key: "pw", value: pwController.text.trim());
+                    await storage.write(key: "id", value: idController!.text.trim());
+                    await storage.write(key: "pw", value: pwController!.text.trim());
 
                     login();
                   },
@@ -298,7 +285,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
               RaisedButton(
                   onPressed: () async {
                     if (fieldList.length < 3) {
-                      List<Widget> newFields = [...fieldList];
+                      List<Widget?> newFields = [...fieldList];
 
                       setState(() {
                         newFields.add(TextFormField(
@@ -346,20 +333,20 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                       }
                       isResistering = true;
 
-                      idController.text = idController.text.trim();
-                      seqController.text = seqController.text.trim();
-                      ckController.text = ckController.text.trim();
-                      pwController.text = pwController.text.trim();
-                      nameController.text = nameController.text.trim();
-                      if (ckController.text != pwController.text) {
+                      idController!.text = idController!.text.trim();
+                      seqController!.text = seqController!.text.trim();
+                      ckController!.text = ckController!.text.trim();
+                      pwController!.text = pwController!.text.trim();
+                      nameController!.text = nameController!.text.trim();
+                      if (ckController!.text != pwController!.text) {
                         Fluttertoast.showToast(msg: "확인 비밀번호가 다릅니다");
                         isResistering = false;
                         return;
                       }
 
                       Fluttertoast.showToast(msg: "회원 확인 중...");
-                      Map isMemberData = await ApiHelper.isLibraryMember(
-                          seqController.text, nameController.text);
+                      Map isMemberData = await (ApiHelper.isLibraryMember(
+                          seqController!.text, nameController!.text)) as Map<dynamic, dynamic>;
 
                       if (isMemberData["result"] != "0") {
                         if (isMemberData["result"] == "1") {
@@ -374,17 +361,17 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                       }
 
                       Fluttertoast.showToast(msg: "회원가입 중...");
-                      Map registerData = await ApiHelper.registerToLibrary(
-                          seqController.text,
-                          idController.text,
-                          pwController.text,
-                          ckController.text);
+                      Map registerData = await (ApiHelper.registerToLibrary(
+                          seqController!.text,
+                          idController!.text,
+                          pwController!.text,
+                          ckController!.text)) as Map<dynamic, dynamic>;
 
                       if (registerData["result"] != "0") {
                         Fluttertoast.showToast(msg: registerData["message"], toastLength: Toast.LENGTH_LONG);
                       } else {
-                        await storage.write(key: "id", value: idController.text.trim());
-                        await storage.write(key: "pw", value: pwController.text.trim());
+                        await storage.write(key: "id", value: idController!.text.trim());
+                        await storage.write(key: "pw", value: pwController!.text.trim());
 
                         login();
                       }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CommunityPage extends StatefulWidget {
-  CommunityPage({Key key}) : super(key: key);
+  CommunityPage({Key? key}) : super(key: key);
 
   @override
   _CommunityPageState createState() {

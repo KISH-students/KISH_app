@@ -18,7 +18,7 @@ import 'package:kish2019/kish_api.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
   @override
   _MainPageState createState() {
@@ -27,9 +27,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>{
-  Widget lunchFutureBuilder;
-  Widget ddayFutureBuilder;
-  String todayDate;
+  Widget? lunchFutureBuilder;
+  late Widget ddayFutureBuilder;
+  String? todayDate;
   int sliderIdx = 0;
 
   Widget ddayNotiIcon = CircularProgressIndicator();
@@ -60,10 +60,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
     Future.delayed(Duration(seconds: 1), () {
       FirebaseMessaging.instance.getInitialMessage()
-          .then((RemoteMessage message) {
+          .then((RemoteMessage? message) {
         if (message != null) {
           if (message.data["type"] == "newPost") {
-            MyApp.navigatorKey.currentState.push(
+            MyApp.navigatorKey.currentState!.push(
                 MaterialPageRoute(
                     builder: (context) =>   // 새 페이지를 띄웁니다
                     PostWebView(  // KISH 게시물 웹뷰 위젯
@@ -89,8 +89,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       await loadDinnerNotiIcon();
       setState(() {});
 
-      if (NotificationManager.instance.preferences == null) {
-        await NotificationManager.instance.loadSharedPreferences();
+      if (NotificationManager.instance!.preferences == null) {
+        await NotificationManager.instance!.loadSharedPreferences();
       }
 
       lunchFutureBuilder = FutureBuilder(
@@ -114,7 +114,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 );
               }
             } else {
-              String cachedJson = NotificationManager.instance.preferences
+              String? cachedJson = NotificationManager.instance!.preferences!
                   .getString(ApiHelper.getCacheKey(KISHApi.GET_LUNCH, {"date": ApiHelper.getTodayDateForLunch()}));
               if (cachedJson != null) {
                 dynamic data;
@@ -151,13 +151,13 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              return getDdayWidget(snapshot.data);
+              return getDdayWidget(snapshot.data as Map);
             } else if (snapshot.hasError) {
               return getDdayWidget(null);
             }
           }
 
-          String cachedJson = NotificationManager.instance.preferences.getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
+          String? cachedJson = NotificationManager.instance!.preferences!.getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
           if (cachedJson != null) {
             dynamic data;
             try {
@@ -288,10 +288,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     );
   }
 
-  Widget getLunchWidget(String cardTitle, dynamic data, {EdgeInsets containerMargin, bool isDinner = false}) {
+  Widget getLunchWidget(String cardTitle, dynamic data, {EdgeInsets? containerMargin, bool isDinner = false}) {
     try {
       if (data != null) {
-        Widget menuWidget;
+        Widget? menuWidget;
 
         DateTime tmpDate = DateTime.now();
         DateTime today =
@@ -304,16 +304,16 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
           Map data = element;
           // 석식 : dinnerMenu | 중식 : "menu"
-          String menu = (isDinner
+          String? menu = (isDinner
               ? data["dinnerMenu"]
-              : data["menu"]) as String;
+              : data["menu"]) as String?;
 
           if (timestamp <= data["timestamp"]) {
             menuWidget = DetailedCard(
               bottomTitle: "",
               title: cardTitle,
               description: data["date"],
-              content: menu.replaceAll(",", "\n"),
+              content: menu!.replaceAll(",", "\n"),
               icon: Container(),
               descriptionColor: Colors.black87,
               contentTextStyle: const TextStyle(
@@ -370,7 +370,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     }
   }
 
-  Widget getDdayWidget(Map data) {
+  Widget getDdayWidget(Map? data) {
     List<Widget> list = [];
     Container widget = Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -421,7 +421,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> loadDdayNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
 
     bool enabled = await manager.isDdayEnabled();
 
@@ -436,7 +436,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       requestIosNotificationPermission();
       return;
     }
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
 
     bool result = await manager.toggleDday();
     if (result && Platform.isIOS) {
@@ -455,12 +455,12 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> loadLunchNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
     lunchNotiIcon = Icon(await manager.isLunchEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> loadDinnerNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
     dinnerNotiIcon = Icon(await manager.isDinnerEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
@@ -469,7 +469,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       requestIosNotificationPermission();
       return;
     }
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
 
     bool result = await manager.toggleDinner();
     if (result && Platform.isIOS) {
@@ -487,7 +487,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       requestIosNotificationPermission();
       return;
     }
-    NotificationManager manager = NotificationManager.getInstance();
+    NotificationManager manager = NotificationManager.getInstance()!;
 
     bool result = await manager.toggleLunch();
     if (result && Platform.isIOS) {

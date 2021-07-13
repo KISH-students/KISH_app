@@ -3,7 +3,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 
 class LunchMenuCard extends StatelessWidget {
-  final String menu;
+  final String? menu;
   final String detail;
 
   const LunchMenuCard({this.menu, this.detail = ""});
@@ -51,7 +51,7 @@ class LunchMenuCard extends StatelessWidget {
                     children: [
                       Text(
                         // 급식 메뉴 부분
-                        menu,
+                        menu!,
                         style: TextStyle(
                             color: Color(0XFF6C6C6C),
                             fontSize: 15,
