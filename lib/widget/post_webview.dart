@@ -88,6 +88,7 @@ class _PostWebViewState extends State<PostWebView> {
                   loadingWidget,
                   Expanded(
                       child: WebView(
+                        javascriptMode: JavascriptMode.unrestricted,
                         initialUrl: KISHApi.GET_POST_CONTENT_HTML + "?menu=" + widget.menu! + "&id=" + widget.id!,
                         onWebViewCreated: (url){
                           setState(() {
