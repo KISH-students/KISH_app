@@ -72,6 +72,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
     idField = TextFormField(
         key: UniqueKey(),
         controller: idController,
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
             icon: const Icon(CupertinoIcons.person, color: Colors.white54),
             fillColor: Colors.white,
@@ -96,6 +97,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
         autocorrect: false,
         obscureText: true,
         obscuringCharacter: "*",
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
             icon: const Icon(CupertinoIcons.lock, color: Colors.white54),
             fillColor: Colors.grey,
@@ -354,6 +356,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                                   autocorrect: false,
                                   obscureText: true,
                                   obscuringCharacter: "*",
+                                  style: TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
                                       icon: const Icon(CupertinoIcons.lock_rotation_open, color: Colors.white54,),
                                       fillColor: Colors.redAccent,
@@ -374,6 +377,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                               newFields.add(TextFormField(
                                   key: UniqueKey(),
                                   controller: seqController,
+                                  style: TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
                                       icon: const Icon(CupertinoIcons.heart_solid, color: Color(0xFFFF8A80),),
                                       fillColor: Colors.redAccent,
@@ -394,6 +398,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                               newFields.add(TextFormField(
                                   key: UniqueKey(),
                                   controller: nameController,
+                                  style: TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
                                       icon: const Icon(CupertinoIcons.info, color: Colors.white54),
                                       fillColor: Colors.blueAccent,
