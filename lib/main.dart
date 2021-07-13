@@ -22,20 +22,11 @@ FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  firebaseCloudMessaging_Listeners();
+  firebaseCloudMessagingListeners();
 
   await NotificationManager().init();
 
-  runApp(MaterialApp(
-      title: 'KISH',
-      theme: ThemeData(
-        textTheme: TextTheme(
-          bodyText1: TextStyle(color: Colors.grey[900]),
-        ),
-        fontFamily: 'NanumSquareL',
-        primarySwatch: Colors.blue,
-      ),
-      home: Home()));
+  runApp(MyApp());
 
   // https://github.com/transistorsoft/flutter_background_fetch 에서
   // BackgroundFetch에 대해 참고할 수 있습니다.
@@ -49,6 +40,27 @@ Future<void> main() async{
     NotificationManager.instance.updateNotifications();
   }
 }
+
+class MyApp extends StatelessWidget {
+  static final navigatorKey = GlobalKey<NavigatorState>();
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+        title: 'KISH',
+        theme: ThemeData(
+          textTheme: TextTheme(
+            bodyText1: TextStyle(color: Colors.grey[900]),
+          ),
+          fontFamily: 'NanumSquareL',
+          primarySwatch: Colors.blue,
+        ),
+        home: Home());
+  }
+}
+
 
 Future<void> setDisplayMode() async{
   try {
@@ -74,7 +86,7 @@ Future<void> setDisplayMode() async{
   }
 }
 
-void firebaseCloudMessaging_Listeners() {
+void firebaseCloudMessagingListeners() {
   _firebaseMessaging.getToken().then((token){
     NotificationManager.FcmToken = token;
   });

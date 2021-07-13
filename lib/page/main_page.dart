@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:kish2019/main.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/description_text.dart';
+import 'package:kish2019/widget/post_webview.dart';
 import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/kish_api.dart';
@@ -54,6 +57,25 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
     todayDate = new DateFormat('yyyy-MM-dd').format(DateTime.now());
     initWidgets();
+
+    Future.delayed(Duration(seconds: 1), () {
+      FirebaseMessaging.instance.getInitialMessage()
+          .then((RemoteMessage message) {
+        if (message != null) {
+          if (message.data["type"] == "newPost") {
+            MyApp.navigatorKey.currentState.push(
+                MaterialPageRoute(
+                    builder: (context) =>   // 새 페이지를 띄웁니다
+                    PostWebView(  // KISH 게시물 웹뷰 위젯
+                        menu: message.data["menu"],
+                        id: message.data["id"]
+                    )
+                )
+            );
+          }
+        }
+      });
+    });
   }
 
   Future<void> initWidgets() async {
@@ -392,9 +414,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
   Future<void> requestIosNotificationPermission() async {
     await NotificationPermissions.requestNotificationPermissions(iosSettings: const NotificationSettingsIos(
-      sound: true,
-      badge: true,
-      alert: true
+        sound: true,
+        badge: true,
+        alert: true
     ), openSettings: true);
   }
 

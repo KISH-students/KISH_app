@@ -46,7 +46,7 @@ class _PostWebViewState extends State<PostWebView> {
                         context);
                     },),
                   Card(
-                    elevation: 5,
+                      elevation: 5,
                       child: Container(
                           width: double.infinity,
                           child: FutureBuilder(
@@ -60,19 +60,19 @@ class _PostWebViewState extends State<PostWebView> {
                                   data.forEach((element) {
                                     widgets.add(
                                       FlatButton(
-                                        minWidth: double.infinity,
+                                          minWidth: double.infinity,
                                           onPressed: (){launch(element["url"]);},
                                           child: Row(
                                               children: [
                                                 Icon(CupertinoIcons.archivebox, color: Colors.redAccent),
                                                 Text("  " + element["name"])
-                                      ])
+                                              ])
                                       ),
                                     );
                                   });
 
                                   return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: widgets
                                   );
                                 } else {
