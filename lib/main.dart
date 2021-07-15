@@ -14,6 +14,7 @@ import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/noti_manager.dart';
+import 'package:kish2019/widget/login_view.dart';
 import 'package:new_version/new_version.dart';
 
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -39,6 +40,8 @@ Future<void> main() async{
 
     NotificationManager.instance!.updateNotifications();
   }
+
+  LoginView.login();
 }
 
 class MyApp extends StatelessWidget {
