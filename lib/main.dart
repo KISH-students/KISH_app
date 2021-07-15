@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kish2019/page/bamboo_page.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
@@ -174,14 +175,9 @@ class MainState extends State<Home> {
           children: [
             MainPage(),
             KishMagazinePage(),
-            /*MaintenancePage(
-              description: "대나무숲에서 익명으로 사연을 공유하세요",
-            ),*/
+            BambooPage(),
             KishPostListPage(),
             LibraryPage(),
-            /*MaintenancePage(
-              description: "도서 대출 현황을 쉽게 확인하세요",
-            ),*/
           ],
         ), // PageView
 
@@ -217,17 +213,17 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("매거진")),
-            /*const BubbleBottomBarItem(  // KISH 대나무숲
+            const BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
-                  Icons.chat_bubble_outline,
+                  CupertinoIcons.tree,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.chat_bubble_outline,
+                  CupertinoIcons.tree,
                   color: Colors.green,
                 ),
-                title: Text("대나무숲")),*/
+                title: Text("대나무숲")),
             const BubbleBottomBarItem(  // KISH 가정통신문
                 backgroundColor: Colors.black54,
                 icon: Icon(
