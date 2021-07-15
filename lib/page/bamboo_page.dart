@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CommunityPage extends StatefulWidget {
-  CommunityPage({Key? key}) : super(key: key);
+class BambooPage extends StatefulWidget {
+  BambooPage({Key? key}) : super(key: key);
 
   @override
-  _CommunityPageState createState() {
-    return _CommunityPageState();
+  _BambooPageState createState() {
+    return _BambooPageState();
   }
 }
 
-class _CommunityPageState extends State<CommunityPage> {
+class _BambooPageState extends State<BambooPage> {
   @override
   void initState() {
     super.initState();
