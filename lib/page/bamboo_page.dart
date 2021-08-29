@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/widget/bamboo_post_viewer.dart';
+import 'package:kish2019/widget/login_view.dart';
 
 class BambooPage extends StatefulWidget {
   BambooPage({Key? key}) : super(key: key);
@@ -51,8 +52,21 @@ class _BambooPageState extends State<BambooPage> {
           children: [
             CupertinoButton(
               child: Text("익명으로 글 쓰기"),
-              onPressed: () {
-                Navigator.pushNamed(context, "writing");
+              onPressed: () async {
+                String? id = await storage.read(key: "id");
+                String? pw = await storage.read(key: "pw");
+
+                if(id == null || pw == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginView()));
+                } else {
+                  if (LoginView.isLoggined) {
+                    Navigator.pushNamed(context, "writing");
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginView()));
+                  }
+                }
               },
               color: Colors.redAccent,
 
@@ -140,14 +154,5 @@ class _PostPreview extends StatelessWidget {
           ],
         )
     );
-  }
-}
-
-class BambooPost extends StatelessWidget {
-  BambooPost({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoButton.filled(child: Text("누르셔"), onPressed: () => Navigator.pushNamed(context, "post_list"));
   }
 }

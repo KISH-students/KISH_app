@@ -7,9 +7,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/bamboo_page.dart';
+import 'package:kish2019/page/bamboo_post_writing_page.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
@@ -181,8 +181,8 @@ class MainState extends State<Home> {
               late Widget page;
               if (settings.name == "main") {
                 page = BambooPage();
-              } else if (settings.name == "post") {
-                page = BambooPost();
+              } else if (settings.name == "writing") {
+                page = BambooPostWritingPage();
               }
               return MaterialPageRoute(builder: (a) => page);
             },
