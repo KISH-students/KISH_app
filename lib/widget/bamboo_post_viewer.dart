@@ -26,44 +26,44 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Stack(
+    return Column(
         children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(30, 30, 40, 0),
+            width: double.infinity,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                          iconSize: 22,
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                        ),
+                        Text("#91번째 외침",
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 20,
+                                //fontWeight: FontWeight.bold,
+                                fontFamily: "NanumSquareR"
+                            )
+                        ),
+                      ]
+                  ),
+                  Text("2021/08/29",
+                      style: TextStyle(color: Colors.grey.shade600)),
+                ]
+            ),
+          ),
+          Divider(),
           Expanded(
             child: ListView(
               //crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                    margin: EdgeInsets.fromLTRB(30, 20, 40, 0),
-                    width: double.infinity,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.arrow_back_ios),
-                                  iconSize: 22,
-                                  onPressed: (){
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                Text("#91번째 외침",
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontSize: 20,
-                                        //fontWeight: FontWeight.bold,
-                                        fontFamily: "NanumSquareR"
-                                    )
-                                ),
-                              ]
-                          ),
-                          Text("2021/08/29",
-                              style: TextStyle(color: Colors.grey.shade600)),
-                        ]
-                    )
-                ),
-                Divider(),
                 Container(
                   margin: EdgeInsets.fromLTRB(30, 20, 30, 20),
                   child: Row(
@@ -152,50 +152,49 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
               ],
             ),
           ),
-          Positioned(
-              bottom: 0,
-              child: Column(
-                  children: [
-                    Container(
-                        height: size.height * 0.07,
-                        width: size.width,
-                        decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 248, 248, 248)
-                        ),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
-                                  width: double.infinity,
-                                  child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 9,
-                                          child: TextFormField(
-                                            decoration: InputDecoration(
-                                                fillColor: Colors.blueGrey,
-                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                                hintText: "댓글을 달아주세요 :D",
-                                                hintStyle: TextStyle(fontFamily: "NanumSquareL")
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                            flex: 1,
-                                            child: CupertinoButton(
-                                                child: Icon(CupertinoIcons.paperplane),
-                                                onPressed: (){}
-                                            )
-                                        )
-                                      ]
-                                  )
-                              )
-                            ]
-                        )
+          Column(
+              children: [
+                Container(
+                  //height: size.height * 0.07,
+                    width: size.width,
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 248, 248, 248)
                     ),
-                  ]
-              )
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
+                              width: double.infinity,
+                              child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 9,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: 5,
+                                        decoration: InputDecoration(
+                                            fillColor: Colors.blueGrey,
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                            hintText: "댓글을 달아주세요 :D",
+                                            hintStyle: TextStyle(fontFamily: "NanumSquareL")
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: CupertinoButton(
+                                            child: Icon(CupertinoIcons.paperplane),
+                                            onPressed: (){}
+                                        )
+                                    )
+                                  ]
+                              )
+                          )
+                        ]
+                    )
+                ),
+              ]
           )
         ]
     );
