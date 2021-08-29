@@ -132,7 +132,6 @@ class _LoginViewState extends State<LoginView> {
                                 isPassword: true)
                           ],
                         ),
-
                         RaisedButton(
                             onPressed: () async {
                               await LoginView.storage.write(key: "id", value: idController.text.trim());

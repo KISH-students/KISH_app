@@ -28,7 +28,7 @@ dependencies:
   fluttertoast: ^8.0.7
   shared_preferences: ^2.0.6
   intl: ^0.17.0
-  like_button: ^2.0.2
+  like_button: ^2.0.3
   flutter_shimmer: ^2.0.0-prerelease-nullsafety
   bubble_bottom_bar:
     git:

@@ -175,7 +175,18 @@ class MainState extends State<Home> {
           children: [
             MainPage(),
             KishMagazinePage(),
-            BambooPage(),
+          Navigator(
+            initialRoute: 'main',
+            onGenerateRoute: (settings) {
+              late Widget page;
+              if (settings.name == "main") {
+                page = BambooPage();
+              } else if (settings.name == "post") {
+                page = BambooPost();
+              }
+              return MaterialPageRoute(builder: (a) => page);
+            },
+          ),
             KishPostListPage(),
             LibraryPage(),
           ],
