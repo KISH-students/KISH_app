@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/bamboo_post_viewer.dart';
 import 'package:kish2019/widget/login_view.dart';
 
@@ -17,6 +18,7 @@ class BambooPage extends StatefulWidget {
 class _BambooPageState extends State<BambooPage> {
   final FlutterSecureStorage storage = new FlutterSecureStorage();
   PagingController<int, _PostPreview> pagingController = new PagingController(firstPageKey: 0);
+  List<_PostPreview> previewList = [];
 
   @override
   void initState() {
@@ -32,16 +34,30 @@ class _BambooPageState extends State<BambooPage> {
     pagingController.dispose();
   }
 
-  void updatePage(int key) {
-    List<Map> newPosts = [];
-    bool lastPage = false;
+  void updatePage(int key) async{
+    List? list = await ApiHelper.getBambooPosts(key);
+    List<_PostPreview> newPosts = [];
 
-    List<_PostPreview> newWidgets = [];
+    if (list != null) {
+      if (list.length == 0) {
+        pagingController.appendLastPage([]);
+        return;
+      }
 
-    if (lastPage) {
-      pagingController.appendLastPage(newWidgets);
+      list.forEach((element) {
+        _PostPreview preview = new _PostPreview(
+          id: element['bamboo_id'],
+          content: element['bamboo_content'],
+          likes: element['like_count'],
+          comments: element['comment_count'],
+        );
+        newPosts.add(preview);
+      });
+
+      this.previewList.addAll(newPosts);
+      pagingController.appendPage(newPosts, key + 1);
     } else {
-      pagingController.appendPage(newWidgets, key + 1);
+      pagingController.appendPage([], key);
     }
   }
 
@@ -49,6 +65,7 @@ class _BambooPageState extends State<BambooPage> {
   Widget build(BuildContext context) {
     return Container(
         child: Column(
+          key: UniqueKey(),
           children: [
             CupertinoButton(
               child: Text("익명으로 글 쓰기"),
@@ -71,18 +88,16 @@ class _BambooPageState extends State<BambooPage> {
               color: Colors.redAccent,
 
             ),
-            _PostPreview(),
-            _PostPreview(),
-            _PostPreview(),
-            _PostPreview(),
-            /*PagedListView<int, _PostPreview>(
-          pagingController: pagingController,
-          builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
-            itemBuilder: (context, item, index) => _PostPreview(
-              content: "와우 " + index.toString() + "번째 아이템!",
-            ),
-          ),
-        )*/
+            Expanded(
+                child: PagedListView<int, _PostPreview>(
+                  pagingController: pagingController,
+                  builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
+                      itemBuilder: (context, item, index) {
+                        return this.previewList[index];
+                      }
+                  ),
+                )
+            )
           ],
         )
     );
@@ -91,8 +106,11 @@ class _BambooPageState extends State<BambooPage> {
 
 class _PostPreview extends StatelessWidget {
   final String content;
+  final int id;
+  final int likes;
+  final int comments;
 
-  _PostPreview({this.content = ""});
+  _PostPreview({this.content: "", this.id: -1, this.likes: -1, this.comments: -1});
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +136,7 @@ class _PostPreview extends StatelessWidget {
                         child: Row(
                             children: [
                               Expanded(
-                                child: Text("내용 미리보기 ...", style: TextStyle(fontSize: 18),),
+                                child: Text(content, style: TextStyle(fontSize: 18),),
                               ),
                             ]
                         )
@@ -132,7 +150,7 @@ class _PostPreview extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                        "#1958번째 외침",
+                        "#$id번째 외침",
                         style: TextStyle(
                             color: Colors.green,
                             fontSize: 14,
@@ -143,9 +161,9 @@ class _PostPreview extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.message, color: Colors.orange.shade200, size: 18),
-                        Text("192" + " ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left),
+                        Text("$comments ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left),
                         Icon(CupertinoIcons.heart_fill, color: Colors.redAccent, size: 18),
-                        Text("192" + " ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left)
+                        Text("$likes ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left)
                       ],
                     )
                   ],

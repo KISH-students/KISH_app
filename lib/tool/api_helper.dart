@@ -22,7 +22,7 @@ class ApiHelper {
 
       params.forEach((key, value) {
         assert (value != null);
-        url += key + "=" + value + "&";
+        url += "$key=$value&";
       });
     }
     url = Uri.encodeFull(url);
@@ -204,7 +204,7 @@ class ApiHelper {
     return json.decode(result);
   }
 
-  static Future<Map?> getBambooPosts(int page) async {
+  static Future<List?> getBambooPosts(int page) async {
     String response = await request(
         KISHApi.BAMBOO_GET_POSTS,
         Method.get,
