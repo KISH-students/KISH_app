@@ -16,6 +16,7 @@ class LoginView extends StatefulWidget {
   static final FlutterSecureStorage storage = new FlutterSecureStorage();
   static bool isLogining = false;
   static bool isLoggined = false;
+  static String seq = "";
 
   LoginView({Key? key}) : super(key: key);
 
@@ -46,6 +47,7 @@ class LoginView extends StatefulWidget {
       resultMap["msg"] = result["message"];
     } else {
       resultMap["result"] = SUCCESS;
+      seq = result["seq"];
       isLoggined = true;
     }
 
