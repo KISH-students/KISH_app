@@ -172,6 +172,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                                       flex: 9,
                                       child: TextFormField(
                                         keyboardType: TextInputType.multiline,
+                                        minLines: 1,
                                         maxLines: 5,
                                         decoration: InputDecoration(
                                             fillColor: Colors.blueGrey,
