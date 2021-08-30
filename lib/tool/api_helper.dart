@@ -13,7 +13,7 @@ enum Method { get, post }
 class ApiHelper {
 
   static Future<String> request(
-      String api, Method method, Map<String, dynamic> params, {doCache: true, int timeout = 999999}) async {
+      String api, Method method, Map<String, String?> params, {doCache: true, int timeout = 999999}) async {
     String url = api;
     late http.Response response;
 
@@ -48,6 +48,7 @@ class ApiHelper {
           fontSize: 16.0);*/
       String? cache = await getCachedResult(getCacheKey(api, params));
       if(cache != null) return cache;
+      print(e.toString() + "  ____________________+");
     }
     return response.body;
   }
@@ -218,7 +219,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_GET_POSTS,
         Method.get,
-        {"page": page}
+        {"page": page.toString()}
     );
     return json.decode(response);
   }
@@ -232,11 +233,11 @@ class ApiHelper {
     return json.decode(response);
   }
 
-  static Future<Map?> getBambooPost(String seq, var postId) async {
+  static Future<Map> getBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_GET_POST,
         Method.post,
-        {'seq': seq, 'postId': postId}
+        {'seq': seq, 'postId': postId.toString()}
     );
     return json.decode(response);
   }
@@ -245,7 +246,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_WRITE_COMMENT,
         Method.post,
-        {'seq': seq, 'postId': postId, 'content': content, 'fcm': NotificationManager.FcmToken}
+        {'seq': seq, 'postId': postId.toString(), 'content': content, 'fcm': NotificationManager.FcmToken}
     );
     return json.decode(response);
   }
@@ -254,7 +255,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_REPLY,
         Method.post,
-        {'seq': seq, 'postId': postId, 'parentId': parentId, 'content': content,
+        {'seq': seq, 'postId': postId.toString(), 'parentId': parentId.toString(), 'content': content,
           'fcm': NotificationManager.FcmToken}
     );
     return json.decode(response);
@@ -264,7 +265,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_LIKE_POST,
         Method.get,
-        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId}
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()}
     );
     return json.decode(response);
   }
@@ -273,7 +274,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_LIKE_COMMENT,
         Method.get,
-        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId}
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()}
     );
     return json.decode(response);
   }
@@ -282,7 +283,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_UNLIKE_POST,
         Method.get,
-        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId}
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()}
     );
     return json.decode(response);
   }
@@ -291,7 +292,7 @@ class ApiHelper {
     String response = await request(
         KISHApi.BAMBOO_UNLIKE_COMMENT,
         Method.get,
-        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId}
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()}
     );
     return json.decode(response);
   }
