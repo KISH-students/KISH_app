@@ -171,7 +171,16 @@ class ApiHelper {
   static Future<Map?> loginToLibrary(String? id, String? pw) async {
     String uuid = await getUuid();
 
-    String result = await request(KISHApi.LIBRARY_LOGIN, Method.post, {"uuid": uuid, "id": id, "pwd": pw}, doCache: false);
+    String result = await request(
+        KISHApi.LIBRARY_LOGIN,
+        Method.post,
+        {
+          'uuid': uuid,
+          'id': id,
+          'pwd': pw,
+          'fcm': NotificationManager.FcmToken
+        },
+        doCache: false);
     return json.decode(result);
   }
 
@@ -179,6 +188,7 @@ class ApiHelper {
     String uuid = await getUuid();
 
     String result = await request(KISHApi.LIBRARY_MY_INFO, Method.get, {"uuid": uuid}, doCache: false);
+    print(result);
     return json.decode(result);
   }
 
