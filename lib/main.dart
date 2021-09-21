@@ -7,13 +7,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kish2019/page/bamboo_page.dart';
+import 'package:kish2019/page/bamboo_post_writing_page.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
 import 'package:kish2019/page/kish_post_list_page.dart';
 import 'package:kish2019/page/library_page.dart';
 import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/noti_manager.dart';
+import 'package:kish2019/widget/login_view.dart';
 import 'package:new_version/new_version.dart';
 
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -39,6 +41,8 @@ Future<void> main() async{
 
     NotificationManager.instance!.updateNotifications();
   }
+
+  LoginView.login();
 }
 
 class MyApp extends StatelessWidget {
@@ -60,6 +64,7 @@ class MyApp extends StatelessWidget {
         home: Home());
   }
 }
+
 
 void firebaseCloudMessagingListeners() {
   _firebaseMessaging.getToken().then((token){
@@ -171,14 +176,20 @@ class MainState extends State<Home> {
           children: [
             MainPage(),
             KishMagazinePage(),
-            /*MaintenancePage(
-              description: "대나무숲에서 익명으로 사연을 공유하세요",
-            ),*/
+          Navigator(
+            initialRoute: 'main',
+            onGenerateRoute: (settings) {
+              late Widget page;
+              if (settings.name == "main") {
+                page = BambooPage();
+              } else if (settings.name == "writing") {
+                page = BambooPostWritingPage();
+              }
+              return MaterialPageRoute(builder: (a) => page);
+            },
+          ),
             KishPostListPage(),
             LibraryPage(),
-            /*MaintenancePage(
-              description: "도서 대출 현황을 쉽게 확인하세요",
-            ),*/
           ],
         ), // PageView
 
@@ -214,17 +225,17 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("매거진")),
-            /*const BubbleBottomBarItem(  // KISH 대나무숲
+            const BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
-                  Icons.chat_bubble_outline,
+                  CupertinoIcons.tree,
                   color: Colors.black,
                 ),
                 activeIcon: Icon(
-                  Icons.chat_bubble_outline,
+                  CupertinoIcons.tree,
                   color: Colors.green,
                 ),
-                title: Text("대나무숲")),*/
+                title: Text("대나무숲")),
             const BubbleBottomBarItem(  // KISH 가정통신문
                 backgroundColor: Colors.black54,
                 icon: Icon(

@@ -28,7 +28,7 @@ dependencies:
   fluttertoast: ^8.0.7
   shared_preferences: ^2.0.6
   intl: ^0.17.0
-  like_button: ^2.0.2
+  like_button: ^2.0.3
   flutter_shimmer: ^2.0.0-prerelease-nullsafety
   bubble_bottom_bar:
     git:
@@ -39,7 +39,6 @@ dependencies:
   progress_indicators: ^1.0.0
   new_version: ^0.2.2
   carousel_slider: ^4.0.0
-  flutter_icons: ^1.1.0
   flutter_local_notifications: ^6.0.0
   background_fetch: ^1.0.1
   cached_network_image: ^3.0.0

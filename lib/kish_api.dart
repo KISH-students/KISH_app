@@ -4,6 +4,7 @@ class KISHApi {
   static const String MAGAZINE_ROOT = API_ROOT + "kish-magazine/";
   static const String POST_ROOT = API_ROOT + "post/";
   static const String LIBRARY_ROOT = API_ROOT + "library/";
+  static const String BAMBOO_ROOT = API_ROOT + "bamboo/";
 
   static const String GET_EXAM_DATES = API_ROOT + "getExamDates";
   static const String GET_LUNCH = API_ROOT + "getLunch";
@@ -24,4 +25,17 @@ class KISHApi {
   static const String GET_MAGAZINE_HOME = MAGAZINE_ROOT + "home";
   static const String GET_MAGAZINE_PARENT_LIST = MAGAZINE_ROOT + "getParentList";
   static const String GET_MAGAZINE_CATEGORY_LIST = MAGAZINE_ROOT + "getCategoryList";
+
+  static const String BAMBOO_GET_POSTS = BAMBOO_ROOT + "posts";
+  static const String BAMBOO_WRITE_POST = BAMBOO_ROOT + "writePost";
+  static const String BAMBOO_GET_POST = BAMBOO_ROOT + "post";
+  static const String BAMBOO_WRITE_COMMENT = BAMBOO_ROOT + "writeComment";
+  static const String BAMBOO_REPLY = BAMBOO_ROOT + "reply";
+  static const String BAMBOO_LIKE_POST = BAMBOO_ROOT + "likePost";
+  static const String BAMBOO_LIKE_COMMENT = BAMBOO_ROOT + "likeComment";
+  static const String BAMBOO_UNLIKE_POST = BAMBOO_ROOT + "unlikePost";
+  static const String BAMBOO_UNLIKE_COMMENT = BAMBOO_ROOT + "unlikeComment";
+  static const String BAMBOO_GET_REPLIES = BAMBOO_ROOT + "getReplies";
+  static const String BAMBOO_DELETE_POST = BAMBOO_ROOT + "deletePost";
+  static const String BAMBOO_DELETE_COMMENT = BAMBOO_ROOT + "deleteComment";
 }

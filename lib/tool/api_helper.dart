@@ -11,8 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum Method { get, post }
 
 class ApiHelper {
+
   static Future<String> request(
-      String api, Method method, Map<String, dynamic> params, {doCache: true, int timeout = 999999}) async {
+      String api, Method method, Map<String, String?> params, {doCache: true, int timeout = 999999}) async {
     String url = api;
     late http.Response response;
 
@@ -21,7 +22,7 @@ class ApiHelper {
 
       params.forEach((key, value) {
         assert (value != null);
-        url += key + "=" + value + "&";
+        url += "$key=$value&";
       });
     }
     url = Uri.encodeFull(url);
@@ -47,6 +48,7 @@ class ApiHelper {
           fontSize: 16.0);*/
       String? cache = await getCachedResult(getCacheKey(api, params));
       if(cache != null) return cache;
+      print(e.toString() + "  ____________________+");
     }
     return response.body;
   }
@@ -170,8 +172,16 @@ class ApiHelper {
   static Future<Map?> loginToLibrary(String? id, String? pw) async {
     String uuid = await getUuid();
 
-    String result = await request(KISHApi.LIBRARY_LOGIN, Method.post, {"uuid": uuid, "id": id, "pwd": pw}, doCache: false);
-    print (result + "??!?" + uuid);
+    String result = await request(
+        KISHApi.LIBRARY_LOGIN,
+        Method.post,
+        {
+          'uuid': uuid,
+          'id': id,
+          'pwd': pw,
+          'fcm': NotificationManager.FcmToken
+        },
+        doCache: false);
     return json.decode(result);
   }
 
@@ -179,6 +189,7 @@ class ApiHelper {
     String uuid = await getUuid();
 
     String result = await request(KISHApi.LIBRARY_MY_INFO, Method.get, {"uuid": uuid}, doCache: false);
+    print(result);
     return json.decode(result);
   }
 
@@ -202,5 +213,115 @@ class ApiHelper {
         doCache: false,
         timeout: 10);
     return json.decode(result);
+  }
+
+  static Future<List?> getBambooPosts(int page) async {
+    String response = await request(
+        KISHApi.BAMBOO_GET_POSTS,
+        Method.get,
+        {"page": page.toString()}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map> writeBambooPost(String seq, String content) async {
+    String response = await request(
+        KISHApi.BAMBOO_WRITE_POST,
+        Method.post,
+        {'seq': seq, 'content': content, 'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map> deleteBambooPost(String seq, var postId) async {
+    String response = await request(
+        KISHApi.BAMBOO_DELETE_POST,
+        Method.get,
+        {'seq': seq, 'postId': postId.toString(), 'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map> deleteBambooComment(String seq, var commentId) async {
+    String response = await request(
+        KISHApi.BAMBOO_DELETE_COMMENT,
+        Method.get,
+        {'seq': seq, 'commentId': commentId.toString(), 'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map> getBambooPost(String seq, var postId) async {
+    String response = await request(
+        KISHApi.BAMBOO_GET_POST,
+        Method.post,
+        {'seq': seq, 'postId': postId.toString()}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> getBambooReplies(String seq, var commentId) async {
+    String response = await request(
+        KISHApi.BAMBOO_GET_REPLIES,
+        Method.post,
+        {'seq': seq, 'commentId': commentId.toString(),
+          'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> writeBambooComment(String seq, var postId, String content) async {
+    String response = await request(
+        KISHApi.BAMBOO_WRITE_COMMENT,
+        Method.post,
+        {'seq': seq, 'postId': postId.toString(), 'content': content, 'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> replyBambooComment(String seq, var postId, var parentId, String content) async {
+    String response = await request(
+        KISHApi.BAMBOO_REPLY,
+        Method.post,
+        {'seq': seq, 'postId': postId.toString(), 'parentId': parentId.toString(), 'content': content,
+          'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> likeBambooPost(String seq, var postId) async {
+    String response = await request(
+        KISHApi.BAMBOO_LIKE_POST,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> likeBambooComment(String seq, var commentId) async {
+    String response = await request(
+        KISHApi.BAMBOO_LIKE_COMMENT,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> unlikeBambooPost(String seq, var postId) async {
+    String response = await request(
+        KISHApi.BAMBOO_UNLIKE_POST,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()}
+    );
+    return json.decode(response);
+  }
+
+  static Future<Map?> unlikeBambooComment(String seq, var commentId) async {
+    String response = await request(
+        KISHApi.BAMBOO_UNLIKE_COMMENT,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()}
+    );
+    return json.decode(response);
   }
 }

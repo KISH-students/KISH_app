@@ -5,8 +5,8 @@ import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
+import 'package:kish2019/widget/login_view.dart';
 import 'package:kish2019/widget/title_text.dart';
-import 'package:simple_animations/simple_animations.dart';
 
 class LibraryPage extends StatefulWidget {
   LibraryPage({Key? key}) : super(key: key);
@@ -21,24 +21,12 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
   final FlutterSecureStorage storage = new FlutterSecureStorage();
 
   late Widget body;
-  List<Widget?> fieldList = [];
-
-  TextFormField? idField;
-  TextFormField? pwField;
-  TextEditingController? idController;
-  TextEditingController? pwController;
-  TextEditingController? ckController;
-  TextEditingController? nameController;
-  TextEditingController? seqController;
-
-  bool isResistering = false;
-  bool isLogining = false;
 
   @override
   void initState() {
     super.initState();
 
-    body = Container();
+    setDefaultBody();
     initWidgets();
   }
 
@@ -48,87 +36,13 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
         initWidgets();
       });
     } else {
-      body = SingleChildScrollView(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                LinearProgressIndicator(),
-              ]
-          )
-      );
-
       loadBodyWidget();
     }
-  }
-
-  void initFields() {
-    idController = TextEditingController();
-    pwController = TextEditingController();
-    seqController = TextEditingController();
-    ckController = TextEditingController();
-    nameController = TextEditingController();
-
-    idField = TextFormField(
-        key: UniqueKey(),
-        controller: idController,
-        style: TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-            icon: const Icon(CupertinoIcons.person, color: Colors.white54),
-            fillColor: Colors.white,
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF4DD0E1)),
-                borderRadius: BorderRadius.all(Radius.circular(30.0))
-            ),
-            enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white54),
-                borderRadius: BorderRadius.all(Radius.circular(30.0))
-            ),
-            labelStyle: TextStyle(
-              color: Colors.white,
-            ),
-            labelText: "아이디"));
-
-    pwField = TextFormField(
-        key: UniqueKey(),
-        controller: pwController,
-        enableSuggestions: false,
-        autocorrect: false,
-        obscureText: true,
-        obscuringCharacter: "*",
-        style: TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-            icon: const Icon(CupertinoIcons.lock, color: Colors.white54),
-            fillColor: Colors.grey,
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF4DD0E1)),
-                borderRadius: BorderRadius.all(Radius.circular(30.0))
-            ),
-            enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white54),
-                borderRadius: BorderRadius.all(Radius.circular(30.0))
-            ),
-            labelStyle: TextStyle(
-              color: Colors.white,
-            ),
-            labelText: "비밀번호"));
-
-    fieldList = [idField, pwField];
   }
 
   @override
   void dispose() {
     super.dispose();
-
-    if (idController != null) {
-      idController!.dispose();
-      pwController!.dispose();
-      seqController!.dispose();
-      ckController!.dispose();
-      nameController!.dispose();
-    }
   }
 
   @override
@@ -141,60 +55,75 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
     String? pw = await storage.read(key: "pw");
 
     if(id == null || pw == null) {
-      setState(() {
-        initFields();
-        body = getLoginForm();
-      });
+      Map? result = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => LoginView()));
+
+      processLoginResult(result);
     } else {
-      login();
-    }
-  }
-
-  void login() async {
-    if (isLogining) {
-      Fluttertoast.showToast(msg: "이미 로그인 중입니다");
-      return;
-    }
-    isLogining = true;
-
-    String? id = await storage.read(key: "id");
-    String? pw = await storage.read(key: "pw");
-
-    Map? result = await ApiHelper.loginToLibrary(id, pw);
-
-    setState(() {
-      if (result!["result"] != "0") {
-        Fluttertoast.showToast(msg: result["message"]);
-        initFields();
-        body = getLoginForm();
+      if (LoginView.isLoggined) {
+        setState(() {
+          setBodyToLoggedInBody();
+        });
       } else {
-        Fluttertoast.showToast(msg: "로그인에 성공하였습니다.");
-        body = getLoggedInBody();
-      }
-    });
+        Map result = await LoginView.login();
+        if (result["result"] == LoginView.SUCCESS) {
+          setBodyToLoggedInBody();
+        } else if (result["result"] == LoginView.IN_PROGRESS) {
+          Future.delayed(Duration(seconds: 1), (){
+            loadBodyWidget();
+          });
+        } else if (result["result"] == LoginView.FAIL) {
+          Map? result = await Navigator.push(context,
+              MaterialPageRoute(builder: (context) => LoginView()));
 
-    isLogining = false;
+          processLoginResult(result);
+        } else {
+          throw Exception("잘못된 result 값");
+        }
+      }
+    }
   }
 
-  Widget getLoggedInBody() {
-    return SingleChildScrollView(
-        child: Container(
-            margin: EdgeInsets.only(top: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                getMyInfoCard(),
-                Container(
-                    margin: EdgeInsets.all(10),
-                    child: DetailedCard(
-                        title: "더 추가됩니다",
-                        content: "추후 내가 대출한 도서, 신규 도서 등의 정보를 확인할 수 있어요.",
-                        bottomTitle: "시간이 없어서...")
-                ),
-              ],
-            )
-        )
+  void processLoginResult(Map? resultMap) {
+    if (resultMap != null && resultMap["result"] == "success") {
+      setBodyToLoggedInBody();
+    }
+  }
+
+  void setDefaultBody() {
+    body = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CupertinoButton.filled(
+              onPressed: (){
+                loadBodyWidget();
+              }, child: Text("다시 시도"))
+        ]
     );
+  }
+
+  void setBodyToLoggedInBody() {
+    setState(() {
+      body = SingleChildScrollView(
+          child: Container(
+              margin: EdgeInsets.only(top: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  getMyInfoCard(),
+                  Container(
+                      margin: EdgeInsets.all(10),
+                      child: DetailedCard(
+                          title: "더 추가됩니다",
+                          content: "추후 내가 대출한 도서, 신규 도서 등의 정보를 확인할 수 있어요.",
+                          bottomTitle: "시간이 없어서...")
+                  ),
+                ],
+              )
+          )
+      );
+    });
   }
 
   Widget getMyInfoCard() {
@@ -249,6 +178,9 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                                           onPressed: () async {
                                             await storage.delete(key: "id");
                                             await storage.delete(key: "pw");
+                                            LoginView.isLoggined = false;
+                                            LoginView.isAdmin = false;
+                                            LoginView.seq = "";
                                             this.initWidgets();
                                           },
                                           color: Color.fromARGB(255, 75, 0, 19),
@@ -273,216 +205,6 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
           }
           return YoutubeShimmer();
         });
-  }
-
-  Widget getLoginForm() {
-    return Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xff0c0c0c),
-              backgroundBlendMode: BlendMode.srcOver,
-            ),
-            child: PlasmaRenderer(
-              type: PlasmaType.infinity,
-              particles: 3,
-              color: Color(0x44ff3232),
-              blur: 1,
-              size: 0.6,
-              speed: 2.04,
-              offset: 0,
-              blendMode: BlendMode.plus,
-              particleType: ParticleType.atlas,
-              variation1: 0,
-              variation2: 0,
-              variation3: 0,
-              rotation: 0,
-              child: PlasmaRenderer(
-                type: PlasmaType.infinity,
-                particles: 3,
-                color: Color(0x442327e4),
-                blur: 1,
-                size: 0.6,
-                speed: 2.04,
-                offset: 1.49,
-                blendMode: BlendMode.plus,
-                particleType: ParticleType.atlas,
-                variation1: 0,
-                variation2: 0,
-                variation3: 0,
-                rotation: 0,
-              ),
-            ),
-          ),
-          Center(
-            child: Container(
-                margin: EdgeInsets.only(left: 50, right: 50),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ListView.builder(
-                      key: UniqueKey(),
-                      shrinkWrap: true,
-                      itemCount: fieldList.length,
-                      itemBuilder: (context, index) {
-                        return fieldList[index]!;
-                      },
-                    ),
-
-                    RaisedButton(
-                        onPressed: () async {
-                          await storage.write(key: "id", value: idController!.text.trim());
-                          await storage.write(key: "pw", value: pwController!.text.trim());
-
-                          login();
-                        },
-                        child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                        color: Colors.white38,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)
-                        )
-                    ),
-                    RaisedButton(
-                        onPressed: () async {
-                          if (fieldList.length < 3) {
-                            List<Widget?> newFields = [...fieldList];
-
-                            setState(() {
-                              newFields.add(TextFormField(
-                                  key: UniqueKey(),
-                                  controller: ckController,
-                                  enableSuggestions: false,
-                                  autocorrect: false,
-                                  obscureText: true,
-                                  obscuringCharacter: "*",
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                      icon: const Icon(CupertinoIcons.lock_rotation_open, color: Colors.white54,),
-                                      fillColor: Colors.redAccent,
-                                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Color(0xFF4DD0E1)),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white54),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      labelText: "비밀번호 확인")));
-
-                              newFields.add(TextFormField(
-                                  key: UniqueKey(),
-                                  controller: seqController,
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                      icon: const Icon(CupertinoIcons.heart_solid, color: Color(0xFFFF8A80),),
-                                      fillColor: Colors.redAccent,
-                                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Color(0xFF4DD0E1)),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white54),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      labelText: "학생증 ID")));
-
-                              newFields.add(TextFormField(
-                                  key: UniqueKey(),
-                                  controller: nameController,
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                      icon: const Icon(CupertinoIcons.info, color: Colors.white54),
-                                      fillColor: Colors.blueAccent,
-                                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                                      focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Color(0xFF4DD0E1)),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white54),
-                                          borderRadius: BorderRadius.all(Radius.circular(30.0))
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                      labelText: "이름")));
-                              fieldList = newFields;
-                              body = getLoginForm();
-                            });
-
-                            Fluttertoast.showToast(msg: "빈 칸을 채워주세요");
-                          } else {
-                            if (isResistering) {
-                              Fluttertoast.showToast(msg: "이미 회원가입 중입니다.");
-                              return;
-                            }
-                            isResistering = true;
-
-                            idController!.text = idController!.text.trim();
-                            seqController!.text = seqController!.text.trim();
-                            ckController!.text = ckController!.text.trim();
-                            pwController!.text = pwController!.text.trim();
-                            nameController!.text = nameController!.text.trim();
-                            if (ckController!.text != pwController!.text) {
-                              Fluttertoast.showToast(msg: "확인 비밀번호가 다릅니다");
-                              isResistering = false;
-                              return;
-                            }
-
-                            Fluttertoast.showToast(msg: "회원 확인 중...");
-                            Map isMemberData = await (ApiHelper.isLibraryMember(
-                                seqController!.text, nameController!.text)) as Map<dynamic, dynamic>;
-
-                            if (isMemberData["result"] != "0") {
-                              if (isMemberData["result"] == "1") {
-                                Fluttertoast.showToast(
-                                    msg: "회원을 찾을 수 없습니다.\n"
-                                        "성명과 학생증 ID 확인해주세요.", toastLength: Toast.LENGTH_LONG);
-                              } else {
-                                Fluttertoast.showToast(msg: isMemberData["message"]);
-                              }
-                              isResistering = false;
-                              return;
-                            }
-
-                            Fluttertoast.showToast(msg: "회원가입 중...");
-                            Map registerData = await (ApiHelper.registerToLibrary(
-                                seqController!.text,
-                                idController!.text,
-                                pwController!.text,
-                                ckController!.text)) as Map<dynamic, dynamic>;
-
-                            if (registerData["result"] != "0") {
-                              Fluttertoast.showToast(msg: registerData["message"], toastLength: Toast.LENGTH_LONG);
-                            } else {
-                              await storage.write(key: "id", value: idController!.text.trim());
-                              await storage.write(key: "pw", value: pwController!.text.trim());
-
-                              login();
-                            }
-
-                            isResistering = false;
-                          }
-                        },
-                        child: Text("회원가입", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                        color: Colors.white38,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)
-                        )
-                    ),
-                  ],
-                )),
-          )
-        ]);
   }
 
   @override
