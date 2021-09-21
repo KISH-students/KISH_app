@@ -157,115 +157,118 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
           ),
           Divider(),
           Expanded(
-            child: ListView(
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: EdgeInsets.fromLTRB(30, 20, 30, 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: Text(content,
-                            style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 30),
-                    width: double.infinity,
+            child: RefreshIndicator(
+              onRefresh: () async { await load(); },
+              child: ListView(
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(30, 20, 30, 20),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        LikeButton(
-                          isLiked: liked,
-                          likeCount: likes,
-                          size: 17,
-                          circleColor:
-                          CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                          bubblesColor: BubblesColor(
-                            dotPrimaryColor: Color(0xff33b5e5),
-                            dotSecondaryColor: Color(0xff0099cc),
-                          ),
-                          likeBuilder: (bool isLiked) {
-                            return Icon(
-                              CupertinoIcons.heart_fill,
-                              color: isLiked ? Colors.red : Colors.grey,
-                              size: 17,
-                            );
-                          },
-                          onTap: (isLiked) async {
-                            Map? response;
-
-                            if (!isLiked) {
-                              response = await ApiHelper.likeBambooPost(LoginView.seq, widget.id);
-                            } else {
-                              response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
-                            }
-                            if (response == null) {
-                              Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
-                              return null;
-                            }
-
-                            String? msg = response['message'];
-                            if (msg != null) {  // 등록 실패
-                              Fluttertoast.showToast(msg: msg);
-                              return null;
-                            }
-
-                            this.setState(() {
-                              if (response == null) return;   // null일 수 없습니다.
-                              this.liked = !isLiked;
-                              this.likes = response['count'];
-                            });
-                            return true;
-                          },
-                          countBuilder: (int? count, bool isLiked, String text) {
-                            var color = isLiked ? Colors.red : Colors.grey;
-                            Widget result;
-                            if (count == 0) {
-                              result = Text(
-                                "0",
-                                style: TextStyle(color: color),
+                        Expanded(
+                            child: Text(content,
+                              style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                      margin: EdgeInsets.symmetric(horizontal: 30),
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          LikeButton(
+                            isLiked: liked,
+                            likeCount: likes,
+                            size: 17,
+                            circleColor:
+                            CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                            bubblesColor: BubblesColor(
+                              dotPrimaryColor: Color(0xff33b5e5),
+                              dotSecondaryColor: Color(0xff0099cc),
+                            ),
+                            likeBuilder: (bool isLiked) {
+                              return Icon(
+                                CupertinoIcons.heart_fill,
+                                color: isLiked ? Colors.red : Colors.grey,
+                                size: 17,
                               );
-                            } else
-                              result = Text(
-                                text,
-                                style: TextStyle(color: color),
-                              );
-                            return result;
-                          },
+                            },
+                            onTap: (isLiked) async {
+                              Map? response;
+
+                              if (!isLiked) {
+                                response = await ApiHelper.likeBambooPost(LoginView.seq, widget.id);
+                              } else {
+                                response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
+                              }
+                              if (response == null) {
+                                Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                                return null;
+                              }
+
+                              String? msg = response['message'];
+                              if (msg != null) {  // 등록 실패
+                                Fluttertoast.showToast(msg: msg);
+                                return null;
+                              }
+
+                              this.setState(() {
+                                if (response == null) return;   // null일 수 없습니다.
+                                this.liked = !isLiked;
+                                this.likes = response['count'];
+                              });
+                              return true;
+                            },
+                            countBuilder: (int? count, bool isLiked, String text) {
+                              var color = isLiked ? Colors.red : Colors.grey;
+                              Widget result;
+                              if (count == 0) {
+                                result = Text(
+                                  "0",
+                                  style: TextStyle(color: color),
+                                );
+                              } else
+                                result = Text(
+                                  text,
+                                  style: TextStyle(color: color),
+                                );
+                              return result;
+                            },
+                          )
+                        ],
+                      )
+                  ),
+                  Divider(),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("댓글",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25
+                            )
+                        ),
+                        Text(" $commentCount",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                color: Colors.grey.shade500
+                            )
                         )
                       ],
-                    )
-                ),
-                Divider(),
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("댓글",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25
-                          )
-                      ),
-                      Text(" $commentCount",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                              color: Colors.grey.shade500
-                          )
-                      )
-                    ],
+                    ),
                   ),
-                ),
-                Column(
-                  children: [...comments, Container(height: size.height * 0.07)],
-                )
-              ],
+                  Column(
+                    children: [...comments, Container(height: size.height * 0.07)],
+                  )
+                ],
+              ),
             ),
           ),
           Column(
@@ -391,16 +394,16 @@ class _CommentState extends State<_Comment> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 8),
                           child: Text(widget.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "NanumSquareL",
-                                fontSize: 15
-                            )),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "NanumSquareL",
+                                  fontSize: 15
+                              )),
                         ),
                         IconButton(onPressed: () async {
                           if (widget.iAmAuthor) {
@@ -418,8 +421,8 @@ class _CommentState extends State<_Comment> {
                             Fluttertoast.showToast(msg: "권한이 없습니다.");
                           }
                         }, icon: Icon(CupertinoIcons.trash,
-                        color: Colors.grey,
-                        size: 20,)),
+                          color: Colors.grey,
+                          size: 20,)),
                       ]
                   ),
                   Container(
@@ -562,9 +565,9 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
   void loadComment() {
     _Comment temp = widget.temp;
     this.comment = _Comment(content: temp.content,
-        id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
-        likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
-        replies: temp.replies, iAmAuthor: temp.iAmAuthor,);
+      id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
+      likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
+      replies: temp.replies, iAmAuthor: temp.iAmAuthor,);
   }
 
   @override
