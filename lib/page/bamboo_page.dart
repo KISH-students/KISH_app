@@ -34,6 +34,11 @@ class _BambooPageState extends State<BambooPage> {
     pagingController.dispose();
   }
 
+  void refreshPage() {
+    previewList = [];
+    pagingController.refresh();
+  }
+
   void updatePage(int key) async{
     List? list = await ApiHelper.getBambooPosts(key);
     List<_PostPreview> newPosts = [];
@@ -80,8 +85,7 @@ class _BambooPageState extends State<BambooPage> {
                 } else {
                   if (LoginView.isLoggined) {
                     await Navigator.pushNamed(context, "writing");
-                    previewList = [];
-                    pagingController.refresh();
+                    refreshPage();
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => LoginView()));
@@ -92,14 +96,17 @@ class _BambooPageState extends State<BambooPage> {
             ),
             SizedBox(height: 10,),
             Expanded(
-                child: PagedListView<int, _PostPreview>(
-                  pagingController: pagingController,
-                  builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
-                      itemBuilder: (context, item, index) {
-                        return this.previewList[index];
-                      }
-                  ),
-                )
+              child: RefreshIndicator(
+                  onRefresh: () async { refreshPage(); },
+                  child: PagedListView<int, _PostPreview>(
+                    pagingController: pagingController,
+                    builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
+                        itemBuilder: (context, item, index) {
+                          return this.previewList[index];
+                        }
+                    ),
+                  )
+              ),
             )
           ],
         )
