@@ -92,7 +92,7 @@ class _BambooPageState extends State<BambooPage> {
                   }
                 }
               },
-              color: Colors.redAccent,
+              color: Colors.blueGrey.shade200,
             ),
             SizedBox(height: 10,),
             Expanded(
@@ -171,9 +171,12 @@ class _PostPreview extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Icon(Icons.message, color: Colors.orange.shade200, size: 18),
+                        Icon(Icons.message, color: Colors.blueGrey.shade200, size: 18),
+                        SizedBox(width: 1,),
                         Text("$comments ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left),
-                        Icon(CupertinoIcons.heart_fill, color: Colors.redAccent, size: 18),
+                        SizedBox(width: 5,),
+                        Icon(CupertinoIcons.heart_fill, color: Colors.pink.shade300, size: 18),
+                        SizedBox(width: 1,),
                         Text("$likes ", style: TextStyle(color: Colors.black87), textAlign: TextAlign.left)
                       ],
                     )
