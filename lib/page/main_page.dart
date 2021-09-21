@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -275,7 +276,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                                   onPressed: NotificationManager.isFcmSupported ? updateDinnerNoti : fcmIsNotsupported,
                                   icon: this.dinnerNotiIcon,
                                   label: const Text("석식 알림"),)),
-
                           ]
                       ),
                     ),
@@ -525,31 +525,16 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   bool get wantKeepAlive => true;
 }
 
-Future<void> _showAppInfoDialog(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('KISH'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('개발자', style: TextStyle(fontFamily: "NanumSquareR", fontSize: 20), textAlign: TextAlign.center,),
-              Text("유정욱\n이동주\n이찬영\n김태형\n김나현\n조현정\n김재원\n고성준\n김태운\n김경재\n박지민\n김선우"),
-              Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('뒤로가기'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
+void _showAppInfoDialog(BuildContext context) {
+  showAboutDialog(context: context,
+    applicationName: "하노이한국국제학교 - KISH 어플리케이션",
+    children: [
+      Text('이 어플리케이션은 하노이한국국제학교의 공식 어플리케이션이 아닙니다.\n'
+          '제공된 정보 중 오류가 포함되어 있을 수 있습니다.\n'
+          '문제 발생시 카카오톡 아이디 j203775으로 연락해주세요.\n'),
+      Text("유정욱,이동주,이찬영,김태형,김나현,조현정,김재원,고성준,김태운,김경재,박지민,김선우",
+        overflow: TextOverflow.clip,),
+      Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
+    ]
   );
 }
