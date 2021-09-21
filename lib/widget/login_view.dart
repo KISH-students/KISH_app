@@ -17,6 +17,7 @@ class LoginView extends StatefulWidget {
   static bool isLogining = false;
   static bool isLoggined = false;
   static String seq = "";
+  static bool isAdmin = false;
 
   LoginView({Key? key}) : super(key: key);
 
@@ -48,6 +49,7 @@ class LoginView extends StatefulWidget {
     } else {
       resultMap["result"] = SUCCESS;
       seq = result["seq"];
+      isAdmin = result['admin'];
       isLoggined = true;
     }
 

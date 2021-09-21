@@ -136,7 +136,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                   Column(
                       children: [
                         IconButton(onPressed: () async {
-                          if (this.iAmAuthor) {
+                          if (this.iAmAuthor || LoginView.isAdmin) {
                             Fluttertoast.showToast(msg: "삭제 중 ...");
                             Map response =
                             await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
@@ -406,7 +406,7 @@ class _CommentState extends State<_Comment> {
                               )),
                         ),
                         IconButton(onPressed: () async {
-                          if (!widget.iAmAuthor) {
+                          if (!widget.iAmAuthor && !LoginView.isAdmin) {
                             return;
                           }
                             Fluttertoast.showToast(msg: "삭제 중 ...");
@@ -421,7 +421,7 @@ class _CommentState extends State<_Comment> {
                             Fluttertoast.showToast(msg: response['message']);
                         }, icon: Icon(CupertinoIcons.trash,
                           color: Colors.grey,
-                          size: widget.iAmAuthor ? 20 : 0,)),
+                          size: (widget.iAmAuthor || LoginView.isAdmin) ? 20 : 0,)),
                       ]
                   ),
                   Container(
