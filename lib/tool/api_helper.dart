@@ -233,6 +233,15 @@ class ApiHelper {
     return json.decode(response);
   }
 
+  static Future<Map> deleteBambooPost(String seq, var postId) async {
+    String response = await request(
+        KISHApi.BAMBOO_DELETE_POST,
+        Method.post,
+        {'seq': seq, 'postId': postId.toString(), 'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
   static Future<Map> getBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_GET_POST,

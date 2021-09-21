@@ -21,6 +21,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
   int likes = 0;
   bool liked = false;
   bool sendingComment = false;
+  bool IAmAuthor = false;
   int commentCount = 0;
   List<Widget> comments = [CircularProgressIndicator()];
   TextEditingController commentController = new TextEditingController();
@@ -33,6 +34,11 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
 
   Future<void> load() async{
     Map post = await ApiHelper.getBambooPost(LoginView.seq, widget.id);
+    if (post['comment'] == null) {
+      Fluttertoast.showToast(msg: "존재하지 않는 게시물입니다.");
+      Navigator.pop(context);
+      return;
+    }
 
     /* 댓글 처리 */
     List<Widget> temp = [];
@@ -83,6 +89,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
       this.content = post['post']['bamboo_content'];  //본문
       this.liked = post['post']['liked'];   //공감 여부
       this.likes = post['post']['likeCount'];   //좋아요 개수
+      this.IAmAuthor = post['post']['IAmAuthor'];
       this.commentCount = tempCount;  //댓글 개수 (대댓글 포함)
       this.comments = temp;   //댓글
 
@@ -106,27 +113,43 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back_ios),
-                          iconSize: 22,
-                          onPressed: (){
-                            Navigator.pop(context);
-                          },
-                        ),
-                        Text("#${widget.id}번째 외침",
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 20,
-                                //fontWeight: FontWeight.bold,
-                                fontFamily: "NanumSquareR"
-                            )
-                        ),
-                      ]
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios),
+                        iconSize: 22,
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Text("#${widget.id}번째 외침",
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 20,
+                              //fontWeight: FontWeight.bold,
+                              fontFamily: "NanumSquareR"
+                          )),
+                    ],
                   ),
-                  Text(this.date,
-                      style: TextStyle(color: Colors.grey.shade600)),
+                  Column(
+                      children: [
+                        IconButton(onPressed: () async {
+                          if (this.IAmAuthor) {
+                            Fluttertoast.showToast(msg: "삭제 중 ...");
+                            Map response =
+                            await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
+
+                            if (response['success'] == true) {
+                              Navigator.pop(context);
+                            }
+                            Fluttertoast.showToast(msg: response['message']);
+                          } else {
+                            Fluttertoast.showToast(msg: "권한이 없습니다.");
+                          }
+                        }, icon: Icon(CupertinoIcons.trash)),
+                        Text(this.date,
+                            style: TextStyle(color: Colors.grey.shade600)),
+                      ]),
                 ]
             ),
           ),
