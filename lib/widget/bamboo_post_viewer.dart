@@ -151,6 +151,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                       children: [
                         LikeButton(
                           isLiked: liked,
+                          likeCount: likes,
                           size: 17,
                           circleColor:
                           CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
@@ -165,7 +166,32 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                               size: 17,
                             );
                           },
-                          likeCount: likes,
+                          onTap: (isLiked) async {
+                            Map? response;
+
+                            if (!isLiked) {
+                              response = await ApiHelper.likeBambooPost(LoginView.seq, widget.id);
+                            } else {
+                              response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
+                            }
+                            if (response == null) {
+                              Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                              return null;
+                            }
+
+                            String? msg = response['message'];
+                            if (msg != null) {  // 등록 실패
+                              Fluttertoast.showToast(msg: msg);
+                              return null;
+                            }
+
+                            this.setState(() {
+                              if (response == null) return;   // null일 수 없습니다.
+                              this.liked = !isLiked;
+                              this.likes = response['count'];
+                            });
+                            return true;
+                          },
                           countBuilder: (int? count, bool isLiked, String text) {
                             var color = isLiked ? Colors.red : Colors.grey;
                             Widget result;
