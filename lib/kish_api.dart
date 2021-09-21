@@ -35,4 +35,5 @@ class KISHApi {
   static const String BAMBOO_LIKE_COMMENT = BAMBOO_ROOT + "likeComment";
   static const String BAMBOO_UNLIKE_POST = BAMBOO_ROOT + "unlikePost";
   static const String BAMBOO_UNLIKE_COMMENT = BAMBOO_ROOT + "unlikeComment";
+  static const String BAMBOO_GET_REPLIES = BAMBOO_ROOT + "getReplies";
 }

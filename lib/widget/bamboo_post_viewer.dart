@@ -49,8 +49,10 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
           likes: element2['likes'],
           liked: element2['liked'],
           isReply: true,
+          inReplyScreen: true,
           id: element2['comment_id'],
           parentId: parentComment['comment_id'],
+          postId: widget.id,
         );
 
         replyComments.add(reply);
@@ -63,6 +65,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
         liked: parentComment['liked'],
         isReply: false,
         id: parentComment['comment_id'],
+        postId: widget.id,
         replies: replyComments,
       );
       temp.add(comment);
@@ -326,15 +329,17 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
 class _Comment extends StatefulWidget {
   final int id;
   final int parentId;
+  final int postId;
   final String name;
   final String content;
+  final bool inReplyScreen;
   final bool isReply;
   int likes;
   bool liked;
+  List<Widget> replies;
 
-  final List<Widget> replies;
   _Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
-    this.liked: false, this.id: -1, this.parentId: -1,
+    this.liked: false, this.id: -1, this.postId: -1, this.parentId: -1, this.inReplyScreen: false,
     this.replies: const [], Key? key}) : super(key: key);
 
   @override
@@ -344,15 +349,6 @@ class _Comment extends StatefulWidget {
 }
 
 class _CommentState extends State<_Comment> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -401,7 +397,21 @@ class _CommentState extends State<_Comment> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  MaterialButton(onPressed: (){}, child: Text("답글 달기")),
+                                  MaterialButton(onPressed: () async {
+                                    if (widget.inReplyScreen) return;
+                                    await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                      return CommentReplyScreen(temp: this.widget, postId: widget.parentId,);
+                                    }));
+
+                                    this.setState(() {
+                                      //  답글 개수 갱신
+                                    });
+                                  },
+                                      child: Text(
+                                          widget.inReplyScreen
+                                              ? ''
+                                              : "답글 ${widget.replies.length}개")
+                                  ),
                                   LikeButton(
                                     size: 15,
                                     circleColor:
@@ -471,18 +481,171 @@ class _CommentState extends State<_Comment> {
                 ],
               )
           ),
-          ...(widget.replies)
+          ...(widget.inReplyScreen? widget.replies : [])
         ]
     );
   }
 }
 
-class _Reply extends StatelessWidget {
-  _Reply({Key? key}) : super(key: key);
+class CommentReplyScreen extends StatefulWidget {
+  final _Comment temp;
+  final int postId;
+  const CommentReplyScreen({required this.temp, required this.postId,
+    Key? key}) : super(key: key);
+
+  @override
+  _CommentReplyScreenState createState() => _CommentReplyScreenState();
+}
+
+class _CommentReplyScreenState extends State<CommentReplyScreen> {
+  late _Comment comment;
+  bool sendingComment = false;
+  TextEditingController commentController = new TextEditingController();
+  ScrollController scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadComment();
+    Future.delayed(Duration(seconds: 0), (){
+      loadReplies();
+    });
+  }
+
+  void loadComment() {
+    _Comment temp = widget.temp;
+    this.comment = _Comment(content: temp.content,
+        id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
+        likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
+        replies: temp.replies);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container();
+    return Column(
+        children: [
+          SizedBox(height: 10,),
+          Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
+                Navigator.pop(context);
+              },)
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+                controller: this.scrollController,
+                child: this.comment
+            ),
+          ),
+          Container(
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
+              width: double.infinity,
+              child: Row(
+                  children: [
+                    Expanded(
+                      flex: 9,
+                      child: TextFormField(
+                        controller: this.commentController,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: 5,
+                        maxLength: 1000,
+                        decoration: InputDecoration(
+                            fillColor: Colors.blueGrey,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                            hintText: "답글을 달아주세요 :D",
+                            hintStyle: TextStyle(fontFamily: "NanumSquareL")
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        flex: 1,
+                        child: CupertinoButton(
+                            child: Icon(CupertinoIcons.paperplane),
+                            onPressed: () {
+                              Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+
+                              if (sendingComment) {
+                                return;
+                              }
+                              sendComment();
+                            }
+                        ))
+                  ]
+              )
+          )
+        ]);
+  }
+
+  Future<void> loadReplies({bool scrollToBottom: false}) async {
+    Map? response = await ApiHelper.getBambooReplies(LoginView.seq, comment.id);
+    if (response == null) {
+      Fluttertoast.showToast(msg: "답글을 새로고치지 못했습니다.");
+      return;
+    }
+
+    bool success = response['success'];
+    if (!success) {
+      Fluttertoast.showToast(msg: response['message']);
+      return;
+    }
+
+    List<Widget> tempList = [];
+    List replies = response['replies'];
+
+    replies.forEach((element2) {
+      _Comment reply = new _Comment(
+        name: element2['comment_author_displayname'],
+        content: element2['comment_content'],
+        likes: element2['likes'],
+        liked: element2['liked'],
+        isReply: true,
+        inReplyScreen: true,
+        id: element2['comment_id'],
+        parentId: comment.id,
+        postId: comment.postId,
+      );
+
+      tempList.add(reply);
+    });
+
+    setState(() {
+      widget.temp.replies = tempList;
+      loadComment();
+    });
+
+    if (scrollToBottom) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent + 100,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.fastLinearToSlowEaseIn,
+      );
+    }
+  }
+
+  Future<void> sendComment() async {
+    this.sendingComment = true;   // 댓글 중복 등록 방지
+
+    String content = this.commentController.text;
+    Map? response = await ApiHelper.replyBambooComment(LoginView.seq,
+        comment.postId, comment.id, content);
+
+    if (response == null) {
+      Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      return;
+    }
+
+    bool success = response['success'];
+    String msg = response['message'];
+
+    if (success) { // 등록 성공
+      Fluttertoast.showToast(msg: msg);
+    } else { // 등록 실패
+      Fluttertoast.showToast(msg: msg);
+    }
+    this.commentController.text = "";   // 댓글 초기화
+    this.sendingComment = false;    // 댓글 등록 상태 x
+
+    loadReplies(scrollToBottom: true);
   }
 }

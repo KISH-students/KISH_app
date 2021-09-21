@@ -242,6 +242,16 @@ class ApiHelper {
     return json.decode(response);
   }
 
+  static Future<Map?> getBambooReplies(String seq, var commentId) async {
+    String response = await request(
+        KISHApi.BAMBOO_GET_REPLIES,
+        Method.post,
+        {'seq': seq, 'commentId': commentId.toString(),
+          'fcm': NotificationManager.FcmToken}
+    );
+    return json.decode(response);
+  }
+
   static Future<Map?> writeBambooComment(String seq, var postId, String content) async {
     String response = await request(
         KISHApi.BAMBOO_WRITE_COMMENT,
