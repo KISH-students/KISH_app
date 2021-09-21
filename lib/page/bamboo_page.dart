@@ -67,6 +67,7 @@ class _BambooPageState extends State<BambooPage> {
         child: Column(
           key: UniqueKey(),
           children: [
+            SizedBox(height: 25,),
             CupertinoButton(
               child: Text("익명으로 글 쓰기"),
               onPressed: () async {
@@ -88,8 +89,8 @@ class _BambooPageState extends State<BambooPage> {
                 }
               },
               color: Colors.redAccent,
-
             ),
+            SizedBox(height: 10,),
             Expanded(
                 child: PagedListView<int, _PostPreview>(
                   pagingController: pagingController,
