@@ -136,6 +136,12 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                   Column(
                       children: [
                         IconButton(onPressed: () async {
+                          if (!LoginView.isLoggined) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => LoginView()));
+                            return;
+                          }
+
                           if (this.iAmAuthor || LoginView.isAdmin) {
                             Fluttertoast.showToast(msg: "삭제 중 ...");
                             Map response =
@@ -197,6 +203,12 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                               );
                             },
                             onTap: (isLiked) async {
+                              if (!LoginView.isLoggined) {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => LoginView()));
+                                return null;
+                              }
+
                               Map? response;
 
                               if (!isLiked) {
@@ -307,6 +319,12 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                                         child: CupertinoButton(
                                             child: Icon(CupertinoIcons.paperplane),
                                             onPressed: () {
+                                              if (!LoginView.isLoggined) {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(builder: (context) => LoginView()));
+                                                return;
+                                              }
+
                                               Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
 
                                               if (sendingComment) {
@@ -477,6 +495,12 @@ class _CommentState extends State<_Comment> {
                                       );
                                     },
                                     onTap: (bool? isLiked) async{
+                                      if (!LoginView.isLoggined) {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context) => LoginView()));
+                                        return null;
+                                      }
+
                                       Map? response;
                                       if (isLiked == null) return null;
 
@@ -612,6 +636,12 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
                         child: CupertinoButton(
                             child: Icon(CupertinoIcons.paperplane),
                             onPressed: () {
+                              if (!LoginView.isLoggined) {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => LoginView()));
+                                return;
+                              }
+
                               Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
 
                               if (sendingComment) {

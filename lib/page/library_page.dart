@@ -178,6 +178,9 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                                           onPressed: () async {
                                             await storage.delete(key: "id");
                                             await storage.delete(key: "pw");
+                                            LoginView.isLoggined = false;
+                                            LoginView.isAdmin = false;
+                                            LoginView.seq = "";
                                             this.initWidgets();
                                           },
                                           color: Color.fromARGB(255, 75, 0, 19),
