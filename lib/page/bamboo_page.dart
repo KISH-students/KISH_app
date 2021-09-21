@@ -68,11 +68,12 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SafeArea(
+        child: Container(
         child: Column(
           key: UniqueKey(),
           children: [
-            SizedBox(height: 25,),
+            SizedBox(height: 8,),
             CupertinoButton(
               child: Text("익명으로 글 쓰기"),
               onPressed: () async {
@@ -110,6 +111,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
             )
           ],
         )
+        ),
     );
   }
 

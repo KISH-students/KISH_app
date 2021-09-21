@@ -161,46 +161,48 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Color.fromARGB(255, 252, 252, 252),
-        child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 30, left: 30, right: 30),
-                child: TextFormField(
-                    cursorColor: Colors.black38,
-                    decoration: const InputDecoration(
-                      icon: const Icon(CupertinoIcons.search),
-                      fillColor: Colors.grey,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                      labelText: "검색어를 입력하세요",
-                    ),
-                    onChanged: (text){
-                      mode = 1;
-                      search(text, 1);
-                    }
+    return SafeArea(
+      child: Container(
+          color: Color.fromARGB(255, 252, 252, 252),
+          child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 10, left: 30, right: 30),
+                  child: TextFormField(
+                      cursorColor: Colors.black38,
+                      decoration: const InputDecoration(
+                        icon: const Icon(CupertinoIcons.search),
+                        fillColor: Colors.grey,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                        labelText: "검색어를 입력하세요",
+                      ),
+                      onChanged: (text){
+                        mode = 1;
+                        search(text, 1);
+                      }
+                  ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 5),
-                decoration: const BoxDecoration(color: Colors.black12),
-                height: 2,
-              ),
-              Container(
-                  alignment: Alignment.center,
-                  child: FlatButton.icon(
-                      onPressed: NotificationManager.isFcmSupported
-                          ? updateNewKishPostNoti
-                          : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
-                      icon: this.newKishPostNotiIcon,
-                      label: const Text("새 글 알림")
-                  )
-              ),
-              loading,
-              backButtonWidget,
-              body,
-            ])
+                Container(
+                  margin: const EdgeInsets.only(top: 5),
+                  decoration: const BoxDecoration(color: Colors.black12),
+                  height: 2,
+                ),
+                Container(
+                    alignment: Alignment.center,
+                    child: FlatButton.icon(
+                        onPressed: NotificationManager.isFcmSupported
+                            ? updateNewKishPostNoti
+                            : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                        icon: this.newKishPostNotiIcon,
+                        label: const Text("새 글 알림")
+                    )
+                ),
+                loading,
+                backButtonWidget,
+                body,
+              ])
+      ),
     );
   }
 

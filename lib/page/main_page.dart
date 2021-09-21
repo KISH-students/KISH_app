@@ -207,22 +207,23 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 17),
-            child: Center(
-              child: FlatButton(
-                onPressed: () { _showAppInfoDialog(context); },
-                child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
-              ),),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 25),
-            child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
-          ),
-          /*CarouselSlider(
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 17),
+              child: Center(
+                child: FlatButton(
+                  onPressed: () { _showAppInfoDialog(context); },
+                  child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
+                ),),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 25),
+              child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
+            ),
+            /*CarouselSlider(
             options: CarouselOptions(
                 aspectRatio: 2 / 1,
                 enlargeCenterPage: true,
@@ -241,49 +242,50 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
             mainAxisAlignment: MainAxisAlignment.center,
             children: _getIndicator(sliderItems, sliderIdx),
           ),*/
-          Center(
-              child: Column(
+            Center(
+                child: Column(
+                    children: [
+                      Container(
+                          alignment: Alignment.topRight,
+                          child: FlatButton.icon(
+                            onPressed: NotificationManager.isFcmSupported ? updateDdayNoti : fcmIsNotsupported,
+                            icon: ddayNotiIcon,
+                            label: const Text("DDay 알림"),)),
+                      ddayFutureBuilder,
+                    ]
+                )
+            ),
+
+            Center(
+                child: Column(
                   children: [
                     Container(
-                        alignment: Alignment.topRight,
-                        child: FlatButton.icon(
-                          onPressed: NotificationManager.isFcmSupported ? updateDdayNoti : fcmIsNotsupported,
-                          icon: ddayNotiIcon,
-                          label: const Text("DDay 알림"),)),
-                    ddayFutureBuilder,
-                  ]
-              )
-          ),
+                      margin: EdgeInsets.only(top: 30),
+                      child: Stack(
+                          children: [
+                            Container(
+                                alignment: Alignment.topLeft,
+                                child: FlatButton.icon(
+                                  onPressed: NotificationManager.isFcmSupported ? updateLunchNoti : fcmIsNotsupported,
+                                  icon: this.lunchNotiIcon,
+                                  label: const Text("중식 알림"),)),
+                            Container(
+                                alignment: Alignment.topRight,
+                                child: FlatButton.icon(
+                                  onPressed: NotificationManager.isFcmSupported ? updateDinnerNoti : fcmIsNotsupported,
+                                  icon: this.dinnerNotiIcon,
+                                  label: const Text("석식 알림"),)),
 
-          Center(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 30),
-                    child: Stack(
-                        children: [
-                          Container(
-                              alignment: Alignment.topLeft,
-                              child: FlatButton.icon(
-                                onPressed: NotificationManager.isFcmSupported ? updateLunchNoti : fcmIsNotsupported,
-                                icon: this.lunchNotiIcon,
-                                label: const Text("중식 알림"),)),
-                          Container(
-                              alignment: Alignment.topRight,
-                              child: FlatButton.icon(
-                                onPressed: NotificationManager.isFcmSupported ? updateDinnerNoti : fcmIsNotsupported,
-                                icon: this.dinnerNotiIcon,
-                                label: const Text("석식 알림"),)),
-
-                        ]
+                          ]
+                      ),
                     ),
-                  ),
-                  Container(
-                      child: lunchFutureBuilder),
-                ],
-              )
-          ),
-        ],
+                    Container(
+                        child: lunchFutureBuilder),
+                  ],
+                )
+            ),
+          ],
+        ),
       ),
     );
   }
