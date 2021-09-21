@@ -21,7 +21,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
   int likes = 0;
   bool liked = false;
   bool sendingComment = false;
-  bool IAmAuthor = false;
+  bool iAmAuthor = false;
   int commentCount = 0;
   List<Widget> comments = [CircularProgressIndicator()];
   TextEditingController commentController = new TextEditingController();
@@ -56,6 +56,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
           liked: element2['liked'],
           isReply: true,
           inReplyScreen: true,
+          iAmAuthor: element2['IAmAuthor'],
           id: element2['comment_id'],
           parentId: parentComment['comment_id'],
           postId: widget.id,
@@ -70,6 +71,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
         likes: parentComment['likes'],
         liked: parentComment['liked'],
         isReply: false,
+        iAmAuthor: parentComment['IAmAuthor'],
         id: parentComment['comment_id'],
         postId: widget.id,
         replies: replyComments,
@@ -89,7 +91,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
       this.content = post['post']['bamboo_content'];  //본문
       this.liked = post['post']['liked'];   //공감 여부
       this.likes = post['post']['likeCount'];   //좋아요 개수
-      this.IAmAuthor = post['post']['IAmAuthor'];
+      this.iAmAuthor = post['post']['IAmAuthor'];
       this.commentCount = tempCount;  //댓글 개수 (대댓글 포함)
       this.comments = temp;   //댓글
 
@@ -134,7 +136,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                   Column(
                       children: [
                         IconButton(onPressed: () async {
-                          if (this.IAmAuthor) {
+                          if (this.iAmAuthor) {
                             Fluttertoast.showToast(msg: "삭제 중 ...");
                             Map response =
                             await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
@@ -355,16 +357,17 @@ class _Comment extends StatefulWidget {
   final int parentId;
   final int postId;
   final String name;
-  final String content;
   final bool inReplyScreen;
   final bool isReply;
+  final bool iAmAuthor;
+  String content;
   int likes;
   bool liked;
   List<Widget> replies;
 
   _Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
     this.liked: false, this.id: -1, this.postId: -1, this.parentId: -1, this.inReplyScreen: false,
-    this.replies: const [], Key? key}) : super(key: key);
+    this.iAmAuthor: false, this.replies: const [], Key? key}) : super(key: key);
 
   @override
   _CommentState createState() {
@@ -388,15 +391,35 @@ class _CommentState extends State<_Comment> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(width: 8),
-                        Text(widget.name,
+                        Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Text(widget.name,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontFamily: "NanumSquareL",
                                 fontSize: 15
-                            )
+                            )),
                         ),
+                        IconButton(onPressed: () async {
+                          if (widget.iAmAuthor) {
+                            Fluttertoast.showToast(msg: "삭제 중 ...");
+                            Map response =
+                            await ApiHelper.deleteBambooComment(LoginView.seq, this.widget.id);
+
+                            if (response['success'] == true) {
+                              setState(() {
+                                widget.content = "삭제된 댓글입니다.";
+                              });
+                            }
+                            Fluttertoast.showToast(msg: response['message']);
+                          } else {
+                            Fluttertoast.showToast(msg: "권한이 없습니다.");
+                          }
+                        }, icon: Icon(CupertinoIcons.trash,
+                        color: Colors.grey,
+                        size: 20,)),
                       ]
                   ),
                   Container(
@@ -541,7 +564,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
     this.comment = _Comment(content: temp.content,
         id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
         likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
-        replies: temp.replies);
+        replies: temp.replies, iAmAuthor: temp.iAmAuthor,);
   }
 
   @override
@@ -625,6 +648,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
         liked: element2['liked'],
         isReply: true,
         inReplyScreen: true,
+        iAmAuthor: element2['IAmAuthor'],
         id: element2['comment_id'],
         parentId: comment.id,
         postId: comment.postId,
