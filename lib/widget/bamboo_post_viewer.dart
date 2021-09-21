@@ -67,12 +67,21 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
       temp.add(comment);
     });
 
+    // 댓글 개수 처리. 대댓글도 포함합니다.
+    int tempCount;
+    tempCount = post['comment'].length;   //댓글 개수
+    temp.forEach((element) {
+      _Comment comment = element as _Comment;
+      tempCount += comment.replies.length;
+    });
+
     setState(() {
       this.content = post['post']['bamboo_content'];  //본문
       this.liked = post['post']['liked'];   //공감 여부
-      this.commentCount = post['comment'].length;   //댓글 개수
       this.likes = post['post']['likeCount'];   //좋아요 개수
+      this.commentCount = tempCount;  //댓글 개수 (대댓글 포함)
       this.comments = temp;   //댓글
+
     });
   }
 
