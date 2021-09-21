@@ -114,6 +114,7 @@ class _PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
         margin: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         child: Column(
@@ -121,7 +122,7 @@ class _PostPreview extends StatelessWidget {
             MaterialButton(
                 onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return BambooPostViewer(Map());
+                    return BambooPostViewer(id);
                   }));
                 },
                 highlightColor: Colors.white.withOpacity(1),

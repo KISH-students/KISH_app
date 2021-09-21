@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 void firebaseCloudMessagingListeners() {
   _firebaseMessaging.getToken().then((token){
     NotificationManager.FcmToken = token;
