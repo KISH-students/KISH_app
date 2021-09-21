@@ -307,6 +307,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
 
     if (response == null) {
       Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      sendingComment = false;
       return;
     }
 
@@ -632,6 +633,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
 
     if (response == null) {
       Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      sendingComment = false;
       return;
     }
 
