@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/login_view.dart';
 import 'package:like_button/like_button.dart';
@@ -19,8 +20,10 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
   String content = "불러오는 중 입니다";
   int likes = 0;
   bool liked = false;
+  bool sendingComment = false;
   int commentCount = 0;
   List<Widget> comments = [CircularProgressIndicator()];
+  TextEditingController commentController = new TextEditingController();
 
   @override
   void initState() {
@@ -220,6 +223,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                                     Expanded(
                                       flex: 9,
                                       child: TextFormField(
+                                        controller: this.commentController,
                                         keyboardType: TextInputType.multiline,
                                         minLines: 1,
                                         maxLines: 5,
@@ -235,9 +239,15 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
                                         flex: 1,
                                         child: CupertinoButton(
                                             child: Icon(CupertinoIcons.paperplane),
-                                            onPressed: (){}
-                                        )
-                                    )
+                                            onPressed: () {
+                                              Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+
+                                              if (sendingComment) {
+                                                return;
+                                              }
+                                              sendComment();
+                                            }
+                                        ))
                                   ]
                               )
                           )
@@ -248,6 +258,32 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
           )
         ]
     );
+  }
+
+  Future<void> sendComment() async {
+    this.sendingComment = true;   // 댓글 중복 등록 방지
+
+    String content = this.commentController.text;
+    Map? response = await ApiHelper.writeBambooComment(LoginView.seq, widget.id, content);
+
+    if (response == null) {
+      Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      return;
+    }
+
+    bool success = response['success'];
+    String msg = response['message'];
+
+    if (success) { // 등록 성공
+      Fluttertoast.showToast(msg: msg);
+    } else { // 등록 실패
+      Fluttertoast.showToast(msg: msg);
+    }
+    this.commentController.text = "";   // 댓글 초기화
+    this.sendingComment = false;    // 댓글 등록 상태 x
+
+    //TODO: 댓글 새로고침 개선
+    load();   // 본문을 새로고칩니다 ......
   }
 }
 
