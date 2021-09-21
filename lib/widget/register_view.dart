@@ -153,6 +153,16 @@ class _RegisterViewState extends State<RegisterView> {
                                 borderRadius: BorderRadius.circular(20)
                             )
                         ),
+                        RaisedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                            },
+                            child: Text("나가기", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
+                            color: Colors.red.shade600.withOpacity(0.8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)
+                            )
+                        ),
                       ],
                     )),
               )
