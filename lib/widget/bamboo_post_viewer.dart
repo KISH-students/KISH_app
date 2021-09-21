@@ -406,7 +406,9 @@ class _CommentState extends State<_Comment> {
                               )),
                         ),
                         IconButton(onPressed: () async {
-                          if (widget.iAmAuthor) {
+                          if (!widget.iAmAuthor) {
+                            return;
+                          }
                             Fluttertoast.showToast(msg: "삭제 중 ...");
                             Map response =
                             await ApiHelper.deleteBambooComment(LoginView.seq, this.widget.id);
@@ -417,12 +419,9 @@ class _CommentState extends State<_Comment> {
                               });
                             }
                             Fluttertoast.showToast(msg: response['message']);
-                          } else {
-                            Fluttertoast.showToast(msg: "권한이 없습니다.");
-                          }
                         }, icon: Icon(CupertinoIcons.trash,
                           color: Colors.grey,
-                          size: 20,)),
+                          size: widget.iAmAuthor ? 20 : 0,)),
                       ]
                   ),
                   Container(
