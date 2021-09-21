@@ -78,7 +78,9 @@ class _BambooPageState extends State<BambooPage> {
                       MaterialPageRoute(builder: (context) => LoginView()));
                 } else {
                   if (LoginView.isLoggined) {
-                    Navigator.pushNamed(context, "writing");
+                    await Navigator.pushNamed(context, "writing");
+                    previewList = [];
+                    pagingController.refresh();
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => LoginView()));

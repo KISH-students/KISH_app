@@ -224,7 +224,7 @@ class ApiHelper {
     return json.decode(response);
   }
 
-  static Future<Map?> writeBambooPost(String seq, String content) async {
+  static Future<Map> writeBambooPost(String seq, String content) async {
     String response = await request(
         KISHApi.BAMBOO_WRITE_POST,
         Method.post,

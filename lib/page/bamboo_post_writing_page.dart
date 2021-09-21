@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kish2019/tool/api_helper.dart';
+import 'package:kish2019/widget/login_view.dart';
 
 class BambooPostWritingPage extends StatefulWidget {
   BambooPostWritingPage({Key? key}) : super(key: key);
@@ -12,6 +15,9 @@ class BambooPostWritingPage extends StatefulWidget {
 }
 
 class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
+  bool sending = false;
+  TextEditingController controller = new TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +72,15 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
             IconButton(
                 icon: Icon(CupertinoIcons.paperplane_fill),
                 color: Colors.blueGrey,
-                onPressed: (){}
+                onPressed: (){
+                  if (sending) {
+                    Fluttertoast.showToast(msg: "이미 작성 중 입니다.");
+                    return;
+                  }
+
+                  sending = true;
+                  writePost();
+                }
             )
           ],
         ),
@@ -78,6 +92,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
                 height: double.infinity,
                 child: TextFormField(
                   scrollPhysics: BouncingScrollPhysics(),
+                  controller: controller,
                   keyboardType: TextInputType.multiline,
                   minLines: null,
                   maxLines: null,
@@ -92,5 +107,24 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
         )
       ],
     );
+  }
+
+  Future<void> writePost() async {
+    String text = controller.text;
+    if (text.length < 5) {
+      Fluttertoast.showToast(msg: "글이 너무 짧습니다.");
+      sending = false;
+      return;
+    }
+
+    Map response = await ApiHelper.writeBambooPost(LoginView.seq, text);
+    bool success = response['success'];
+    String msg = response['message'];
+
+    Fluttertoast.showToast(msg: msg);
+    if (success) {
+      Navigator.pop(context);
+    }
+    sending = false;
   }
 }
