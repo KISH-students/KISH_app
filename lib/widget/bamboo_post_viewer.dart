@@ -38,9 +38,9 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
     List<Widget> temp = [];
     List comments = post['comment'];
 
-    comments.forEach((element) {
+    comments.forEach((parentComment) {
       List<Widget> replyComments = [];
-      List replies = element['replies'];
+      List replies = parentComment['replies'];
 
       replies.forEach((element2) {
         _Comment reply = new _Comment(
@@ -49,19 +49,20 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
           likes: element2['likes'],
           liked: element2['liked'],
           isReply: true,
-          id: element['comment_id'],
+          id: element2['comment_id'],
+          parentId: parentComment['comment_id'],
         );
 
         replyComments.add(reply);
       });
 
       _Comment comment = new _Comment(
-        name: element['comment_author_displayname'],
-        content: element['comment_content'],
-        likes: element['likes'],
-        liked: element['liked'],
+        name: parentComment['comment_author_displayname'],
+        content: parentComment['comment_content'],
+        likes: parentComment['likes'],
+        liked: parentComment['liked'],
         isReply: false,
-        id: element['comment_id'],
+        id: parentComment['comment_id'],
         replies: replyComments,
       );
       temp.add(comment);
@@ -297,16 +298,18 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
 }
 
 class _Comment extends StatefulWidget {
+  final int id;
+  final int parentId;
   final String name;
   final String content;
-  final int likes;
-  final bool liked;
   final bool isReply;
-  final int id; //만약 답글일경우 부모 댓글의 id가 됩니다.
+  int likes;
+  bool liked;
 
   final List<Widget> replies;
   _Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
-    this.liked: false, this.id: -1, this.replies: const [], Key? key}) : super(key: key);
+    this.liked: false, this.id: -1, this.parentId: -1,
+    this.replies: const [], Key? key}) : super(key: key);
 
   @override
   _CommentState createState() {
@@ -387,6 +390,33 @@ class _CommentState extends State<_Comment> {
                                         color: isLiked ? Colors.red : Colors.grey,
                                         size: 15,
                                       );
+                                    },
+                                    onTap: (bool? isLiked) async{
+                                      Map? response;
+                                      if (isLiked == null) return null;
+
+                                      if (!isLiked) {
+                                        response = await ApiHelper.likeBambooComment(LoginView.seq, widget.id);
+                                      } else {
+                                        response = await ApiHelper.unlikeBambooComment(LoginView.seq, widget.id);
+                                      }
+                                      if (response == null) {
+                                        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                                        return null;
+                                      }
+
+                                      String? msg = response['message'];
+                                      if (msg != null) {  // 등록 실패
+                                        Fluttertoast.showToast(msg: msg);
+                                        return null;
+                                      }
+
+                                      this.setState(() {
+                                        if (response == null) return;   // null일 수 없습니다.
+                                        widget.liked = !isLiked;
+                                        widget.likes = response['count'];
+                                      });
+                                      return true;
                                     },
                                     isLiked: widget.liked,
                                     likeCount: widget.likes,
