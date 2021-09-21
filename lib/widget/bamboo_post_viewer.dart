@@ -15,7 +15,7 @@ class BambooPostViewer extends StatefulWidget {
   }
 }
 
-class _BambooPostViewerState extends State<BambooPostViewer> {
+class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepAliveClientMixin<BambooPostViewer>{
   String date = "";
   String content = "불러오는 중 입니다";
   int likes = 0;
@@ -371,6 +371,9 @@ class _BambooPostViewerState extends State<BambooPostViewer> {
     //TODO: 댓글 새로고침 개선
     load();   // 본문을 새로고칩니다 ......
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class _Comment extends StatefulWidget {

@@ -15,7 +15,7 @@ class BambooPage extends StatefulWidget {
   }
 }
 
-class _BambooPageState extends State<BambooPage> {
+class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMixin<BambooPage>{
   final FlutterSecureStorage storage = new FlutterSecureStorage();
   PagingController<int, _PostPreview> pagingController = new PagingController(firstPageKey: 0);
   List<_PostPreview> previewList = [];
@@ -112,6 +112,9 @@ class _BambooPageState extends State<BambooPage> {
         )
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class _PostPreview extends StatelessWidget {

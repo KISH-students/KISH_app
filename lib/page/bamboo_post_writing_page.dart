@@ -14,7 +14,7 @@ class BambooPostWritingPage extends StatefulWidget {
   }
 }
 
-class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
+class _BambooPostWritingPageState extends State<BambooPostWritingPage> with AutomaticKeepAliveClientMixin<BambooPostWritingPage>{
   bool sending = false;
   TextEditingController controller = new TextEditingController();
 
@@ -127,4 +127,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> {
     }
     sending = false;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
