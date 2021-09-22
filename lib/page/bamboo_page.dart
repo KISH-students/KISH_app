@@ -152,7 +152,7 @@ class _PostPreview extends StatelessWidget {
                         child: Row(
                             children: [
                               Expanded(
-                                child: Text(content, style: TextStyle(fontSize: 18),),
+                                child: Text(content, style: TextStyle(fontSize: 18), maxLines: 11,),
                               ),
                             ]
                         )
