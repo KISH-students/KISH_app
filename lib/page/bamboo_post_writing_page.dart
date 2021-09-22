@@ -99,7 +99,11 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                      hintText: "질문/썰/고민 등을 공유해보세요!\n완벽하게 익명이 보장됩니다.\n단, 혐오 조장과 같은 부적절한 글을 게시할 경우 불이익을 받으실 수 있습니다.",
+                      hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
+                          "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
+                          "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
+                          "정보가 제공될 수 있습니다.",
+                      hintStyle: TextStyle(overflow: TextOverflow.clip),
                       border: InputBorder.none
                   ),
                 )
