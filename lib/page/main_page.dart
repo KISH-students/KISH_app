@@ -249,9 +249,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                       Container(
                           alignment: Alignment.topRight,
                           child: FlatButton.icon(
-                            onPressed: NotificationManager.isFcmSupported ? updateDdayNoti : fcmIsNotsupported,
+                            onPressed: Platform.isIOS ? (){} : updateDdayNoti,  // ios에선 표시 안 함
                             icon: ddayNotiIcon,
-                            label: const Text("DDay 알림"),)),
+                            label: Text(Platform.isIOS ? "" : "DDay 알림"),)),
                       ddayFutureBuilder,
                     ]
                 )
@@ -267,15 +267,15 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                             Container(
                                 alignment: Alignment.topLeft,
                                 child: FlatButton.icon(
-                                  onPressed: NotificationManager.isFcmSupported ? updateLunchNoti : fcmIsNotsupported,
+                                  onPressed: Platform.isIOS ? (){} : updateLunchNoti,
                                   icon: this.lunchNotiIcon,
-                                  label: const Text("중식 알림"),)),
+                                  label: Text(Platform.isIOS ? "" : "중식 알림"),)),
                             Container(
                                 alignment: Alignment.topRight,
                                 child: FlatButton.icon(
-                                  onPressed: NotificationManager.isFcmSupported ? updateDinnerNoti : fcmIsNotsupported,
+                                  onPressed: Platform.isIOS ? (){} : updateDinnerNoti,
                                   icon: this.dinnerNotiIcon,
-                                  label: const Text("석식 알림"),)),
+                                  label: Text(Platform.isIOS ? "" : "석식 알림"),)),
                           ]
                       ),
                     ),
@@ -423,8 +423,12 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> loadDdayNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance()!;
+    if (Platform.isIOS) {
+      ddayNotiIcon = Container();
+      return;
+    }
 
+    NotificationManager manager = NotificationManager.getInstance()!;
     bool enabled = await manager.isDdayEnabled();
 
     ddayNotiIcon = Icon(
@@ -451,17 +455,20 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     await manager.updateNotifications();
   }
 
-  // IOS에서 FCM이 작동하지 않습니다.
-  void fcmIsNotsupported() {
-    Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");
-  }
-
   Future<void> loadLunchNotiIcon() async {
+    if (Platform.isIOS) {
+      lunchNotiIcon = Container();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance()!;
     lunchNotiIcon = Icon(await manager.isLunchEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> loadDinnerNotiIcon() async {
+    if (Platform.isIOS) {
+      dinnerNotiIcon = Container();
+      return;
+    }
     NotificationManager manager = NotificationManager.getInstance()!;
     dinnerNotiIcon = Icon(await manager.isDinnerEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
