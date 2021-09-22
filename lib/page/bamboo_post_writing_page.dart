@@ -43,7 +43,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                   showDialog<void>(
                     context: context,
                     barrierDismissible: false, // user must tap button!
-                    builder: (BuildContext context1) {
+                    builder: (BuildContext dialogContext) {
                       return AlertDialog(
                         title: const Text('정말 글 쓰기를 취소할까요?'),
                         content: SingleChildScrollView(
@@ -53,12 +53,13 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                           TextButton(
                             child: const Text('아니요'),
                             onPressed: () {
+                              Navigator.of(dialogContext).pop();
                             },
                           ),
                           TextButton(
                             child: const Text('네'),
                             onPressed: () {
-                              Navigator.of(context1).pop();
+                              Navigator.of(dialogContext).pop();
                               Navigator.of(context).pop();
                             },
                           ),
