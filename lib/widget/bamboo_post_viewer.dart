@@ -143,16 +143,22 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                           }
 
                           if (this.iAmAuthor || LoginView.isAdmin) {
-                            Fluttertoast.showToast(msg: "삭제 중 ...");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("댓글을 지우고 있습니다 ..."))
+                            );
                             Map response =
                             await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
 
                             if (response['success'] == true) {
                               Navigator.pop(context);
                             }
-                            Fluttertoast.showToast(msg: response['message']);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(response['message']))
+                            );
                           } else {
-                            Fluttertoast.showToast(msg: "권한이 없습니다.");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("권한이 없습니다."))
+                            );
                           }
                         }, icon: Icon(CupertinoIcons.trash)),
                         Text(this.date,
@@ -430,7 +436,9 @@ class _CommentState extends State<_Comment> {
                           if (!widget.iAmAuthor && !LoginView.isAdmin) {
                             return;
                           }
-                            Fluttertoast.showToast(msg: "삭제 중 ...");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("삭제 중 ..."))
+                          );
                             Map response =
                             await ApiHelper.deleteBambooComment(LoginView.seq, this.widget.id);
 
@@ -439,7 +447,9 @@ class _CommentState extends State<_Comment> {
                                 widget.content = "삭제된 댓글입니다.";
                               });
                             }
-                            Fluttertoast.showToast(msg: response['message']);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(response['message']))
+                          );
                         }, icon: Icon(CupertinoIcons.trash,
                           color: Colors.grey,
                           size: (widget.iAmAuthor || LoginView.isAdmin) ? 20 : 0,)),

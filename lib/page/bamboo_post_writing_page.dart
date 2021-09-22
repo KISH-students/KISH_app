@@ -75,12 +75,15 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                 color: Colors.blueGrey,
                 onPressed: (){
                   if (sending) {
-                    Fluttertoast.showToast(msg: "이미 작성 중 입니다.");
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(
+                        SnackBar(content: Text("이미 처리 중 입니다."))
+                    );
                     return;
                   }
 
                   sending = true;
-                  writePost();
+                  writePost(context);
                 }
             )
           ],
@@ -114,10 +117,13 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
     );
   }
 
-  Future<void> writePost() async {
+  Future<void> writePost(BuildContext context) async {
     String text = controller.text;
     if (text.length < 5) {
-      Fluttertoast.showToast(msg: "글이 너무 짧습니다.");
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+          SnackBar(content: Text("글이 너무 짧습니다."))
+      );
       sending = false;
       return;
     }
