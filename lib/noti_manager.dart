@@ -211,13 +211,13 @@ class NotificationManager {
         String content;
 
         if (await isLunchEnabled()) {
-          content = (data["menu"] as String).replaceAll(",", "\n");
+          content = data["menu"];
           flutterLocalNotificationsPlugin.show(
               LUNCH_NOTIFICATION_ID, "급식 알림 · " + title, content, detail);
         }
 
         if (await isDinnerEnabled()) {
-          content = (data["dinnerMenu"] as String).replaceAll(",", "\n");
+          content = data["dinnerMenu"];
           flutterLocalNotificationsPlugin.show(
               DINNER_NOTIFICATION_ID, "석식 알림 · " + title, content, detail);
         }
