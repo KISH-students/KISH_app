@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/main.dart';
 import 'package:kish2019/tool/api_helper.dart';
@@ -90,8 +89,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       await loadDinnerNotiIcon();
       setState(() {});
 
-      if (NotificationManager.instance!.preferences == null) {
-        await NotificationManager.instance!.loadSharedPreferences();
+      if (NotificationManager.instance.preferences == null) {
+        await NotificationManager.instance.loadSharedPreferences();
       }
 
       lunchFutureBuilder = FutureBuilder(
@@ -115,7 +114,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 );
               }
             } else {
-              String? cachedJson = NotificationManager.instance!.preferences!
+              String? cachedJson = NotificationManager.instance.preferences!
                   .getString(ApiHelper.getCacheKey(KISHApi.GET_LUNCH, {"date": ApiHelper.getTodayDateForLunch()}));
               if (cachedJson != null) {
                 dynamic data;
@@ -158,7 +157,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
             }
           }
 
-          String? cachedJson = NotificationManager.instance!.preferences!.getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
+          String? cachedJson = NotificationManager.instance.preferences!.getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
           if (cachedJson != null) {
             dynamic data;
             try {
@@ -428,31 +427,11 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       return;
     }
 
-    NotificationManager manager = NotificationManager.getInstance()!;
-    bool enabled = await manager.isDdayEnabled();
-
+    NotificationManager manager = NotificationManager.getInstance();
     ddayNotiIcon = Icon(
-        enabled
+        await manager.ddayNoti.isEnabled()
             ? Icons.notifications_active
             : Icons.notifications_active_outlined);
-  }
-
-  Future<void> updateDdayNoti() async{
-    if (await checkIosNotificationPermission() == false) {
-      requestIosNotificationPermission();
-      return;
-    }
-    NotificationManager manager = NotificationManager.getInstance()!;
-
-    bool result = await manager.toggleDday();
-    if (result && Platform.isIOS) {
-      Fluttertoast.showToast(msg: "아이폰의 경우 아직 알림이 모두 구현되지 않았습니다.\n아침 8시에 알림이 전송됩니다");
-    }
-    setState(() {
-      loadDdayNotiIcon();
-    });
-
-    await manager.updateNotifications();
   }
 
   Future<void> loadLunchNotiIcon() async {
@@ -460,8 +439,11 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       lunchNotiIcon = Container();
       return;
     }
-    NotificationManager manager = NotificationManager.getInstance()!;
-    lunchNotiIcon = Icon(await manager.isLunchEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+    NotificationManager manager = NotificationManager.getInstance();
+    lunchNotiIcon = Icon(
+        await manager.lunchMenuNoti.isLunchEnabled()
+            ? Icons.notifications_active
+            : Icons.notifications_active_outlined);
   }
 
   Future<void> loadDinnerNotiIcon() async {
@@ -469,21 +451,28 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       dinnerNotiIcon = Container();
       return;
     }
-    NotificationManager manager = NotificationManager.getInstance()!;
-    dinnerNotiIcon = Icon(await manager.isDinnerEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+    NotificationManager manager = NotificationManager.getInstance();
+    dinnerNotiIcon = Icon(
+        await manager.lunchMenuNoti.isDinnerEnabled()
+            ? Icons.notifications_active
+            : Icons.notifications_active_outlined);
+  }
+
+  Future<void> updateDdayNoti() async{
+    NotificationManager manager = NotificationManager.getInstance();
+
+    bool result = await manager.ddayNoti.toggleStatus();
+    setState(() {
+      ddayNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
+
+    await manager.updateNotifications();
   }
 
   Future<void> updateDinnerNoti() async{
-    if (await checkIosNotificationPermission() == false) {
-      requestIosNotificationPermission();
-      return;
-    }
-    NotificationManager manager = NotificationManager.getInstance()!;
+    NotificationManager manager = NotificationManager.getInstance();
 
-    bool result = await manager.toggleDinner();
-    if (result && Platform.isIOS) {
-      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
-    }
+    bool result = await manager.lunchMenuNoti.toggleDinner();
     setState(() {
       dinnerNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
@@ -492,40 +481,14 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> updateLunchNoti() async{
-    if (await checkIosNotificationPermission() == false) {
-      requestIosNotificationPermission();
-      return;
-    }
-    NotificationManager manager = NotificationManager.getInstance()!;
+    NotificationManager manager = NotificationManager.getInstance();
 
-    bool result = await manager.toggleLunch();
-    if (result && Platform.isIOS) {
-      Fluttertoast.showToast(msg: "아침 8시에 알림이 전송됩니다");
-    }
+    bool result = await manager.lunchMenuNoti.toggleLunch();
     setState(() {
       lunchNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
 
     await manager.updateNotifications();
-  }
-
-  List<Widget> _getIndicator(List items, int index) {
-    List<Widget> list = [];
-    // https://pub.dev/packages/carousel_slider/example - indicator demo
-    for (int i = 0; i < items.length; i++) {
-      list.add(Container(
-        width: 8.0,
-        height: 8.0,
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: i == index
-              ? Color.fromRGBO(0, 0, 0, 0.9)
-              : Color.fromRGBO(0, 0, 0, 0.4),
-        ),
-      ));
-    }
-    return list;
   }
 
   @override
@@ -534,14 +497,14 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
 void _showAppInfoDialog(BuildContext context) {
   showAboutDialog(context: context,
-    applicationName: "하노이한국국제학교 - KISH 어플리케이션",
-    children: [
-      Text('이 어플리케이션은 하노이한국국제학교의 공식 어플리케이션이 아닙니다.\n'
-          '제공된 정보 중 오류가 포함되어 있을 수 있습니다.\n'
-          '문제 발생시 카카오톡 아이디 j203775으로 연락해주세요.\n'),
-      Text("유정욱,이동주,이찬영,김태형,김나현,조현정,김재원,고성준,김태운,김경재,박지민,김선우",
-        overflow: TextOverflow.clip,),
-      Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
-    ]
+      applicationName: "하노이한국국제학교 - KISH 어플리케이션",
+      children: [
+        Text('이 어플리케이션은 하노이한국국제학교의 공식 어플리케이션이 아닙니다.\n'
+            '제공된 정보 중 오류가 포함되어 있을 수 있습니다.\n'
+            '문제 발생시 카카오톡 아이디 j203775으로 연락해주세요.\n'),
+        Text("유정욱,이동주,이찬영,김태형,김나현,조현정,김재원,고성준,김태운,김경재,박지민,김선우",
+          overflow: TextOverflow.clip,),
+        Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
+      ]
   );
 }

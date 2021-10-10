@@ -128,7 +128,6 @@ class ApiHelper {
   static Future<List?> getMagazineHome({String? parent, String? category}) async {
     String resultJson =
     await request(KISHApi.GET_MAGAZINE_HOME, Method.get, {"parent": parent, "category": category, "ios": Platform.isIOS.toString()});
-    print({"parent": parent, "category": category});
     return json.decode(resultJson);
   }
 
@@ -189,7 +188,6 @@ class ApiHelper {
     String uuid = await getUuid();
 
     String result = await request(KISHApi.LIBRARY_MY_INFO, Method.get, {"uuid": uuid}, doCache: false);
-    print(result);
     return json.decode(result);
   }
 

@@ -207,14 +207,14 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   }
 
   Future<void> loadNewKishPostNotiIcon() async {
-    NotificationManager manager = NotificationManager.getInstance()!;
-    newKishPostNotiIcon = Icon(await manager.isNewKishPostEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
+    NotificationManager manager = NotificationManager.getInstance();
+    newKishPostNotiIcon = Icon(await manager.newKishPostNoti.isEnabled() ? Icons.notifications_active : Icons.notifications_active_outlined);
   }
 
   Future<void> updateNewKishPostNoti() async{
-    NotificationManager manager = NotificationManager.getInstance()!;
+    NotificationManager manager = NotificationManager.getInstance();
 
-    bool result = await manager.toggleNewKishPost();
+    bool result = await manager.newKishPostNoti.toggleStatus();
 
     setState(() {
       newKishPostNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
@@ -247,7 +247,6 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     }
 
     searchIndex ++;
-    print (searchIndex.toString() + "??");
 
     try {
       List? result;

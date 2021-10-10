@@ -20,13 +20,10 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClientMixin<LibraryPage>{
   final FlutterSecureStorage storage = new FlutterSecureStorage();
 
-  late Widget body;
-
   @override
   void initState() {
     super.initState();
 
-    setDefaultBody();
     initWidgets();
   }
 
@@ -47,7 +44,16 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    return body;
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CupertinoButton.filled(
+              onPressed: (){
+                loadBodyWidget();
+              }, child: Text("다시 시도"))
+        ]
+    );
   }
 
   Future<void> loadBodyWidget() async {
@@ -90,20 +96,7 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
     }
   }
 
-  void setDefaultBody() {
-    body = Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CupertinoButton.filled(
-              onPressed: (){
-                loadBodyWidget();
-              }, child: Text("다시 시도"))
-        ]
-    );
-  }
-
-  void setBodyToLoggedInBody() {
+  /*void temp() {
     setState(() {
       body = SingleChildScrollView(
           child: Container(
@@ -124,6 +117,13 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
           )
       );
     });
+  }*/
+
+  void setBodyToLoggedInBody() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return _MyPage();
+    },
+    ));
   }
 
   Widget getMyInfoCard() {
@@ -209,4 +209,46 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _MyPage extends StatefulWidget {
+  const _MyPage({Key? key}) : super(key: key);
+
+  @override
+  _MyPageState createState() => _MyPageState();
+}
+
+class _MyPageState extends State<_MyPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+        children: [
+          Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [const Color(0xFF0f0c29), const Color(0XFF302b63), const Color(0xFF2C5364)],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight)
+                ),
+              )
+          ),
+          Positioned(
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.77,
+              width:  MediaQuery.of(context).size.width * 0.7,
+
+              decoration: BoxDecoration(
+                  color: Color(0xFFf0f0f0),
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(200)
+                  ),
+                boxShadow: [
+                  BoxShadow(blurRadius: 10, color: Colors.white)
+                  ]
+              ),
+            ),
+          )
+        ]);
+  }
 }

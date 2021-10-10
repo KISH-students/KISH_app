@@ -39,7 +39,7 @@ Future<void> main() async{
     await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     BackgroundFetch.start();
 
-    NotificationManager.instance!.updateNotifications();
+    NotificationManager.instance.updateNotifications();
   }
 
   LoginView.login();
@@ -146,6 +146,7 @@ class MainState extends State<Home> {
       currentIndex = pageController.page!.toInt();
     });
     Future.delayed(Duration(seconds: 0), () async {
+      newVersion = NewVersion();
       final VersionStatus? status = await newVersion.getVersionStatus();
       if(status != null) {
         if (status.canUpdate) {
@@ -189,7 +190,11 @@ class MainState extends State<Home> {
             },
           ),
             KishPostListPage(),
-            LibraryPage(),
+            Navigator(
+              onGenerateRoute: (settings) {
+                return MaterialPageRoute(builder: (a) => LibraryPage());
+              },
+            )
           ],
         ), // PageView
 
