@@ -146,7 +146,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
 
                           if (this.iAmAuthor || LoginView.isAdmin) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("댓글을 지우고 있습니다 ..."))
+                                SnackBar(content: Text("게시물을 지우고 있습니다 ..."))
                             );
                             Map response =
                             await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
