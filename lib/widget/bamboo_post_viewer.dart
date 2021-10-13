@@ -77,12 +77,16 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
         postId: widget.id,
         replies: replyComments,
       );
-      temp.add(comment);
+
+      // 답글도 없으면 삭제된 댓글 표시 안 함
+      if (!comment.removed && comment.replies.length > 0) {
+        temp.add(comment);
+      }
     });
 
     // 댓글 개수 처리. 대댓글도 포함합니다.
     int tempCount;
-    tempCount = post['comment'].length;   //댓글 개수
+    tempCount = temp.length;   //댓글 개수
     temp.forEach((element) {
       _Comment comment = element as _Comment;
       tempCount += comment.replies.length;
@@ -416,6 +420,7 @@ class _Comment extends StatefulWidget {
   final bool inReplyScreen;
   final bool isReply;
   final bool iAmAuthor;
+  bool removed = false;
   String content;
   int likes;
   bool liked;
@@ -423,7 +428,13 @@ class _Comment extends StatefulWidget {
 
   _Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
     this.liked: false, this.id: -1, this.postId: -1, this.parentId: -1, this.inReplyScreen: false,
-    this.iAmAuthor: false, this.replies: const [], Key? key}) : super(key: key);
+    this.iAmAuthor: false, this.replies: const [], Key? key}) : super(key: key)
+  {
+    if(this.content.isEmpty) {
+      this.content = "삭제된 댓글입니다";
+      this.removed = true;
+    }
+  }
 
   @override
   _CommentState createState() {
@@ -455,7 +466,7 @@ class _CommentState extends State<_Comment> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontFamily: "NanumSquareL",
-                                  fontSize: 15
+                                  fontSize: 15,
                               )),
                         ),
                         IconButton(onPressed: () async {
@@ -471,6 +482,7 @@ class _CommentState extends State<_Comment> {
                           if (response['success'] == true) {
                             setState(() {
                               widget.content = "삭제된 댓글입니다.";
+                              widget.removed = true;
                             });
                           }
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -495,7 +507,8 @@ class _CommentState extends State<_Comment> {
                               margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
                               child: Text(widget.content,
                                   style: TextStyle(
-                                      fontSize: 15
+                                      fontSize: 15,
+                                      fontStyle: widget.removed ? FontStyle.italic : FontStyle.normal
                                   )),
                             ),
                             Container(
