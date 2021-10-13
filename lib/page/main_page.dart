@@ -89,8 +89,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
       await loadDinnerNotiIcon();
       setState(() {});
 
-      if (NotificationManager.instance.preferences == null) {
-        await NotificationManager.instance.loadSharedPreferences();
+      if (NotificationManager.getInstance().preferences == null) {
+        await NotificationManager.getInstance().loadSharedPreferences();
       }
 
       lunchFutureBuilder = FutureBuilder(
@@ -114,7 +114,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 );
               }
             } else {
-              String? cachedJson = NotificationManager.instance.preferences!
+              String? cachedJson = NotificationManager.getInstance().preferences!
                   .getString(ApiHelper.getCacheKey(KISHApi.GET_LUNCH, {"date": ApiHelper.getTodayDateForLunch()}));
               if (cachedJson != null) {
                 dynamic data;
@@ -157,7 +157,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
             }
           }
 
-          String? cachedJson = NotificationManager.instance.preferences!.getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
+          String? cachedJson = NotificationManager.getInstance().preferences!
+              .getString(ApiHelper.getCacheKey(KISHApi.GET_EXAM_DATES, {}));
           if (cachedJson != null) {
             dynamic data;
             try {

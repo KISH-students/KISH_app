@@ -1,16 +1,14 @@
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/notification/dday_noti.dart';
 import 'package:kish2019/notification/lunch_menu_noti.dart';
 import 'package:kish2019/notification/new_kish_post_noti.dart';
-import 'package:kish2019/tool/api_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationManager {
-  static late NotificationManager instance;
+  static NotificationManager? _instance;
   static final FlutterLocalNotificationsPlugin notiPlugin =
   FlutterLocalNotificationsPlugin();
 
@@ -23,11 +21,10 @@ class NotificationManager {
   SharedPreferences? preferences;
 
   static NotificationManager getInstance() {
-    return instance;
-  }
-
-  NotificationManager() {
-    instance = this;
+    if (_instance == null) {
+      _instance = new NotificationManager();
+    }
+    return _instance as NotificationManager;
   }
 
   Future<void> init() async{

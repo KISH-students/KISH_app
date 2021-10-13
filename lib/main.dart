@@ -26,7 +26,7 @@ Future<void> main() async{
   await Firebase.initializeApp();
   firebaseCloudMessagingListeners();
 
-  await NotificationManager().init();
+  await NotificationManager.getInstance().init();
 
   runApp(MyApp());
 
@@ -39,7 +39,7 @@ Future<void> main() async{
     await BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     BackgroundFetch.start();
 
-    NotificationManager.instance.updateNotifications();
+    NotificationManager.getInstance().updateNotifications();
   }
 
   LoginView.login();
@@ -73,12 +73,7 @@ void firebaseCloudMessagingListeners() {
 }
 
 Future<void> notificationUpdateTask() async {
-  NotificationManager? manager = NotificationManager.instance;
-
-  if(manager == null){
-    manager = new NotificationManager();
-    await manager.init();
-  }
+  NotificationManager manager = NotificationManager.getInstance();
 
   manager.updateNotifications();
   return Future.value(true);
