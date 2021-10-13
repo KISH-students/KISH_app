@@ -145,17 +145,34 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                           }
 
                           if (this.iAmAuthor || LoginView.isAdmin) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("게시물을 지우고 있습니다 ..."))
-                            );
-                            Map response =
-                            await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
+                            showDialog<void>(
+                                context: context,
+                                barrierDismissible: false, // user must tap button!
+                                builder: (BuildContext dialogContext) {
+                                  return AlertDialog(content: Text("글을 정말 제거할까요?"),
+                                    actions: [
+                                      TextButton(onPressed: () async {
+                                        Navigator.of(dialogContext).pop();
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("게시물을 지우고 있습니다 ..."))
+                                        );
+                                        Map response =
+                                        await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
 
-                            if (response['success'] == true) {
-                              Navigator.pop(context);
-                            }
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(response['message']))
+                                        if (response['success'] == true) {
+                                          Navigator.pop(context);
+                                        }
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(response['message']))
+                                        );
+                                      }, child: Text("네")),
+
+                                      TextButton(onPressed: () {
+                                        Navigator.of(dialogContext).pop();
+                                      }, child: Text("아니요")),
+                                    ],
+                                  );
+                                }
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -441,14 +458,14 @@ class _CommentState extends State<_Comment> {
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("삭제 중 ..."))
                           );
-                            Map response =
-                            await ApiHelper.deleteBambooComment(LoginView.seq, this.widget.id);
+                          Map response =
+                          await ApiHelper.deleteBambooComment(LoginView.seq, this.widget.id);
 
-                            if (response['success'] == true) {
-                              setState(() {
-                                widget.content = "삭제된 댓글입니다.";
-                              });
-                            }
+                          if (response['success'] == true) {
+                            setState(() {
+                              widget.content = "삭제된 댓글입니다.";
+                            });
+                          }
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(response['message']))
                           );
