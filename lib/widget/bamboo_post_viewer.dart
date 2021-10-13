@@ -371,30 +371,37 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
   }
 
   Future<void> sendComment() async {
-    this.sendingComment = true;   // 댓글 중복 등록 방지
+    try {
+      this.sendingComment = true; // 댓글 중복 등록 방지
 
-    String content = this.commentController.text;
-    Map? response = await ApiHelper.writeBambooComment(LoginView.seq, widget.id, content);
+      String content = this.commentController.text;
+      Map? response = await ApiHelper.writeBambooComment(
+          LoginView.seq, widget.id, content);
 
-    if (response == null) {
-      Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      if (response == null) {
+        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+        sendingComment = false;
+        return;
+      }
+
+      bool success = response['success'];
+      String msg = response['message'];
+
+      if (success) { // 등록 성공
+        Fluttertoast.showToast(msg: msg);
+      } else { // 등록 실패
+        Fluttertoast.showToast(msg: msg);
+      }
+      this.commentController.text = ""; // 댓글 초기화
+      this.sendingComment = false; // 댓글 등록 상태 x
+
+      //TODO: 댓글 새로고침 개선
+      load(); // 본문을 새로고칩니다 ......
+    } catch(e) {
+      print(e);
+      Fluttertoast.showToast(msg: "처리하지 못했습니다.");
       sendingComment = false;
-      return;
     }
-
-    bool success = response['success'];
-    String msg = response['message'];
-
-    if (success) { // 등록 성공
-      Fluttertoast.showToast(msg: msg);
-    } else { // 등록 실패
-      Fluttertoast.showToast(msg: msg);
-    }
-    this.commentController.text = "";   // 댓글 초기화
-    this.sendingComment = false;    // 댓글 등록 상태 x
-
-    //TODO: 댓글 새로고침 개선
-    load();   // 본문을 새로고칩니다 ......
   }
 
   @override
@@ -736,29 +743,35 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
   }
 
   Future<void> sendComment() async {
-    this.sendingComment = true;   // 댓글 중복 등록 방지
+    try {
+      this.sendingComment = true; // 댓글 중복 등록 방지
 
-    String content = this.commentController.text;
-    Map? response = await ApiHelper.replyBambooComment(LoginView.seq,
-        comment.postId, comment.id, content);
+      String content = this.commentController.text;
+      Map? response = await ApiHelper.replyBambooComment(LoginView.seq,
+          comment.postId, comment.id, content);
 
-    if (response == null) {
-      Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+      if (response == null) {
+        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+        sendingComment = false;
+        return;
+      }
+
+      bool success = response['success'];
+      String msg = response['message'];
+
+      if (success) { // 등록 성공
+        Fluttertoast.showToast(msg: msg);
+      } else { // 등록 실패
+        Fluttertoast.showToast(msg: msg);
+      }
+      this.commentController.text = ""; // 댓글 초기화
+      this.sendingComment = false; // 댓글 등록 상태 x
+
+      loadReplies(scrollToBottom: true);
+    } catch(e) {
+      print(e);
+      Fluttertoast.showToast(msg: "처리하지 못했습니다.");
       sendingComment = false;
-      return;
     }
-
-    bool success = response['success'];
-    String msg = response['message'];
-
-    if (success) { // 등록 성공
-      Fluttertoast.showToast(msg: msg);
-    } else { // 등록 실패
-      Fluttertoast.showToast(msg: msg);
-    }
-    this.commentController.text = "";   // 댓글 초기화
-    this.sendingComment = false;    // 댓글 등록 상태 x
-
-    loadReplies(scrollToBottom: true);
   }
 }

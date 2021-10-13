@@ -129,35 +129,49 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
   }
 
   Future<void> writePost(BuildContext context) async {
-    String title = titleEditingController.text;
-    String content = contentEditingController.text;
+    try {
+      String title = titleEditingController.text;
+      String content = contentEditingController.text;
 
-    if (title.trim().isEmpty) {
+      if (title
+          .trim()
+          .isEmpty) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+            SnackBar(content: Text("제목을 입력해주세요."))
+        );
+        sending = false;
+        return;
+      }
+      if (content
+          .trim()
+          .length < 5) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+            SnackBar(content: Text("글이 너무 짧습니다."))
+        );
+        sending = false;
+        return;
+      }
+
+      Map response = await ApiHelper.writeBambooPost(
+          LoginView.seq, title, content);
+      bool success = response['success'];
+      String msg = response['message'];
+
+      Fluttertoast.showToast(msg: msg);
+      if (success) {
+        Navigator.pop(context);
+      }
+      sending = false;
+    } catch(e) {
+      print(e);
       ScaffoldMessenger.of(context)
           .showSnackBar(
-          SnackBar(content: Text("제목을 입력해주세요."))
+          SnackBar(content: Text("처리하지 못했습니다. 인터넷 상태를 확인해주세요."))
       );
       sending = false;
-      return;
     }
-    if (content.trim().length < 5) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-          SnackBar(content: Text("글이 너무 짧습니다."))
-      );
-      sending = false;
-      return;
-    }
-
-    Map response = await ApiHelper.writeBambooPost(LoginView.seq, title, content);
-    bool success = response['success'];
-    String msg = response['message'];
-
-    Fluttertoast.showToast(msg: msg);
-    if (success) {
-      Navigator.pop(context);
-    }
-    sending = false;
   }
 
   @override
