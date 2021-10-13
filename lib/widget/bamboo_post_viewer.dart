@@ -79,7 +79,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
       );
 
       // 답글도 없으면 삭제된 댓글 표시 안 함
-      if (!comment.removed && comment.replies.length > 0) {
+      if (!(comment.removed && comment.replies.length == 0)) {
         temp.add(comment);
       }
     });
