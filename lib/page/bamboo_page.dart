@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/tool/api_helper.dart';
@@ -52,6 +53,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
       list.forEach((element) {
         _PostPreview preview = new _PostPreview(
           id: element['bamboo_id'],
+          title: element['bamboo_title'],
           content: element['bamboo_content'],
           likes: element['like_count'],
           comments: element['comment_count'],
@@ -69,49 +71,49 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Container(
-        child: Column(
-          key: UniqueKey(),
-          children: [
-            SizedBox(height: 8,),
-            CupertinoButton(
-              child: Text("익명으로 글 쓰기"),
-              onPressed: () async {
-                String? id = await storage.read(key: "id");
-                String? pw = await storage.read(key: "pw");
+      child: Container(
+          child: Column(
+            key: UniqueKey(),
+            children: [
+              SizedBox(height: 8,),
+              CupertinoButton(
+                child: Text("익명으로 글 쓰기"),
+                onPressed: () async {
+                  String? id = await storage.read(key: "id");
+                  String? pw = await storage.read(key: "pw");
 
-                if(id == null || pw == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginView()));
-                } else {
-                  if (LoginView.isLoggined) {
-                    await Navigator.pushNamed(context, "writing");
-                    refreshPage();
-                  } else {
+                  if(id == null || pw == null) {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => LoginView()));
+                  } else {
+                    if (LoginView.isLoggined) {
+                      await Navigator.pushNamed(context, "writing");
+                      refreshPage();
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginView()));
+                    }
                   }
-                }
-              },
-              color: Colors.blueGrey.shade200,
-            ),
-            SizedBox(height: 10,),
-            Expanded(
-              child: RefreshIndicator(
-                  onRefresh: () async { refreshPage(); },
-                  child: PagedListView<int, _PostPreview>(
-                    pagingController: pagingController,
-                    builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
-                        itemBuilder: (context, item, index) {
-                          return this.previewList[index];
-                        }
-                    ),
-                  )
+                },
+                color: Colors.blueGrey.shade200,
               ),
-            )
-          ],
-        )
-        ),
+              SizedBox(height: 10,),
+              Expanded(
+                child: RefreshIndicator(
+                    onRefresh: () async { refreshPage(); },
+                    child: PagedListView<int, _PostPreview>(
+                      pagingController: pagingController,
+                      builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
+                          itemBuilder: (context, item, index) {
+                            return this.previewList[index];
+                          }
+                      ),
+                    )
+                ),
+              )
+            ],
+          )
+      ),
     );
   }
 
@@ -124,8 +126,9 @@ class _PostPreview extends StatelessWidget {
   final int id;
   final int likes;
   final int comments;
+  final String title;
 
-  _PostPreview({this.content: "", this.id: -1, this.likes: -1, this.comments: -1});
+  _PostPreview({this.title: "", this.content: "", this.id: -1, this.likes: -1, this.comments: -1});
 
   @override
   Widget build(BuildContext context) {
@@ -149,13 +152,24 @@ class _PostPreview extends StatelessWidget {
                     ),
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                        child: Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(content, style: TextStyle(fontSize: 18), maxLines: 11,),
-                              ),
-                            ]
-                        )
+                              Text("$title",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  )),
+                              //Container(height: 10),
+                              Divider(),
+                              Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(content, style: TextStyle(fontSize: 15), maxLines: 11,),
+                                    ),
+                                  ])
+                            ])
                     )
                 )
             ),
@@ -163,17 +177,8 @@ class _PostPreview extends StatelessWidget {
             Container(
                 margin: EdgeInsets.symmetric(vertical: 4, horizontal: 22),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                        "#$id번째 외침",
-                        style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold
-                        ),
-                        textAlign: TextAlign.left
-                    ),
                     Row(
                       children: [
                         Icon(Icons.message, color: Colors.blueGrey.shade200, size: 18),

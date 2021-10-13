@@ -16,6 +16,7 @@ class BambooPostViewer extends StatefulWidget {
 }
 
 class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepAliveClientMixin<BambooPostViewer>{
+  String title = "";
   String date = "";
   String content = "불러오는 중 입니다";
   int likes = 0;
@@ -88,6 +89,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
     });
 
     setState(() {
+      this.title = post['post']['bamboo_title'];
       this.content = post['post']['bamboo_content'];  //본문
       this.liked = post['post']['liked'];   //공감 여부
       this.likes = post['post']['likeCount'];   //좋아요 개수
@@ -118,17 +120,17 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios),
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
                         iconSize: 22,
                         onPressed: (){
                           Navigator.pop(context);
                         },
                       ),
-                      Text("#${widget.id}번째 외침",
+                      Text("$title",
                           style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 20,
-                              //fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
                               fontFamily: "NanumSquareR"
                           )),
                     ],
@@ -160,7 +162,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                                 SnackBar(content: Text("권한이 없습니다."))
                             );
                           }
-                        }, icon: Icon(CupertinoIcons.trash)),
+                        }, icon: Icon(CupertinoIcons.trash, color: Colors.grey)),
                         Text(this.date,
                             style: TextStyle(color: Colors.grey.shade600)),
                       ]),
@@ -175,7 +177,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                 //crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.fromLTRB(30, 20, 30, 20),
+                    margin: EdgeInsets.fromLTRB(30, 10, 30, 20),
                     child: Row(
                       children: [
                         Expanded(

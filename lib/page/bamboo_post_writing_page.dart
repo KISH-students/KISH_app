@@ -16,7 +16,8 @@ class BambooPostWritingPage extends StatefulWidget {
 
 class _BambooPostWritingPageState extends State<BambooPostWritingPage> with AutomaticKeepAliveClientMixin<BambooPostWritingPage>{
   bool sending = false;
-  TextEditingController controller = new TextEditingController();
+  TextEditingController contentEditingController = new TextEditingController();
+  TextEditingController titleEditingController = new TextEditingController();
 
   @override
   void initState() {
@@ -88,6 +89,16 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
             )
           ],
         ),
+        Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: TextFormField(
+          controller: titleEditingController,
+          decoration: InputDecoration(
+              hintText: "제목을 입력해주세요",
+              hintStyle: TextStyle(overflow: TextOverflow.clip),
+              border: InputBorder.none
+          )),
+        ),
         Divider(),
         Expanded(
             child: Container(
@@ -95,22 +106,22 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                 width: double.infinity,
                 height: double.infinity,
                 child: TextFormField(
-                  scrollPhysics: BouncingScrollPhysics(),
-                  controller: controller,
-                  keyboardType: TextInputType.multiline,
-                  minLines: null,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                      hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
-                          "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
-                          "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
-                          "정보가 제공될 수 있습니다.",
-                      hintStyle: TextStyle(overflow: TextOverflow.clip),
-                      border: InputBorder.none
-                  ),
-                )
+                      scrollPhysics: BouncingScrollPhysics(),
+                      controller: contentEditingController,
+                      keyboardType: TextInputType.multiline,
+                      minLines: null,
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: InputDecoration(
+                          hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
+                              "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
+                              "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
+                              "정보가 제공될 수 있습니다.",
+                          hintStyle: TextStyle(overflow: TextOverflow.clip),
+                          border: InputBorder.none
+                      ),
+                    )
             )
         )
       ],
@@ -118,8 +129,18 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
   }
 
   Future<void> writePost(BuildContext context) async {
-    String text = controller.text;
-    if (text.length < 5) {
+    String title = titleEditingController.text;
+    String content = contentEditingController.text;
+
+    if (title.trim().isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+          SnackBar(content: Text("제목을 입력해주세요."))
+      );
+      sending = false;
+      return;
+    }
+    if (content.trim().length < 5) {
       ScaffoldMessenger.of(context)
           .showSnackBar(
           SnackBar(content: Text("글이 너무 짧습니다."))
@@ -128,7 +149,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
       return;
     }
 
-    Map response = await ApiHelper.writeBambooPost(LoginView.seq, text);
+    Map response = await ApiHelper.writeBambooPost(LoginView.seq, title, content);
     bool success = response['success'];
     String msg = response['message'];
 
