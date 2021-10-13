@@ -222,12 +222,12 @@ class ApiHelper {
     return json.decode(response);
   }
 
-  static Future<Map> writeBambooPost(String seq, String title, String content) async {
+  static Future<Map> writeBambooPost(String seq, String title, String content, bool facebook) async {
     String response = await request(
         KISHApi.BAMBOO_WRITE_POST,
         Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken,
-        'title': title, 'content': content}
+        'title': title, 'content': content, 'fb': facebook.toString()}
     );
     return json.decode(response);
   }

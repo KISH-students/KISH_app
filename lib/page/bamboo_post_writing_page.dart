@@ -75,29 +75,20 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                 icon: Icon(CupertinoIcons.paperplane_fill),
                 color: Colors.blueGrey,
                 onPressed: (){
-                  if (sending) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(
-                        SnackBar(content: Text("이미 처리 중 입니다."))
-                    );
-                    return;
-                  }
-
-                  sending = true;
-                  writePost(context);
+                  readyToWrite(context);
                 }
             )
           ],
         ),
         Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        child: TextFormField(
-          controller: titleEditingController,
-          decoration: InputDecoration(
-              hintText: "제목을 입력해주세요",
-              hintStyle: TextStyle(overflow: TextOverflow.clip),
-              border: InputBorder.none
-          )),
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: TextFormField(
+              controller: titleEditingController,
+              decoration: InputDecoration(
+                  hintText: "제목을 입력해주세요",
+                  hintStyle: TextStyle(overflow: TextOverflow.clip),
+                  border: InputBorder.none
+              )),
         ),
         Divider(),
         Expanded(
@@ -106,56 +97,78 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                 width: double.infinity,
                 height: double.infinity,
                 child: TextFormField(
-                      scrollPhysics: BouncingScrollPhysics(),
-                      controller: contentEditingController,
-                      keyboardType: TextInputType.multiline,
-                      minLines: null,
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      decoration: InputDecoration(
-                          hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
-                              "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
-                              "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
-                              "정보가 제공될 수 있습니다.",
-                          hintStyle: TextStyle(overflow: TextOverflow.clip),
-                          border: InputBorder.none
-                      ),
-                    )
+                  scrollPhysics: BouncingScrollPhysics(),
+                  controller: contentEditingController,
+                  keyboardType: TextInputType.multiline,
+                  minLines: null,
+                  maxLines: null,
+                  expands: true,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(
+                      hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
+                          "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
+                          "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
+                          "정보가 제공될 수 있습니다.",
+                      hintStyle: TextStyle(overflow: TextOverflow.clip),
+                      border: InputBorder.none
+                  ),
+                )
             )
         )
       ],
     );
   }
 
-  Future<void> writePost(BuildContext context) async {
+  Future<void> readyToWrite(BuildContext context) async {
+    String title = titleEditingController.text;
+    String content = contentEditingController.text;
+
+    if (title.trim().isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+          SnackBar(content: Text("제목을 입력해주세요."))
+      );
+      return;
+    }
+    if (content.trim().length < 5) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+          SnackBar(content: Text("글이 너무 짧습니다."))
+      );
+      return;
+    }
+    showCheckingDialog();
+  }
+
+  void showCheckingDialog() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return CheckDialog(this);
+      },
+    );
+  }
+
+  Future<void> writePost(bool facebook) async{
+    if (sending) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+          SnackBar(content: Text("이미 처리 중 입니다."))
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("게시물 등록 중 ...")));
+
+    sending = true;
+    String title = titleEditingController.text;
+    String content = contentEditingController.text;
+
     try {
-      String title = titleEditingController.text;
-      String content = contentEditingController.text;
-
-      if (title
-          .trim()
-          .isEmpty) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(
-            SnackBar(content: Text("제목을 입력해주세요."))
-        );
-        sending = false;
-        return;
-      }
-      if (content
-          .trim()
-          .length < 5) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(
-            SnackBar(content: Text("글이 너무 짧습니다."))
-        );
-        sending = false;
-        return;
-      }
-
       Map response = await ApiHelper.writeBambooPost(
-          LoginView.seq, title, content);
+          LoginView.seq, title, content, facebook);
       bool success = response['success'];
       String msg = response['message'];
 
@@ -163,17 +176,72 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
       if (success) {
         Navigator.pop(context);
       }
-      sending = false;
     } catch(e) {
       print(e);
       ScaffoldMessenger.of(context)
           .showSnackBar(
           SnackBar(content: Text("처리하지 못했습니다. 인터넷 상태를 확인해주세요."))
       );
+    } finally {
       sending = false;
     }
   }
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class CheckDialog extends StatefulWidget {
+  final _BambooPostWritingPageState pageState;
+  const CheckDialog(this.pageState, {Key? key}) : super(key: key);
+
+  @override
+  _CheckDialogState createState() => _CheckDialogState();
+}
+
+class _CheckDialogState extends State<CheckDialog> {
+  bool? facebook = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('글 등록'),
+      content: SingleChildScrollView(
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('글을 등록할까요?'),
+                Container(height: 10,),
+                Row(
+                    children: [
+                      Checkbox(value: facebook, onChanged: (v){
+                        setState(() {
+                          facebook = v!;
+                        });
+                      }),
+                      Expanded(
+                        child: Text("페이스북 KISH 대나무숲에 익명으로 게시",
+                        overflow: TextOverflow.clip),
+                      )
+                    ]
+                )
+              ])
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('아니요'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: const Text('네'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.pageState.writePost(facebook as bool);
+          },
+        ),
+      ],
+    );
+  }
 }
