@@ -247,7 +247,7 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("가정통신문")),
-            const BubbleBottomBarItem(  // KISH 도서
+            /*const BubbleBottomBarItem(  // KISH 도서
                 backgroundColor: Colors.brown,
                 icon: Icon(
                   Icons.book_outlined,
@@ -257,7 +257,7 @@ class MainState extends State<Home> {
                   Icons.book_outlined,
                   color: Colors.brown,
                 ),
-                title: const Text("도서")),
+                title: const Text("도서")),*/
           ],
         ),
       ),
