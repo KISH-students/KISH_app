@@ -206,25 +206,27 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(left: 17),
-              child: Center(
-                child: FlatButton(
-                  onPressed: () { _showAppInfoDialog(context); },
-                  child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
-                ),),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 25),
-              child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
-            ),
-            /*CarouselSlider(
+    return RefreshIndicator(
+      onRefresh: () async {await initWidgets();},
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.only(left: 17),
+                child: Center(
+                  child: FlatButton(
+                    onPressed: () { _showAppInfoDialog(context); },
+                    child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
+                  ),),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 25),
+                child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
+              ),
+              /*CarouselSlider(
             options: CarouselOptions(
                 aspectRatio: 2 / 1,
                 enlargeCenterPage: true,
@@ -243,48 +245,49 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
             mainAxisAlignment: MainAxisAlignment.center,
             children: _getIndicator(sliderItems, sliderIdx),
           ),*/
-            Center(
-                child: Column(
+              Center(
+                  child: Column(
+                      children: [
+                        Container(
+                            alignment: Alignment.topRight,
+                            child: FlatButton.icon(
+                              onPressed: Platform.isIOS ? (){} : updateDdayNoti,  // ios에선 표시 안 함
+                              icon: ddayNotiIcon,
+                              label: Text(Platform.isIOS ? "" : "DDay 알림"),)),
+                        ddayFutureBuilder,
+                      ]
+                  )
+              ),
+
+              Center(
+                  child: Column(
                     children: [
                       Container(
-                          alignment: Alignment.topRight,
-                          child: FlatButton.icon(
-                            onPressed: Platform.isIOS ? (){} : updateDdayNoti,  // ios에선 표시 안 함
-                            icon: ddayNotiIcon,
-                            label: Text(Platform.isIOS ? "" : "DDay 알림"),)),
-                      ddayFutureBuilder,
-                    ]
-                )
-            ),
-
-            Center(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child: Stack(
-                          children: [
-                            Container(
-                                alignment: Alignment.topLeft,
-                                child: FlatButton.icon(
-                                  onPressed: Platform.isIOS ? (){} : updateLunchNoti,
-                                  icon: this.lunchNotiIcon,
-                                  label: Text(Platform.isIOS ? "" : "중식 알림"),)),
-                            Container(
-                                alignment: Alignment.topRight,
-                                child: FlatButton.icon(
-                                  onPressed: Platform.isIOS ? (){} : updateDinnerNoti,
-                                  icon: this.dinnerNotiIcon,
-                                  label: Text(Platform.isIOS ? "" : "석식 알림"),)),
-                          ]
+                        margin: EdgeInsets.only(top: 30),
+                        child: Stack(
+                            children: [
+                              Container(
+                                  alignment: Alignment.topLeft,
+                                  child: FlatButton.icon(
+                                    onPressed: Platform.isIOS ? (){} : updateLunchNoti,
+                                    icon: this.lunchNotiIcon,
+                                    label: Text(Platform.isIOS ? "" : "중식 알림"),)),
+                              Container(
+                                  alignment: Alignment.topRight,
+                                  child: FlatButton.icon(
+                                    onPressed: Platform.isIOS ? (){} : updateDinnerNoti,
+                                    icon: this.dinnerNotiIcon,
+                                    label: Text(Platform.isIOS ? "" : "석식 알림"),)),
+                            ]
+                        ),
                       ),
-                    ),
-                    Container(
-                        child: lunchFutureBuilder),
-                  ],
-                )
-            ),
-          ],
+                      Container(
+                          child: lunchFutureBuilder),
+                    ],
+                  )
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -73,20 +73,22 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
           label: const Text("뒤로가기"));
 
       body = Expanded(
-        child: PagedListView<int, Widget>(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(
-              parent: const AlwaysScrollableScrollPhysics()),
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Widget>(
-              itemBuilder: (context, item, index) {
-                if (index > postList.length - 1) {    // 왜 자꾸 index를 넘어갈까요?
-                  return SizedBox.shrink();
-                }
-                return postList[index];
-              }
-          ),
-        ),);
+        child: RefreshIndicator(
+          onRefresh: () async { _pagingController.refresh(); },
+          child: PagedListView<int, Widget>(
+              physics: AlwaysScrollableScrollPhysics(),
+              shrinkWrap: false,
+              pagingController: _pagingController,
+              builderDelegate: PagedChildBuilderDelegate<Widget>(
+                  itemBuilder: (context, item, index) {
+                    if (index > postList.length - 1) {    // 왜 자꾸 index를 넘어갈까요?
+                      return SizedBox.shrink();
+                    }
+                    return postList[index];
+                  }
+              )),
+        ),
+      );
     });
   }
 
@@ -98,9 +100,6 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
       searchIndex = -1;
       _pagingController.itemList = [];
       postList = [];
-      if(_pagingController != null) {
-        _pagingController.dispose();
-      }
 
       body = FutureBuilder(
           future: ApiHelper.getPostListHomeSummary(),
@@ -116,25 +115,6 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
               }
             }
 
-            /*if (data == null) {
-                      loading = LinearProgressIndicator(backgroundColor: Colors.grey);
-
-                      if (NotificationManager.instance.preferences != null) {
-                        String key = ApiHelper.getCacheKey(
-                            KISHApi.GET_POST_LIST_HOME_SUMMARY, {});
-                        String jsonData = NotificationManager.instance
-                            .preferences.getString(key);
-
-                        if (jsonData != null) {
-                          try {
-                            data = json.decode(jsonData);
-                          } catch (e) {
-                            print(e);
-                          }
-                        }
-                      }
-                    }*/
-
             if (data != null) {
               List<Widget> widgets = [];
               data.forEach((element) {
@@ -143,14 +123,18 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
               });
 
               Widget resultWidget = Expanded(
-                  child: AspectRatio(
-                      aspectRatio: 1/1,
-                      child: ListView.builder(
-                        shrinkWrap: false,
-                        itemCount: widgets.length,
-                        itemBuilder: (context, index) {return widgets[index];},
-                      )));
-
+                  child: RefreshIndicator(
+                      onRefresh: () async { setBody2Normal(); },
+                      child: AspectRatio(
+                          aspectRatio: 1/1,
+                          child: ListView.builder(
+                            shrinkWrap: false,
+                            itemCount: widgets.length,
+                            itemBuilder: (context, index) {return widgets[index];},
+                          )
+                      )
+                  )
+              );
               return resultWidget;
             }
             return YoutubeShimmer();
