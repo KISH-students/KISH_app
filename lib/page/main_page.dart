@@ -32,9 +32,9 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   String? todayDate;
   int sliderIdx = 0;
 
-  Widget ddayNotiIcon = CircularProgressIndicator();
-  Widget lunchNotiIcon = CircularProgressIndicator();
-  Widget dinnerNotiIcon = CircularProgressIndicator();
+  Widget ddayNotiIcon = CupertinoActivityIndicator();
+  Widget lunchNotiIcon = CupertinoActivityIndicator();
+  Widget dinnerNotiIcon = CupertinoActivityIndicator();
 
   @override
   void initState() {

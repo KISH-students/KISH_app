@@ -24,7 +24,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
   bool sendingComment = false;
   bool iAmAuthor = false;
   int commentCount = 0;
-  List<Widget> comments = [CircularProgressIndicator()];
+  List<Widget> comments = [CupertinoActivityIndicator()];
   TextEditingController commentController = new TextEditingController();
 
   @override

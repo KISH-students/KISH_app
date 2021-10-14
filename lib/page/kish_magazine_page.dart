@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/page/pdf_page.dart';
@@ -18,9 +19,9 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
   String? parent;
   String? category;
 
-  Widget body = CircularProgressIndicator();
-  Widget parentDropdown = CircularProgressIndicator();
-  Widget categoryDropdown = CircularProgressIndicator();
+  Widget body = CupertinoActivityIndicator();
+  Widget parentDropdown = CupertinoActivityIndicator();
+  Widget categoryDropdown = CupertinoActivityIndicator();
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                 return Text("로드 실패");
               }
             } else {
-              return CircularProgressIndicator(backgroundColor: Colors.orangeAccent);
+              return CupertinoActivityIndicator();
             }
           },
         );
@@ -125,8 +126,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                 return Text("로드 실패");
               }
             } else {
-              return CircularProgressIndicator(
-                  backgroundColor: Colors.orangeAccent);
+              return CupertinoActivityIndicator();
             }
           },
         );
@@ -162,8 +162,7 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                 return Text("로드 실패");
               }
             } else {
-              return CircularProgressIndicator(
-                  backgroundColor: Colors.orangeAccent);
+              return CupertinoActivityIndicator();
             }
           },
         );
@@ -278,7 +277,7 @@ class TextArticleWithImg extends StatelessWidget {
                       loadingBuilder: (context, child, progress) {
                         return progress == null
                             ? child
-                            : CircularProgressIndicator();
+                            : CupertinoActivityIndicator();
                       },
                     )
                 )
@@ -326,7 +325,7 @@ class ImgArticle extends StatelessWidget {
                     loadingBuilder: (context, child, progress) {
                       return progress == null
                           ? child
-                          : CircularProgressIndicator();
+                          : CupertinoActivityIndicator();
                     },
                   )
               ),
@@ -364,7 +363,7 @@ class _ParentDropdownState extends State<ParentDropdown> {
       onChanged: (String? v) {
         setState(() {
           widget.main.parent = v;
-          widget.main.body = CircularProgressIndicator();
+          widget.main.body = CupertinoActivityIndicator();
         });
         widget.main.loadCategory();
       },
