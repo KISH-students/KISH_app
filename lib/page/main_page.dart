@@ -226,25 +226,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 margin: EdgeInsets.only(bottom: 25),
                 child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
               ),
-              /*CarouselSlider(
-            options: CarouselOptions(
-                aspectRatio: 2 / 1,
-                enlargeCenterPage: true,
-                scrollDirection: Axis.horizontal,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 10),
-                enableInfiniteScroll: true,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    sliderIdx = index;
-                  });
-                }),
-            items: sliderItems,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: _getIndicator(sliderItems, sliderIdx),
-          ),*/
               Center(
                   child: Column(
                       children: [
@@ -283,11 +264,13 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                       ),
                       Container(
                           child: lunchFutureBuilder),
-                    ],
-                  )
+                    ],)
               ),
-            ],
-          ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                child: BambooPosts(),
+              )
+            ],),
         ),
       ),
     );
@@ -511,4 +494,62 @@ void _showAppInfoDialog(BuildContext context) {
         Text("\n개발에 기여 해보세요.\nhttps://github.com/KISH-students"),
       ]
   );
+}
+
+class BambooPosts extends StatelessWidget {
+  const BambooPosts({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text("익명 게시물",
+                  style: TextStyle(color: Color.fromARGB(220, 43, 43, 43),
+                      fontSize: 20,
+                      fontFamily: "CRB"))
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.withOpacity(0.4), width: 1.4),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              child: FutureBuilder(builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return Text("오류가 발생했습니다.");
+                }
+                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                  List data = snapshot.data as List;
+                  List<Widget> posts = [];
+                  data.forEach((element) {
+                    Widget post = MaterialButton(onPressed: () {MainState.instance!.changePage(2);},
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(element['bamboo_title'], style: TextStyle(fontWeight: FontWeight.bold,)),
+                              Container(height: 4),
+                              Text(element['bamboo_content'])
+                            ])
+                    );
+                    posts.add(post);
+                    posts.add(Divider());
+                  });
+                  posts.removeLast(); //마지막 Divider 제거
+                  return Column(children: posts,
+                    crossAxisAlignment: CrossAxisAlignment.start,);
+                } else {
+                  return CupertinoActivityIndicator();
+                }
+              },
+                  future: ApiHelper.getBambooPosts(0)),
+            ),
+          ),
+        ]);
+  }
 }

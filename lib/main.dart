@@ -129,6 +129,8 @@ class Home extends StatefulWidget {
 }
 
 class MainState extends State<Home> {
+  static MainState? instance;
+
   final PageController pageController = PageController(initialPage: 0, keepPage: true);
   late NewVersion newVersion;
   DateTime? currentBackPressTime;
@@ -137,6 +139,8 @@ class MainState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    instance = this;
+
     pageController.addListener(() {
       currentIndex = pageController.page!.toInt();
     });

@@ -214,6 +214,7 @@ class ApiHelper {
   }
 
   static Future<List?> getBambooPosts(int page) async {
+    // page는 0이 시작
     String response = await request(
         KISHApi.BAMBOO_GET_POSTS,
         Method.get,
