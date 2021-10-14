@@ -56,6 +56,14 @@ class LoginView extends StatefulWidget {
     return resultMap;
   }
 
+  static Future<void> logout() async {
+    LoginView.isLoggined = false;
+    LoginView.isAdmin = false;
+    LoginView.seq = "";
+    await storage.delete(key: "id");
+    await storage.delete(key: "pw");
+}
+
   @override
   _LoginViewState createState() {
     return _LoginViewState();

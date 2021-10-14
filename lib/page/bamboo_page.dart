@@ -70,33 +70,62 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    Color loginButtonColor;
+    String loginButtonText;
+    if (LoginView.isLoggined) {
+      loginButtonColor = Colors.redAccent;
+      loginButtonText = "로그아웃 하기";
+    } else {
+      loginButtonColor = Colors.green;
+      loginButtonText = "로그인 하기";
+    }
+
     return SafeArea(
       child: Container(
           child: Column(
             key: UniqueKey(),
             children: [
-              SizedBox(height: 8,),
-              CupertinoButton(
-                child: Text("익명으로 글 쓰기"),
-                onPressed: () async {
-                  String? id = await storage.read(key: "id");
-                  String? pw = await storage.read(key: "pw");
+              SizedBox(height: 8),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CupertinoButton(
+                      child: Text("익명으로 글 쓰기"),
+                      onPressed: () async {
+                        String? id = await storage.read(key: "id");
+                        String? pw = await storage.read(key: "pw");
 
-                  if(id == null || pw == null) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginView()));
-                  } else {
-                    if (LoginView.isLoggined) {
-                      await Navigator.pushNamed(context, "writing");
-                      refreshPage();
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginView()));
-                    }
-                  }
-                },
-                color: Colors.blueGrey.shade200,
-              ),
+                        if(id == null || pw == null) {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => LoginView()));
+                        } else {
+                          if (LoginView.isLoggined) {
+                            await Navigator.pushNamed(context, "writing");
+                            refreshPage();
+                          } else {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => LoginView()));
+                          }
+                        }
+                      },
+                      color: Colors.black87,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    ),
+                    Container(width: 5),
+                    CupertinoButton(
+                      child: Text(loginButtonText),
+                      color: loginButtonColor, onPressed: () async {
+                      if (LoginView.isLoggined) {
+                        await LoginView.logout();
+                      } else {
+                        await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => LoginView()));
+                      }
+                      setState(() {});
+                    },
+                      padding: EdgeInsets.symmetric(horizontal: 13, vertical: 6),
+                    ),
+                  ]),
               SizedBox(height: 10,),
               Expanded(
                 child: RefreshIndicator(
@@ -153,7 +182,7 @@ class _PostPreview extends StatelessWidget {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("$title",
                                   textAlign: TextAlign.start,
