@@ -16,9 +16,8 @@ class CustomTextFromField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4),
+        margin: EdgeInsets.symmetric(vertical: 4),
         child: TextFormField(
-            key: UniqueKey(),
             controller: this.controller,
             style: TextStyle(color: Colors.white),
             enableSuggestions: !this.isPassword,
