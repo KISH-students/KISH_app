@@ -125,13 +125,10 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
               Widget resultWidget = Expanded(
                   child: RefreshIndicator(
                       onRefresh: () async { setBody2Normal(); },
-                      child: AspectRatio(
-                          aspectRatio: 1/1,
-                          child: ListView.builder(
-                            shrinkWrap: false,
-                            itemCount: widgets.length,
-                            itemBuilder: (context, index) {return widgets[index];},
-                          )
+                      child: ListView.builder(
+                        shrinkWrap: false,
+                        itemCount: widgets.length,
+                        itemBuilder: (context, index) {return widgets[index];},
                       )
                   )
               );
