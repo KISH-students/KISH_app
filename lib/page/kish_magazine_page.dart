@@ -233,7 +233,7 @@ class TextArticle extends StatelessWidget {
             Text(data["summary"],
                 style: TextStyle(
                     fontSize: 13, color: Color.fromARGB(255, 28, 28, 28),
-                    fontFamily: "Times New Roman", fontWeight: FontWeight.w300)),
+                    fontFamily: "NanumSquareR", fontWeight: FontWeight.w300)),
             Container(
               margin: EdgeInsets.only(top: 20, bottom: 16),
               height: 1,
@@ -266,7 +266,7 @@ class TextArticleWithImg extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
-            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28), fontFamily: "Times New Roman")),
+            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28), fontFamily: "NanumSquareR")),
             Container(
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 10, bottom: 15),
