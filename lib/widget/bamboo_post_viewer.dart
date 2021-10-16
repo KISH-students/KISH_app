@@ -202,7 +202,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                     child: Row(
                       children: [
                         Expanded(
-                            child: Text(content,
+                            child: SelectableText(content,
                               style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
                         ),
                       ],
@@ -505,7 +505,7 @@ class _CommentState extends State<_Comment> {
                           children:[
                             Container(
                               margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                              child: Text(widget.content,
+                              child: SelectableText(widget.content,
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontStyle: widget.removed ? FontStyle.italic : FontStyle.normal
