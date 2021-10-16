@@ -395,19 +395,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
     }
   }
 
-  Future<bool> checkIosNotificationPermission() async {
-    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
-    return permissionStatus == PermissionStatus.granted;
-  }
-
-  Future<void> requestIosNotificationPermission() async {
-    await NotificationPermissions.requestNotificationPermissions(iosSettings: const NotificationSettingsIos(
-        sound: true,
-        badge: true,
-        alert: true
-    ), openSettings: true);
-  }
-
   Future<void> loadDdayNotiIcon() async {
     if (Platform.isIOS) {
       ddayNotiIcon = Container();

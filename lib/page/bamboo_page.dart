@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/bamboo_post_viewer.dart';
 import 'package:kish2019/widget/login_view.dart';
@@ -20,12 +24,23 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
   final FlutterSecureStorage storage = new FlutterSecureStorage();
   PagingController<int, _PostPreview> pagingController = new PagingController(firstPageKey: 0);
   List<_PostPreview> previewList = [];
+  late Widget newBambooPostNotiIcon;
 
   @override
   void initState() {
     super.initState();
     pagingController.addPageRequestListener((pageKey) {
       updatePage(pageKey);
+    });
+    NotificationManager manager = NotificationManager.getInstance();
+
+    newBambooPostNotiIcon = FutureBuilder(
+      future: manager.newBambooPostNoti.isEnabled(),
+      initialData: "loading",
+      builder: (context, snapshot) {
+        if(snapshot.data == "loading") return Icon(Icons.sync);
+        if(snapshot.data == true) return Icon(Icons.notifications_active);
+        return Icon(Icons.notifications_active_outlined);
     });
   }
 
@@ -125,6 +140,16 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                     },
                       padding: EdgeInsets.symmetric(horizontal: 13, vertical: 6),
                     ),
+                    Container(
+                        alignment: Alignment.center,
+                        child: FlatButton.icon(
+                            onPressed: NotificationManager.isFcmSupported
+                                ? updateNewPostNoti
+                                : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                            icon: this.newBambooPostNotiIcon,
+                            label: const Text("새 글 알림")
+                        )
+                    ),
                   ]),
               SizedBox(height: 10,),
               Expanded(
@@ -144,6 +169,23 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
           )
       ),
     );
+  }
+
+  Future<void> updateNewPostNoti() async{
+    if(Platform.isIOS) {
+      bool perm = await NotificationManager.checkIosNotificationPermission();
+      if (!perm) {
+        NotificationManager.requestIosNotificationPermission();
+        return;
+      }
+    }
+
+    NotificationManager manager = NotificationManager.getInstance();
+    bool result = await manager.newBambooPostNoti.toggleStatus();
+
+    setState(() {
+      newBambooPostNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
   }
 
   @override

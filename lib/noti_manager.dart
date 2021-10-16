@@ -4,7 +4,9 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/notification/dday_noti.dart';
 import 'package:kish2019/notification/lunch_menu_noti.dart';
+import 'package:kish2019/notification/new_bamboo_post_noti.dart';
 import 'package:kish2019/notification/new_kish_post_noti.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationManager {
@@ -17,6 +19,7 @@ class NotificationManager {
   late DdayNoti ddayNoti;
   late LunchMenuNoti lunchMenuNoti;
   late NewKishPostNoti newKishPostNoti;
+  late NewBambooPostNoti newBambooPostNoti;
 
   SharedPreferences? preferences;
 
@@ -39,6 +42,20 @@ class NotificationManager {
     this.lunchMenuNoti = new LunchMenuNoti();
     this.ddayNoti = new DdayNoti();
     this.newKishPostNoti = new NewKishPostNoti();
+    this.newBambooPostNoti = new NewBambooPostNoti();
+  }
+
+  static Future<bool> checkIosNotificationPermission() async {
+    PermissionStatus permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    return permissionStatus == PermissionStatus.granted;
+  }
+
+  static Future<void> requestIosNotificationPermission() async {
+    await NotificationPermissions.requestNotificationPermissions(iosSettings: const NotificationSettingsIos(
+        sound: true,
+        badge: true,
+        alert: true
+    ), openSettings: true);
   }
 
   Future<void> loadSharedPreferences() async{
