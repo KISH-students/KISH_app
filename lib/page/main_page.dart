@@ -28,7 +28,7 @@ class MainPage extends StatefulWidget {
   }
 }
 
-class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>, WidgetsBindingObserver{
+class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>{
   Widget? lunchFutureBuilder;
   late Widget ddayFutureBuilder;
   String? todayDate;
@@ -37,25 +37,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   Widget ddayNotiIcon = CupertinoActivityIndicator();
   Widget lunchNotiIcon = CupertinoActivityIndicator();
   Widget dinnerNotiIcon = CupertinoActivityIndicator();
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        print("app in resumed");
-        print(FirebaseMessaging.instance.getInitialMessage());
-        break;
-      case AppLifecycleState.inactive:
-        print("app in inactive");
-        break;
-      case AppLifecycleState.paused:
-        print("app in paused");
-        break;
-      case AppLifecycleState.detached:
-        print("app in detached");
-        break;
-    }
-  }
 
   @override
   void initState() {
