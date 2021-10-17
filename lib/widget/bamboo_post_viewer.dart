@@ -7,7 +7,8 @@ import 'package:like_button/like_button.dart';
 
 class BambooPostViewer extends StatefulWidget {
   final int id;
-  BambooPostViewer(this.id, {Key? key}) : super(key: key);
+  final int commentIdToView;  // 확인 할 댓글
+  BambooPostViewer(this.id, {this.commentIdToView: -1, Key? key}) : super(key: key);
 
   @override
   _BambooPostViewerState createState() {
@@ -81,6 +82,14 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
       // 답글도 없으면 삭제된 댓글 표시 안 함
       if (!(comment.removed && comment.replies.length == 0)) {
         temp.add(comment);
+
+        if (widget.commentIdToView == comment.id) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return Scaffold(
+                body: CommentReplyScreen(tempComment: comment, postId: comment.postId)
+            );
+          }));
+        }
       }
     });
 
@@ -464,9 +473,9 @@ class _CommentState extends State<_Comment> {
                           padding: EdgeInsets.only(left: 8),
                           child: Text(widget.name,
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "NanumSquareL",
-                                  fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "NanumSquareL",
+                                fontSize: 15,
                               )),
                         ),
                         IconButton(onPressed: () async {
@@ -519,7 +528,7 @@ class _CommentState extends State<_Comment> {
                                   MaterialButton(onPressed: () async {
                                     if (widget.inReplyScreen) return;
                                     await Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                      return CommentReplyScreen(temp: this.widget, postId: widget.parentId,);
+                                      return CommentReplyScreen(tempComment: this.widget, postId: widget.parentId,);
                                     }));
 
                                     this.setState(() {
@@ -613,9 +622,9 @@ class _CommentState extends State<_Comment> {
 }
 
 class CommentReplyScreen extends StatefulWidget {
-  final _Comment temp;
+  final _Comment tempComment;
   final int postId;
-  const CommentReplyScreen({required this.temp, required this.postId,
+  const CommentReplyScreen({required this.tempComment, required this.postId,
     Key? key}) : super(key: key);
 
   @override
@@ -638,7 +647,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
   }
 
   void loadComment() {
-    _Comment temp = widget.temp;
+    _Comment temp = widget.tempComment;
     this.comment = _Comment(content: temp.content,
       id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
       likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
@@ -650,12 +659,16 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
     return Column(
         children: [
           SizedBox(height: 10,),
-          Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
-                Navigator.pop(context);
-              },)
-          ),
+          Row(
+              children: [
+                Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
+                      Navigator.pop(context);
+                    },)
+                ),
+                Text("돌아가기"),
+              ]),
           Expanded(
             child: SingleChildScrollView(
                 controller: this.scrollController,
@@ -742,7 +755,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
     });
 
     setState(() {
-      widget.temp.replies = tempList;
+      widget.tempComment.replies = tempList;
       loadComment();
     });
 

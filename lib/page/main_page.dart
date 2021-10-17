@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/main.dart';
+import 'package:kish2019/page/bamboo_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
+import 'package:kish2019/widget/bamboo_post_viewer.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/description_text.dart';
 import 'package:kish2019/widget/post_webview.dart';
@@ -26,7 +28,7 @@ class MainPage extends StatefulWidget {
   }
 }
 
-class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>{
+class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<MainPage>, WidgetsBindingObserver{
   Widget? lunchFutureBuilder;
   late Widget ddayFutureBuilder;
   String? todayDate;
@@ -35,6 +37,25 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
   Widget ddayNotiIcon = CupertinoActivityIndicator();
   Widget lunchNotiIcon = CupertinoActivityIndicator();
   Widget dinnerNotiIcon = CupertinoActivityIndicator();
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        print(FirebaseMessaging.instance.getInitialMessage());
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -71,6 +92,27 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                         id: message.data["id"]
                     )
                 )
+            );
+          } else if (message.data["type"] == "newBambooPost") {
+            MyApp.navigatorKey.currentState!.push(
+                MaterialPageRoute(
+                    builder: (context) {
+                      int id = int.parse(message.data["post_id"]);
+                      return new Scaffold(
+                          body: BambooPostViewer(id),
+                      );
+                    })
+            );
+          } else if (message.data["type"] == "newBambooComment") {
+            MyApp.navigatorKey.currentState!.push(
+                MaterialPageRoute(
+                    builder: (context) {
+                      int postId = int.parse(message.data["post_id"]);
+                      int commentId = int.parse(message.data["comment_id"]);
+                      return new Scaffold(
+                        body: BambooPostViewer(postId, commentIdToView: commentId,),
+                      );
+                    })
             );
           }
         }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/custom_text_form_field.dart';
 import 'package:kish2019/widget/register_view.dart';
@@ -51,18 +52,24 @@ class LoginView extends StatefulWidget {
       seq = result["seq"];
       isAdmin = result['admin'];
       isLoggined = true;
+
+      NotificationManager manager = NotificationManager.getInstance();
+      bool bambooNotiEnabled = await manager.bambooNoti.isEnabled();
+      ApiHelper.toggleBambooNotification(bambooNotiEnabled, seq);
     }
 
     return resultMap;
   }
 
   static Future<void> logout() async {
+    await ApiHelper.logoutFromLibrary();
+
     LoginView.isLoggined = false;
     LoginView.isAdmin = false;
     LoginView.seq = "";
     await storage.delete(key: "id");
     await storage.delete(key: "pw");
-}
+  }
 
   @override
   _LoginViewState createState() {
@@ -152,19 +159,19 @@ class _LoginViewState extends State<LoginView> {
                                 await LoginView.storage.write(key: "id", value: idController.text.trim());
                                 await LoginView.storage.write(key: "pw", value: pwController.text.trim());
 
-                                    login();
-                                  },
-                                  child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                                  color: Colors.blueGrey.shade600,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)
-                                  )
-                              ),
-                              SizedBox(width: 5,),
-                              RaisedButton(
-                                  onPressed: () async {
-                                    Map? data = await Navigator.push(context, new MaterialPageRoute(
-                                        builder: (context) => RegisterView()));
+                                login();
+                              },
+                              child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
+                              color: Colors.blueGrey.shade600,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)
+                              )
+                          ),
+                          SizedBox(width: 5,),
+                          RaisedButton(
+                              onPressed: () async {
+                                Map? data = await Navigator.push(context, new MaterialPageRoute(
+                                    builder: (context) => RegisterView()));
 
                                 if (data != null && data["result"] == "success") {
                                   this.login();

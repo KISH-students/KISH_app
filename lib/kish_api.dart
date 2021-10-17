@@ -17,6 +17,7 @@ class KISHApi {
   static const String GET_POST_LIST_HOME_SUMMARY = POST_ROOT + "getPostListHomeSummary";
 
   static const String LIBRARY_LOGIN = LIBRARY_ROOT + "login";
+  static const String LIBRARY_LOGOUT = LIBRARY_ROOT + "logout";
   static const String LIBRARY_MY_INFO = LIBRARY_ROOT + "getInfo";
   static const String LIBRARY_REGISTER = LIBRARY_ROOT + "register";
   static const String IS_LIBRARY_Member = LIBRARY_ROOT + "isMember";
@@ -38,4 +39,5 @@ class KISHApi {
   static const String BAMBOO_GET_REPLIES = BAMBOO_ROOT + "getReplies";
   static const String BAMBOO_DELETE_POST = BAMBOO_ROOT + "deletePost";
   static const String BAMBOO_DELETE_COMMENT = BAMBOO_ROOT + "deleteComment";
+  static const String BAMBOO_TOGGLE_NOTIFICATION = BAMBOO_ROOT + "notification";
 }

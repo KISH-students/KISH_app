@@ -14,10 +14,6 @@ class NewBambooPostNoti extends Noti {
   Future<bool> toggleStatus() async {
     bool result = !(await isEnabled());
     await this.setEnabled(result);
-
-    if (result) FirebaseMessaging.instance.subscribeToTopic(propertyName);
-    else FirebaseMessaging.instance.unsubscribeFromTopic(propertyName);
-
     return result;
   }
 }

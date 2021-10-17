@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/noti_manager.dart';
+import 'package:kish2019/widget/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Method { get, post }
@@ -184,6 +185,17 @@ class ApiHelper {
     return json.decode(result);
   }
 
+  static Future<void> logoutFromLibrary() async {
+    String result = await request(
+        KISHApi.LIBRARY_LOGOUT,
+        Method.post,
+        {
+          'seq': LoginView.seq,
+          'fcm': NotificationManager.FcmToken
+        },
+        doCache: false);
+  }
+
   static Future<Map?> getLibraryMyInfo() async {
     String uuid = await getUuid();
 
@@ -323,5 +335,13 @@ class ApiHelper {
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()}
     );
     return json.decode(response);
+  }
+
+  static Future<void> toggleBambooNotification(bool enable, String seq) async {
+    String response = await request(
+        KISHApi.BAMBOO_TOGGLE_NOTIFICATION,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'enable': enable.toString()}
+    );
   }
 }

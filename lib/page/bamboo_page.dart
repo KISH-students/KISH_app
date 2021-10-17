@@ -25,6 +25,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
   PagingController<int, _PostPreview> pagingController = new PagingController(firstPageKey: 0);
   List<_PostPreview> previewList = [];
   late Widget newBambooPostNotiIcon;
+  late Widget bambooNotiIcon;
 
   @override
   void initState() {
@@ -35,13 +36,23 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
     NotificationManager manager = NotificationManager.getInstance();
 
     newBambooPostNotiIcon = FutureBuilder(
-      future: manager.newBambooPostNoti.isEnabled(),
-      initialData: "loading",
-      builder: (context, snapshot) {
-        if(snapshot.data == "loading") return Icon(Icons.sync);
-        if(snapshot.data == true) return Icon(Icons.notifications_active);
-        return Icon(Icons.notifications_active_outlined);
-    });
+        future: manager.newBambooPostNoti.isEnabled(),
+        initialData: "loading",
+        builder: (context, snapshot) {
+          if(snapshot.data == "loading") return Icon(Icons.sync);
+          if(snapshot.data == true) return Icon(Icons.notifications_active);
+          return Icon(Icons.notifications_active_outlined);
+        });
+
+    bambooNotiIcon = FutureBuilder(
+        future: manager.bambooNoti.isEnabled(),
+        initialData: "loading",
+        builder: (context, snapshot) {
+          if(snapshot.data == "loading") return Icon(Icons.sync);
+          if(!LoginView.isLoggined) return Icon(Icons.notifications_active_outlined);
+          if(snapshot.data == true) return Icon(Icons.notifications_active);
+          return Icon(Icons.notifications_active_outlined);
+        });
   }
 
   @override
@@ -131,7 +142,17 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                       child: Text(loginButtonText),
                       color: loginButtonColor, onPressed: () async {
                       if (LoginView.isLoggined) {
-                        await LoginView.logout();
+                        try {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("로그아웃 중 ...")));
+                          await LoginView.logout();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("로그아웃 성공")));
+                        } catch (e) {
+                          print(e);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("로그아웃에 실패하였습니다. 인터넷을 확인해주세요.")));
+                        }
                       } else {
                         await Navigator.push(context,
                             MaterialPageRoute(builder: (context) => LoginView()));
@@ -140,6 +161,10 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                     },
                       padding: EdgeInsets.symmetric(horizontal: 13, vertical: 6),
                     ),
+                  ]),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Container(
                         alignment: Alignment.center,
                         child: FlatButton.icon(
@@ -148,6 +173,16 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                                 : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
                             icon: this.newBambooPostNotiIcon,
                             label: const Text("새 글 알림")
+                        )
+                    ),
+                    Container(
+                        alignment: Alignment.center,
+                        child: FlatButton.icon(
+                            onPressed: NotificationManager.isFcmSupported
+                                ? updateBambooNoti
+                                : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                            icon: this.bambooNotiIcon,
+                            label: const Text("댓글 알림")
                         )
                     ),
                   ]),
@@ -185,6 +220,29 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
 
     setState(() {
       newBambooPostNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
+    });
+  }
+
+  Future<void> updateBambooNoti() async{
+    if(Platform.isIOS) {
+      bool perm = await NotificationManager.checkIosNotificationPermission();
+      if (!perm) {
+        NotificationManager.requestIosNotificationPermission();
+        return;
+      }
+    }
+
+    if(!LoginView.isLoggined) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => LoginView()));
+      return;
+    }
+
+    NotificationManager manager = NotificationManager.getInstance();
+    bool result = await manager.bambooNoti.toggleStatus();
+
+    setState(() {
+      bambooNotiIcon = Icon(result ? Icons.notifications_active : Icons.notifications_active_outlined);
     });
   }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kish2019/notification/bamboo_noti.dart';
 import 'package:kish2019/notification/dday_noti.dart';
 import 'package:kish2019/notification/lunch_menu_noti.dart';
 import 'package:kish2019/notification/new_bamboo_post_noti.dart';
@@ -20,6 +21,7 @@ class NotificationManager {
   late LunchMenuNoti lunchMenuNoti;
   late NewKishPostNoti newKishPostNoti;
   late NewBambooPostNoti newBambooPostNoti;
+  late BambooNoti bambooNoti;
 
   SharedPreferences? preferences;
 
@@ -43,6 +45,7 @@ class NotificationManager {
     this.ddayNoti = new DdayNoti();
     this.newKishPostNoti = new NewKishPostNoti();
     this.newBambooPostNoti = new NewBambooPostNoti();
+    this.bambooNoti = new BambooNoti();
   }
 
   static Future<bool> checkIosNotificationPermission() async {
