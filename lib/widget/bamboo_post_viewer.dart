@@ -51,7 +51,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
       List replies = parentComment['replies'];
 
       replies.forEach((element2) {
-        _Comment reply = new _Comment(
+        Comment reply = new Comment(
           name: element2['comment_author_displayname'],
           content: element2['comment_content'],
           likes: element2['likes'],
@@ -67,7 +67,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
         replyComments.add(reply);
       });
 
-      _Comment comment = new _Comment(
+      Comment comment = new Comment(
         name: parentComment['comment_author_displayname'],
         content: parentComment['comment_content'],
         likes: parentComment['likes'],
@@ -97,7 +97,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
     int tempCount;
     tempCount = temp.length;   //댓글 개수
     temp.forEach((element) {
-      _Comment comment = element as _Comment;
+      Comment comment = element as Comment;
       tempCount += comment.replies.length;
     });
 
@@ -422,7 +422,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
   bool get wantKeepAlive => true;
 }
 
-class _Comment extends StatefulWidget {
+class Comment extends StatefulWidget {
   final int id;
   final int parentId;
   final int postId;
@@ -436,7 +436,7 @@ class _Comment extends StatefulWidget {
   bool liked;
   List<Widget> replies;
 
-  _Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
+  Comment({this.name: "", this.content: "", this.likes: 0, this.isReply: false,
     this.liked: false, this.id: -1, this.postId: -1, this.parentId: -1, this.inReplyScreen: false,
     this.iAmAuthor: false, this.replies: const [], Key? key}) : super(key: key)
   {
@@ -452,7 +452,7 @@ class _Comment extends StatefulWidget {
   }
 }
 
-class _CommentState extends State<_Comment> {
+class _CommentState extends State<Comment> {
 
   @override
   Widget build(BuildContext context) {
@@ -623,7 +623,7 @@ class _CommentState extends State<_Comment> {
 }
 
 class CommentReplyScreen extends StatefulWidget {
-  final _Comment tempComment;
+  final Comment tempComment;
   final int postId;
   const CommentReplyScreen({required this.tempComment, required this.postId,
     Key? key}) : super(key: key);
@@ -633,7 +633,7 @@ class CommentReplyScreen extends StatefulWidget {
 }
 
 class _CommentReplyScreenState extends State<CommentReplyScreen> {
-  late _Comment comment;
+  late Comment comment;
   bool sendingComment = false;
   TextEditingController commentController = new TextEditingController();
   ScrollController scrollController = new ScrollController();
@@ -648,8 +648,8 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
   }
 
   void loadComment() {
-    _Comment temp = widget.tempComment;
-    this.comment = _Comment(content: temp.content,
+    Comment temp = widget.tempComment;
+    this.comment = Comment(content: temp.content,
       id: temp.id, inReplyScreen: true, isReply: false, liked: temp.liked,
       likes: temp.likes, name: temp.name, parentId: temp.parentId, postId: temp.postId,
       replies: temp.replies, iAmAuthor: temp.iAmAuthor,);
@@ -740,7 +740,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
     List replies = response['replies'];
 
     replies.forEach((element2) {
-      _Comment reply = new _Comment(
+      Comment reply = new Comment(
         name: element2['comment_author_displayname'],
         content: element2['comment_content'],
         likes: element2['likes'],

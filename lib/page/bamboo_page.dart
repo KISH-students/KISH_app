@@ -370,9 +370,7 @@ class _MyPageState extends State<MyPage> {
                       child: Text('First Page'),
                     ),
                     MyPosts(),
-                    Center(
-                      child: Text('Third Page'),
-                    )
+                    MyComments(),
                   ],
                 )
             )
@@ -411,7 +409,7 @@ class _MyPostsState extends State<MyPosts> {
       if (msg != null) {
         Fluttertoast.showToast(msg: "불러오지 못했습니다.");
       }
-      pagingController.appendLastPage([]);
+      pagingController.appendPage([], key);
       return;
     }
 
@@ -453,6 +451,99 @@ class _MyPostsState extends State<MyPosts> {
           builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
               itemBuilder: (context, item, index) {
                 return this.previewList[index];
+              }
+          ),
+        )
+    );
+  }
+}
+
+class MyComments extends StatefulWidget {
+  const MyComments({Key? key}) : super(key: key);
+
+  @override
+  _MyCommentsState createState() => _MyCommentsState();
+}
+
+class _MyCommentsState extends State<MyComments> {
+  PagingController<int, MaterialButton> pagingController = new PagingController(firstPageKey: 0);
+  List<MaterialButton> commentList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    pagingController.addPageRequestListener((pageKey) {
+      updatePage(pageKey);
+    });
+  }
+
+  void updatePage(int key) async{
+    Map result = await ApiHelper.getMyBambooComments(key);
+    bool? success = result['success'];
+    String? msg = result['message'];
+    List? list = result['comments'];
+    List<MaterialButton> newComments = [];
+
+    if (success == false || list == null) {
+      if (msg != null) {
+        Fluttertoast.showToast(msg: "불러오지 못했습니다.");
+      }
+      pagingController.appendPage([], key);
+      return;
+    }
+
+    if (list != null) {
+      if (list.length == 0) {
+        pagingController.appendLastPage([]);
+        return;
+      }
+
+      list.forEach((element) {
+        Comment comment = new Comment(
+          name: element['post_title'],
+          content: element['comment_content'],
+          likes: element['likes'],
+          liked: element['liked'],
+          isReply: true,
+          inReplyScreen: true,
+          iAmAuthor: true,
+          id: element['comment_id'],
+          parentId: -1,
+          postId: element['post_id'],
+        );
+
+        MaterialButton button = MaterialButton(onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return BambooPostViewer(element['post_id'] as int);
+          },));
+        },
+          child: comment,
+        );
+
+        newComments.add(button);
+      });
+
+      this.commentList.addAll(newComments);
+      pagingController.appendPage(newComments, key + 1);
+    } else {
+      pagingController.appendPage([], key);
+    }
+  }
+
+  void refreshPage() {
+    commentList = [];
+    pagingController.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+        onRefresh: () async { refreshPage(); },
+        child: PagedListView<int, MaterialButton>(
+          pagingController: pagingController,
+          builderDelegate: PagedChildBuilderDelegate<MaterialButton>(
+              itemBuilder: (context, item, index) {
+                return this.commentList[index];
               }
           ),
         )
