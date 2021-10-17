@@ -121,265 +121,266 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(30, 30, 40, 0),
-            width: double.infinity,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+    return SafeArea(
+        child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(30, 0, 40, 0),
+                width: double.infinity,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
-                        iconSize: 22,
-                        onPressed: (){
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Text("$title",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 19,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "NanumSquareR"
-                          )),
-                    ],
-                  ),
-                  Column(
-                      children: [
-                        IconButton(onPressed: () async {
-                          if (!LoginView.isLoggined) {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => LoginView()));
-                            return;
-                          }
-
-                          if (this.iAmAuthor || LoginView.isAdmin) {
-                            showDialog<void>(
-                                context: context,
-                                barrierDismissible: false, // user must tap button!
-                                builder: (BuildContext dialogContext) {
-                                  return AlertDialog(content: Text("글을 정말 제거할까요?"),
-                                    actions: [
-                                      TextButton(onPressed: () async {
-                                        Navigator.of(dialogContext).pop();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("게시물을 지우고 있습니다 ..."))
-                                        );
-                                        Map response =
-                                        await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
-
-                                        if (response['success'] == true) {
-                                          Navigator.pop(context);
-                                        }
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text(response['message']))
-                                        );
-                                      }, child: Text("네")),
-
-                                      TextButton(onPressed: () {
-                                        Navigator.of(dialogContext).pop();
-                                      }, child: Text("아니요")),
-                                    ],
-                                  );
-                                }
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("권한이 없습니다."))
-                            );
-                          }
-                        }, icon: Icon(CupertinoIcons.trash, color: Colors.grey)),
-                        Text(this.date,
-                            style: TextStyle(color: Colors.grey.shade600)),
-                      ]),
-                ]
-            ),
-          ),
-          Divider(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async { await load(); },
-              child: ListView(
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(30, 10, 30, 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: SelectableText(content,
-                              style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 30),
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          LikeButton(
-                            isLiked: liked,
-                            likeCount: likes,
-                            size: 17,
-                            circleColor:
-                            CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                            bubblesColor: BubblesColor(
-                              dotPrimaryColor: Color(0xff33b5e5),
-                              dotSecondaryColor: Color(0xff0099cc),
-                            ),
-                            likeBuilder: (bool isLiked) {
-                              return Icon(
-                                CupertinoIcons.heart_fill,
-                                color: isLiked ? Colors.red : Colors.grey,
-                                size: 17,
-                              );
+                          IconButton(
+                            icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
+                            iconSize: 22,
+                            onPressed: (){
+                              Navigator.pop(context);
                             },
-                            onTap: (isLiked) async {
+                          ),
+                          Text("$title",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "NanumSquareR"
+                              )),
+                        ],
+                      ),
+                      Column(
+                          children: [
+                            IconButton(onPressed: () async {
                               if (!LoginView.isLoggined) {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) => LoginView()));
-                                return null;
+                                return;
                               }
 
-                              Map? response;
+                              if (this.iAmAuthor || LoginView.isAdmin) {
+                                showDialog<void>(
+                                    context: context,
+                                    barrierDismissible: false, // user must tap button!
+                                    builder: (BuildContext dialogContext) {
+                                      return AlertDialog(content: Text("글을 정말 제거할까요?"),
+                                        actions: [
+                                          TextButton(onPressed: () async {
+                                            Navigator.of(dialogContext).pop();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text("게시물을 지우고 있습니다 ..."))
+                                            );
+                                            Map response =
+                                            await ApiHelper.deleteBambooPost(LoginView.seq, this.widget.id);
 
-                              if (!isLiked) {
-                                response = await ApiHelper.likeBambooPost(LoginView.seq, widget.id);
-                              } else {
-                                response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
-                              }
-                              if (response == null) {
-                                Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
-                                return null;
-                              }
-
-                              String? msg = response['message'];
-                              if (msg != null) {  // 등록 실패
-                                Fluttertoast.showToast(msg: msg);
-                                return null;
-                              }
-
-                              this.setState(() {
-                                if (response == null) return;   // null일 수 없습니다.
-                                this.liked = !isLiked;
-                                this.likes = response['count'];
-                              });
-                              return true;
-                            },
-                            countBuilder: (int? count, bool isLiked, String text) {
-                              var color = isLiked ? Colors.red : Colors.grey;
-                              Widget result;
-                              if (count == 0) {
-                                result = Text(
-                                  "0",
-                                  style: TextStyle(color: color),
-                                );
-                              } else
-                                result = Text(
-                                  text,
-                                  style: TextStyle(color: color),
-                                );
-                              return result;
-                            },
-                          )
-                        ],
-                      )
-                  ),
-                  Divider(),
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("댓글",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25
-                            )
-                        ),
-                        Text(" $commentCount",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                                color: Colors.grey.shade500
-                            )
-                        )
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: [...comments, Container(height: size.height * 0.07)],
-                  )
-                ],
-              ),
-            ),
-          ),
-          Column(
-              children: [
-                Container(
-                  //height: size.height * 0.07,
-                    width: size.width,
-                    decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 248, 248, 248)
-                    ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
-                              width: double.infinity,
-                              child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 9,
-                                      child: TextFormField(
-                                        controller: this.commentController,
-                                        keyboardType: TextInputType.multiline,
-                                        minLines: 1,
-                                        maxLines: 5,
-                                        decoration: InputDecoration(
-                                            fillColor: Colors.blueGrey,
-                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                            hintText: "댓글을 달아주세요 :D",
-                                            hintStyle: TextStyle(fontFamily: "NanumSquareL")
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                        flex: 1,
-                                        child: CupertinoButton(
-                                            child: Icon(CupertinoIcons.paperplane),
-                                            onPressed: () {
-                                              if (!LoginView.isLoggined) {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(builder: (context) => LoginView()));
-                                                return;
-                                              }
-
-                                              Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
-
-                                              if (sendingComment) {
-                                                return;
-                                              }
-                                              sendComment();
+                                            if (response['success'] == true) {
+                                              Navigator.pop(context);
                                             }
-                                        ))
-                                  ]
-                              )
-                          )
-                        ]
-                    )
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text(response['message']))
+                                            );
+                                          }, child: Text("네")),
+
+                                          TextButton(onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                          }, child: Text("아니요")),
+                                        ],
+                                      );
+                                    }
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("권한이 없습니다."))
+                                );
+                              }
+                            }, icon: Icon(CupertinoIcons.trash, color: Colors.grey)),
+                            Text(this.date,
+                                style: TextStyle(color: Colors.grey.shade600)),
+                          ]),
+                    ]
                 ),
-              ]
-          )
-        ]
+              ),
+              Divider(),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async { await load(); },
+                  child: ListView(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.fromLTRB(30, 15, 30, 20),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: SelectableText(content,
+                                  style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 30),
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              LikeButton(
+                                isLiked: liked,
+                                likeCount: likes,
+                                size: 17,
+                                circleColor:
+                                CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                                bubblesColor: BubblesColor(
+                                  dotPrimaryColor: Color(0xff33b5e5),
+                                  dotSecondaryColor: Color(0xff0099cc),
+                                ),
+                                likeBuilder: (bool isLiked) {
+                                  return Icon(
+                                    CupertinoIcons.heart_fill,
+                                    color: isLiked ? Colors.red : Colors.grey,
+                                    size: 17,
+                                  );
+                                },
+                                onTap: (isLiked) async {
+                                  if (!LoginView.isLoggined) {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => LoginView()));
+                                    return null;
+                                  }
+
+                                  Map? response;
+
+                                  if (!isLiked) {
+                                    response = await ApiHelper.likeBambooPost(LoginView.seq, widget.id);
+                                  } else {
+                                    response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
+                                  }
+                                  if (response == null) {
+                                    Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                                    return null;
+                                  }
+
+                                  String? msg = response['message'];
+                                  if (msg != null) {  // 등록 실패
+                                    Fluttertoast.showToast(msg: msg);
+                                    return null;
+                                  }
+
+                                  this.setState(() {
+                                    if (response == null) return;   // null일 수 없습니다.
+                                    this.liked = !isLiked;
+                                    this.likes = response['count'];
+                                  });
+                                  return true;
+                                },
+                                countBuilder: (int? count, bool isLiked, String text) {
+                                  var color = isLiked ? Colors.red : Colors.grey;
+                                  Widget result;
+                                  if (count == 0) {
+                                    result = Text(
+                                      "0",
+                                      style: TextStyle(color: color),
+                                    );
+                                  } else
+                                    result = Text(
+                                      text,
+                                      style: TextStyle(color: color),
+                                    );
+                                  return result;
+                                },
+                              )
+                            ],
+                          )
+                      ),
+                      Divider(),
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("댓글",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25
+                                )
+                            ),
+                            Text(" $commentCount",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                    color: Colors.grey.shade500
+                                )
+                            )
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: [...comments, Container(height: size.height * 0.07)],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                  children: [
+                    Container(
+                      //height: size.height * 0.07,
+                        width: size.width,
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 248, 248, 248)
+                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                  margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
+                                  width: double.infinity,
+                                  child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 9,
+                                          child: TextFormField(
+                                            controller: this.commentController,
+                                            keyboardType: TextInputType.multiline,
+                                            minLines: 1,
+                                            maxLines: 5,
+                                            decoration: InputDecoration(
+                                                fillColor: Colors.blueGrey,
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                                hintText: "댓글을 달아주세요 :D",
+                                                hintStyle: TextStyle(fontFamily: "NanumSquareL")
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                            flex: 1,
+                                            child: CupertinoButton(
+                                                child: Icon(CupertinoIcons.paperplane),
+                                                onPressed: () {
+                                                  if (!LoginView.isLoggined) {
+                                                    Navigator.push(context,
+                                                        MaterialPageRoute(builder: (context) => LoginView()));
+                                                    return;
+                                                  }
+
+                                                  Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+
+                                                  if (sendingComment) {
+                                                    return;
+                                                  }
+                                                  sendComment();
+                                                }
+                                            ))
+                                      ]
+                                  )
+                              )
+                            ]
+                        )
+                    ),
+                  ]
+              )
+            ])
     );
   }
 
@@ -656,69 +657,70 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        children: [
-          SizedBox(height: 10,),
-          Row(
-              children: [
-                Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
-                      Navigator.pop(context);
-                    },)
-                ),
-                Text("돌아가기"),
-              ]),
-          Expanded(
-            child: SingleChildScrollView(
-                controller: this.scrollController,
-                child: this.comment
-            ),
-          ),
-          Container(
-              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
-              width: double.infinity,
-              child: Row(
+    return SafeArea(
+        child: Column(
+            children: [
+              Row(
                   children: [
-                    Expanded(
-                      flex: 9,
-                      child: TextFormField(
-                        controller: this.commentController,
-                        keyboardType: TextInputType.multiline,
-                        minLines: 1,
-                        maxLines: 5,
-                        maxLength: 1000,
-                        decoration: InputDecoration(
-                            fillColor: Colors.blueGrey,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                            hintText: "답글을 달아주세요 :D",
-                            hintStyle: TextStyle(fontFamily: "NanumSquareL")
-                        ),
-                      ),
+                    Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
+                          Navigator.pop(context);
+                        },)
                     ),
-                    Expanded(
-                        flex: 1,
-                        child: CupertinoButton(
-                            child: Icon(CupertinoIcons.paperplane),
-                            onPressed: () {
-                              if (!LoginView.isLoggined) {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => LoginView()));
-                                return;
-                              }
+                    Text("돌아가기"),
+                  ]),
+              Expanded(
+                child: SingleChildScrollView(
+                    controller: this.scrollController,
+                    child: this.comment
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 0, horizontal: 7),
+                  width: double.infinity,
+                  child: Row(
+                      children: [
+                        Expanded(
+                          flex: 9,
+                          child: TextFormField(
+                            controller: this.commentController,
+                            keyboardType: TextInputType.multiline,
+                            minLines: 1,
+                            maxLines: 5,
+                            maxLength: 1000,
+                            decoration: InputDecoration(
+                                fillColor: Colors.blueGrey,
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                hintText: "답글을 달아주세요 :D",
+                                hintStyle: TextStyle(fontFamily: "NanumSquareL")
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: CupertinoButton(
+                                child: Icon(CupertinoIcons.paperplane),
+                                onPressed: () {
+                                  if (!LoginView.isLoggined) {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => LoginView()));
+                                    return;
+                                  }
 
-                              Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+                                  Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
 
-                              if (sendingComment) {
-                                return;
-                              }
-                              sendComment();
-                            }
-                        ))
-                  ]
+                                  if (sendingComment) {
+                                    return;
+                                  }
+                                  sendComment();
+                                }
+                            ))
+                      ]
+                  )
               )
-          )
-        ]);
+            ])
+    );
   }
 
   Future<void> loadReplies({bool scrollToBottom: false}) async {
