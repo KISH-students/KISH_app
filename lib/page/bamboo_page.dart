@@ -161,6 +161,11 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                     },
                       padding: EdgeInsets.symmetric(horizontal: 13, vertical: 6),
                     ),
+                    IconButton(onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return MyPage();
+                      },));
+                    }, icon: Icon(Icons.person))
                   ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -323,6 +328,133 @@ class _PostPreview extends StatelessWidget {
                 )
             )
           ],
+        )
+    );
+  }
+}
+
+
+class MyPage extends StatefulWidget {
+  const MyPage({Key? key}) : super(key: key);
+
+  @override
+  _MyPageState createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  final PageController controller = PageController(initialPage: 0);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: Column(
+          children: [
+            Text("내 정보"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(child: Text("알림"),
+                  onPressed: () {controller.jumpToPage(0);},),
+                TextButton(child: Text("내 글"),
+                  onPressed: () {controller.jumpToPage(1);},),
+                TextButton(child: Text("내 댓글"),
+                  onPressed: () {controller.jumpToPage(2);},),
+              ],),
+            Expanded(
+                child: PageView(
+                  controller: controller,
+                  physics: NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  children: const <Widget>[
+                    Center(
+                      child: Text('First Page'),
+                    ),
+                    MyPosts(),
+                    Center(
+                      child: Text('Third Page'),
+                    )
+                  ],
+                )
+            )
+          ],)
+    );
+  }
+}
+
+class MyPosts extends StatefulWidget {
+  const MyPosts({Key? key}) : super(key: key);
+
+  @override
+  _MyPostsState createState() => _MyPostsState();
+}
+
+class _MyPostsState extends State<MyPosts> {
+  PagingController<int, _PostPreview> pagingController = new PagingController(firstPageKey: 0);
+  List<_PostPreview> previewList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    pagingController.addPageRequestListener((pageKey) {
+      updatePage(pageKey);
+    });
+  }
+
+  void updatePage(int key) async{
+    Map result = await ApiHelper.getMyBambooPosts(key);
+    bool? success = result['success'];
+    String? msg = result['message'];
+    List? list = result['posts'];
+    List<_PostPreview> newPosts = [];
+
+    if (success == false || list == null) {
+      if (msg != null) {
+        Fluttertoast.showToast(msg: "불러오지 못했습니다.");
+      }
+      pagingController.appendLastPage([]);
+      return;
+    }
+
+    if (list != null) {
+      if (list.length == 0) {
+        pagingController.appendLastPage([]);
+        return;
+      }
+
+      list.forEach((element) {
+        _PostPreview preview = new _PostPreview(
+          id: element['bamboo_id'],
+          title: element['bamboo_title'],
+          content: element['bamboo_content'],
+          likes: element['like_count'],
+          comments: element['comment_count'],
+        );
+        newPosts.add(preview);
+      });
+
+      this.previewList.addAll(newPosts);
+      pagingController.appendPage(newPosts, key + 1);
+    } else {
+      pagingController.appendPage([], key);
+    }
+  }
+
+  void refreshPage() {
+    previewList = [];
+    pagingController.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+        onRefresh: () async { refreshPage(); },
+        child: PagedListView<int, _PostPreview>(
+          pagingController: pagingController,
+          builderDelegate: PagedChildBuilderDelegate<_PostPreview>(
+              itemBuilder: (context, item, index) {
+                return this.previewList[index];
+              }
+          ),
         )
     );
   }

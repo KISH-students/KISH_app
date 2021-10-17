@@ -235,6 +235,16 @@ class ApiHelper {
     return json.decode(response);
   }
 
+  static Future<Map> getMyBambooPosts(int page) async {
+    // page는 0이 시작
+    String response = await request(
+        KISHApi.BAMBOO_GET_MY_POSTS,
+        Method.get,
+        {'seq': LoginView.seq, 'fcm': NotificationManager.FcmToken, "page": page.toString()}
+    );
+    return json.decode(response);
+  }
+
   static Future<Map> writeBambooPost(String seq, String title, String content, bool facebook) async {
     String response = await request(
         KISHApi.BAMBOO_WRITE_POST,

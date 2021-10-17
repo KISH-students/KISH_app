@@ -28,6 +28,8 @@ class KISHApi {
   static const String GET_MAGAZINE_CATEGORY_LIST = MAGAZINE_ROOT + "getCategoryList";
 
   static const String BAMBOO_GET_POSTS = BAMBOO_ROOT + "posts";
+  static const String BAMBOO_GET_MY_POSTS = BAMBOO_ROOT + "myPosts";
+  static const String BAMBOO_GET_MY_COMMENTS = BAMBOO_ROOT + "myComments";
   static const String BAMBOO_WRITE_POST = BAMBOO_ROOT + "writePost";
   static const String BAMBOO_GET_POST = BAMBOO_ROOT + "post";
   static const String BAMBOO_WRITE_COMMENT = BAMBOO_ROOT + "writeComment";
