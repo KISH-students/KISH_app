@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -349,15 +350,28 @@ class _MyPageState extends State<MyPage> {
     return SafeArea(
         child: Column(
           children: [
-            Text("내 정보"),
+            Container(height: 10,),
+            Container(
+              margin: EdgeInsets.only(left: 10, right: 30),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                        children: [
+                          IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(CupertinoIcons.chevron_back)),
+                          Text("돌아가기"),
+                        ]),
+                    Text("내 정보", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                  ]),
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                TextButton(child: Text("알림"),
+                CupertinoButton(child: Text("알림"),
                   onPressed: () {controller.jumpToPage(0);},),
-                TextButton(child: Text("내 글"),
+                CupertinoButton(child: Text("내 글"),
                   onPressed: () {controller.jumpToPage(1);},),
-                TextButton(child: Text("내 댓글"),
+                CupertinoButton(child: Text("내 댓글"),
                   onPressed: () {controller.jumpToPage(2);},),
               ],),
             Expanded(
