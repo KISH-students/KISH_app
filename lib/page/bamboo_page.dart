@@ -362,7 +362,7 @@ class _MyPageState extends State<MyPage> {
                           IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(CupertinoIcons.chevron_back)),
                           Text("돌아가기"),
                         ]),
-                    Text(currentPageTitle, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                    Text(currentPageTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
                   ]),
             ),
             Row(
