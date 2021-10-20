@@ -548,7 +548,7 @@ class _BambooPostListWidget extends StatelessWidget {
                             children: [
                               Text(element['bamboo_title'], style: TextStyle(fontWeight: FontWeight.bold,)),
                               Container(height: 4),
-                              Text(element['bamboo_content'])
+                              Text(element['bamboo_content'], maxLines: 2, overflow: TextOverflow.ellipsis,)
                             ])
                     );
                     posts.add(post);
