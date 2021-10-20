@@ -364,4 +364,13 @@ class ApiHelper {
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'enable': enable.toString()}
     );
   }
+
+  static Future<Map> getMyBambooNotification(int page, String seq) async {
+    String response = await request(
+        KISHApi.BAMBOO_MY_NOTIFICATION,
+        Method.get,
+        {'seq': seq, 'fcm': NotificationManager.FcmToken, 'page': page.toString()}
+    );
+    return json.decode(response);
+  }
 }

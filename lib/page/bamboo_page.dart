@@ -380,9 +380,7 @@ class _MyPageState extends State<MyPage> {
                   physics: NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   children: const <Widget>[
-                    Center(
-                      child: Text('First Page'),
-                    ),
+                    MyNotification(),
                     MyPosts(),
                     MyComments(),
                   ],
@@ -392,6 +390,131 @@ class _MyPageState extends State<MyPage> {
     );
   }
 }
+
+class MyNotification extends StatefulWidget {
+  const MyNotification({Key? key}) : super(key: key);
+
+  @override
+  _MyNotificationState createState() => _MyNotificationState();
+}
+
+class _MyNotificationState extends State<MyNotification> {
+  PagingController<int, NotificationInfoWidget> pagingController = new PagingController(firstPageKey: 0);
+  List<NotificationInfoWidget> notiWidgetList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    pagingController.addPageRequestListener((pageKey) {
+      updatePage(pageKey);
+    });
+  }
+
+  void updatePage(int key) async{
+    Map result = await ApiHelper.getMyBambooNotification(key, LoginView.seq);
+    bool? success = result['success'];
+    String? msg = result['message'];
+    List? list = result['notification_list'];
+    List<NotificationInfoWidget> newWidgetList = [];
+
+    if (success == false || list == null) {
+      if (msg != null) {
+        Fluttertoast.showToast(msg: "불러오지 못했습니다.\n$msg");
+      }
+      pagingController.appendPage([], key);
+      return;
+    }
+
+    if (list != null) {
+      if (list.length == 0) {
+        pagingController.appendLastPage([]);
+        return;
+      }
+
+      list.forEach((element) {
+        NotificationInfoWidget notiWidget = new NotificationInfoWidget(
+          type: element['type'],
+          title: element['title'],
+          content: element['content'],
+          comment: element['comment_id'],
+          post: element['post_id']
+        );
+        newWidgetList.add(notiWidget);
+      });
+
+      this.notiWidgetList.addAll(newWidgetList);
+      pagingController.appendPage(newWidgetList, key + 1);
+    } else {
+      pagingController.appendPage([], key);
+    }
+  }
+
+  void refreshPage() {
+    notiWidgetList = [];
+    pagingController.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+        onRefresh: () async { refreshPage(); },
+        child: PagedListView<int, NotificationInfoWidget>(
+          pagingController: pagingController,
+          builderDelegate: PagedChildBuilderDelegate<NotificationInfoWidget>(
+              itemBuilder: (context, item, index) {
+                return this.notiWidgetList[index];
+              }
+          ),
+        )
+    );
+  }
+
+}
+
+class NotificationInfoWidget extends StatelessWidget {
+  final String type;
+  final String title;
+  final String content;
+  final int post;
+  final int comment;
+  const NotificationInfoWidget({this.type: "", required this.title, required this.content,
+    this.post: -1, this.comment: -1, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Divider(),
+        MaterialButton(child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 5),
+          child: Card(
+            elevation: 0,
+              color: Colors.grey.shade100,
+              shadowColor: Colors.black.withOpacity(0.7),
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),),
+                      Divider(),
+                      Text(content),
+                    ]),
+              )
+          ),
+        ),
+          onPressed: (){
+            if (this.post != -1) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return BambooPostViewer(this.post, commentIdToView: this.comment,);
+              },));
+            }
+          },)
+      ],);
+  }
+}
+
 
 class MyPosts extends StatefulWidget {
   const MyPosts({Key? key}) : super(key: key);

@@ -42,4 +42,5 @@ class KISHApi {
   static const String BAMBOO_DELETE_POST = BAMBOO_ROOT + "deletePost";
   static const String BAMBOO_DELETE_COMMENT = BAMBOO_ROOT + "deleteComment";
   static const String BAMBOO_TOGGLE_NOTIFICATION = BAMBOO_ROOT + "notification";
+  static const String BAMBOO_MY_NOTIFICATION = BAMBOO_ROOT + "myNotification";
 }
