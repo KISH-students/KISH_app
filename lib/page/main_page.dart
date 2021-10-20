@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:kish2019/main.dart';
-import 'package:kish2019/page/bamboo_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/bamboo_post_viewer.dart';
@@ -17,7 +16,6 @@ import 'package:kish2019/widget/post_webview.dart';
 import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/kish_api.dart';
-import 'package:notification_permissions/notification_permissions.dart';
 import 'package:toasta/toasta.dart';
 
 class MainPage extends StatefulWidget {
@@ -294,7 +292,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                child: BambooPosts(),
+                child: _BambooPostListWidget(this),
               )
             ],),
         ),
@@ -509,8 +507,9 @@ void _showAppInfoDialog(BuildContext context) {
   );
 }
 
-class BambooPosts extends StatelessWidget {
-  const BambooPosts({Key? key}) : super(key: key);
+class _BambooPostListWidget extends StatelessWidget {
+  final _MainPageState mainPageState;
+  const _BambooPostListWidget(this.mainPageState, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -535,7 +534,9 @@ class BambooPosts extends StatelessWidget {
               child: FutureBuilder(builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   print(snapshot.error);
-                  return Text("오류가 발생했습니다.");
+                  return MaterialButton(
+                    onPressed: (){mainPageState.initWidgets();},
+                      child: Text("오류가 발생했습니다. 새로고치려면 터치하세요."));
                 }
                 if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                   List data = snapshot.data as List;
