@@ -92,6 +92,18 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     });
   }
 
+  Future<void> checkConnectionForNormalBody() async {
+    try {
+      await ApiHelper.getPostListHomeSummary();
+    } catch (e) {
+      print(e);
+      Future.delayed(Duration(seconds: 1), (){checkConnectionForNormalBody();});
+      return;
+    }
+
+    this.setBody2Normal();
+  }
+
   void setBody2Normal() {
     setState(() {
       backButtonWidget = Container();
@@ -111,6 +123,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
               if (snapshot.hasData) {
                 data = snapshot.data as List;
               } else {
+                checkConnectionForNormalBody();
                 return DDayCard(description: "불러오지 못했습니다", content: "불러오지 못했습니다", color: Colors.redAccent,);
               }
             }
@@ -202,6 +215,12 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     });
   }
 
+  void resetLoadingBar() {
+    setState(() {
+      loading = Container();
+    });
+  }
+
   Future<void> search(String? keyword, int pageIndex) async{
     loading = LinearProgressIndicator(backgroundColor: Colors.orangeAccent);
 
@@ -210,7 +229,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
 
       if (keyword == null || keyword.isEmpty) {
         setBody2Normal();
-        loading = Container();
+        resetLoadingBar();
         return;
       } else if(keyword.length == 1) {
         setBody2PagedListView();
@@ -233,10 +252,17 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
       List? result;
       List<PostInfo> newWidgetList = [];
 
-      if (mode == 1) {
-        result = await ApiHelper.searchPost(keyword, searchIndex);
-      } else if (mode == 2) {
-        result = await ApiHelper.getPostsByMenu(menu, searchIndex.toString());
+      try {
+        if (mode == 1) {
+          result = await ApiHelper.searchPost(keyword, searchIndex);
+        } else if (mode == 2) {
+          result = await ApiHelper.getPostsByMenu(menu, searchIndex.toString());
+        }
+      } catch(e) {
+        print(e);
+        _pagingController.appendPage([], pageIndex);
+        resetLoadingBar();
+        return;
       }
 
       if (currentKeyword != keyword) return;
@@ -263,7 +289,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
       }
 
     } finally {
-      loading = Container(height: 2);
+      resetLoadingBar();
     }
   }
 
