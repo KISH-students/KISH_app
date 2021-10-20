@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/dday_card.dart';
 import 'package:kish2019/widget/post_webview.dart';
 import 'package:kish2019/noti_manager.dart';
+import 'package:toasta/toasta.dart';
 
 class KishPostListPage extends StatefulWidget {
   static int mode = 0;
@@ -174,7 +174,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                     child: FlatButton.icon(
                         onPressed: NotificationManager.isFcmSupported
                             ? updateNewKishPostNoti
-                            : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                            : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다"));},
                         icon: this.newKishPostNotiIcon,
                         label: const Text("새 글 알림")
                     )

@@ -18,6 +18,7 @@ import 'package:kish2019/widget/title_text.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:notification_permissions/notification_permissions.dart';
+import 'package:toasta/toasta.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
@@ -79,9 +80,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                 MaterialPageRoute(
                     builder: (context) {
                       int id = int.parse(message.data["post_id"]);
-                      return new Scaffold(
-                          body: BambooPostViewer(id),
-                      );
+                      return ToastaContainer(
+                          child: new Scaffold(
+                            body: BambooPostViewer(id),
+                          ));
                     })
             );
           } else if (message.data["type"] == "newBambooComment") {
@@ -90,9 +92,10 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                     builder: (context) {
                       int postId = int.parse(message.data["post_id"]);
                       int commentId = int.parse(message.data["comment_id"]);
-                      return new Scaffold(
-                        body: BambooPostViewer(postId, commentIdToView: commentId,),
-                      );
+                      return ToastaContainer( // Wrap your app by ToastaContainer
+                          child: new Scaffold(
+                            body: BambooPostViewer(postId, commentIdToView: commentId,),
+                          ));
                     })
             );
           }

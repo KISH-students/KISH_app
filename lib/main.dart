@@ -2,12 +2,10 @@ import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/page/bamboo_page.dart';
 import 'package:kish2019/page/bamboo_post_writing_page.dart';
 import 'package:kish2019/page/kish_magazine_page.dart';
@@ -17,6 +15,7 @@ import 'package:kish2019/page/main_page.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/widget/login_view.dart';
 import 'package:new_version/new_version.dart';
+import 'package:toasta/toasta.dart';
 
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -51,17 +50,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-        title: 'KISH',
-        theme: ThemeData(
-          textTheme: TextTheme(
-            bodyText1: TextStyle(color: Colors.grey[900]),
-          ),
-          fontFamily: 'NanumSquareL',
-          primarySwatch: Colors.blue,
-        ),
-        home: Home());
+    return ToastaContainer(
+        child: MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'KISH',
+            theme: ThemeData(
+              textTheme: TextTheme(
+                bodyText1: TextStyle(color: Colors.grey[900]),
+              ),
+              fontFamily: 'NanumSquareL',
+              primarySwatch: Colors.blue,
+            ),
+            home: Home())
+    );
   }
 }
 
@@ -176,18 +177,18 @@ class MainState extends State<Home> {
           children: [
             MainPage(),
             KishMagazinePage(),
-          Navigator(
-            initialRoute: 'main',
-            onGenerateRoute: (settings) {
-              late Widget page;
-              if (settings.name == "main") {
-                page = BambooPage();
-              } else if (settings.name == "writing") {
-                page = BambooPostWritingPage();
-              }
-              return MaterialPageRoute(builder: (a) => page);
-            },
-          ),
+            Navigator(
+              initialRoute: 'main',
+              onGenerateRoute: (settings) {
+                late Widget page;
+                if (settings.name == "main") {
+                  page = BambooPage();
+                } else if (settings.name == "writing") {
+                  page = BambooPostWritingPage();
+                }
+                return MaterialPageRoute(builder: (a) => page);
+              },
+            ),
             KishPostListPage(),
             Navigator(
               onGenerateRoute: (settings) {
@@ -284,7 +285,7 @@ class MainState extends State<Home> {
     if (currentBackPressTime == null ||
         now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
       currentBackPressTime = now;
-      Fluttertoast.showToast(msg: "종료하려면 한번 더 누르세요");
+      Toasta(context).toast(Toast(subtitle: "종료하려면 한번 더 누르세요"));
       return Future.value(false);
     }
     return Future.value(true);

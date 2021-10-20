@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/login_view.dart';
 import 'package:like_button/like_button.dart';
+import 'package:toasta/toasta.dart';
 
 class BambooPostViewer extends StatefulWidget {
   final int id;
@@ -37,7 +37,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
   Future<void> load() async{
     Map post = await ApiHelper.getBambooPost(LoginView.seq, widget.id);
     if (post['comment'] == null) {
-      Fluttertoast.showToast(msg: "존재하지 않는 게시물입니다.");
+      Toasta(context).toast(Toast(subtitle: "존재하지 않는 게시물입니다"));
       Navigator.pop(context);
       return;
     }
@@ -269,13 +269,15 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                                     response = await ApiHelper.unlikeBambooPost(LoginView.seq, widget.id);
                                   }
                                   if (response == null) {
-                                    Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                                    Toasta(context).toast(Toast(subtitle: "인터넷 상태를 확인해주세요"));
                                     return null;
                                   }
 
                                   String? msg = response['message'];
                                   if (msg != null) {  // 등록 실패
-                                    Fluttertoast.showToast(msg: msg);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("$msg"))
+                                    );
                                     return null;
                                   }
 
@@ -377,7 +379,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                                                     return;
                                                   }
 
-                                                  Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+                                                  Toasta(context).toast(Toast(subtitle: "댓글을 등록하는 중..."));
 
                                                   if (sendingComment) {
                                                     return;
@@ -406,7 +408,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
           LoginView.seq, widget.id, content);
 
       if (response == null) {
-        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+        Toasta(context).toast(Toast(subtitle: "인터넷 상태를 확인해주세요"));
         sendingComment = false;
         return;
       }
@@ -414,19 +416,20 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
       bool success = response['success'];
       String msg = response['message'];
 
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("$msg"))
+      );
       if (success) { // 등록 성공
-        Fluttertoast.showToast(msg: msg);
-      } else { // 등록 실패
-        Fluttertoast.showToast(msg: msg);
+        this.commentController.text = ""; // 댓글 초기화
       }
-      this.commentController.text = ""; // 댓글 초기화
+
       this.sendingComment = false; // 댓글 등록 상태 x
 
       //TODO: 댓글 새로고침 개선
       load(); // 본문을 새로고칩니다 ......
     } catch(e) {
       print(e);
-      Fluttertoast.showToast(msg: "처리하지 못했습니다.");
+      Toasta(context).toast(Toast(subtitle: "요청을 처리하지 못했습니다"));
       sendingComment = false;
     }
   }
@@ -585,13 +588,15 @@ class _CommentState extends State<Comment> {
                                         response = await ApiHelper.unlikeBambooComment(LoginView.seq, widget.id);
                                       }
                                       if (response == null) {
-                                        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+                                        Toasta(context).toast(Toast(subtitle: "인터넷 상태를 확인해주세요"));
                                         return null;
                                       }
 
                                       String? msg = response['message'];
                                       if (msg != null) {  // 등록 실패
-                                        Fluttertoast.showToast(msg: msg);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("$msg"))
+                                        );
                                         return null;
                                       }
 
@@ -721,7 +726,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
                                     return;
                                   }
 
-                                  Fluttertoast.showToast(msg: "댓글을 등록하는 중...");
+                                  Toasta(context).toast(Toast(subtitle: "댓글을 등록하는 중.."));
 
                                   if (sendingComment) {
                                     return;
@@ -739,13 +744,15 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
   Future<void> loadReplies({bool scrollToBottom: false}) async {
     Map? response = await ApiHelper.getBambooReplies(LoginView.seq, comment.id);
     if (response == null) {
-      Fluttertoast.showToast(msg: "답글을 새로고치지 못했습니다.");
+      Toasta(context).toast(Toast(subtitle: "답글 새로고침 실패"));
       return;
     }
 
     bool success = response['success'];
     if (!success) {
-      Fluttertoast.showToast(msg: response['message']);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("${response['message']}"))
+      );
       return;
     }
 
@@ -792,7 +799,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
           comment.postId, comment.id, content);
 
       if (response == null) {
-        Fluttertoast.showToast(msg: "인터넷 상태를 확인해주세요.");
+        Toasta(context).toast(Toast(subtitle: "인터넷 상태를 확인해주세요"));
         sendingComment = false;
         return;
       }
@@ -800,18 +807,19 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
       bool success = response['success'];
       String msg = response['message'];
 
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("$msg"))
+      );
       if (success) { // 등록 성공
-        Fluttertoast.showToast(msg: msg);
-      } else { // 등록 실패
-        Fluttertoast.showToast(msg: msg);
+        this.commentController.text = ""; // 댓글 초기화
       }
-      this.commentController.text = ""; // 댓글 초기화
+
       this.sendingComment = false; // 댓글 등록 상태 x
 
       loadReplies(scrollToBottom: true);
     } catch(e) {
       print(e);
-      Fluttertoast.showToast(msg: "처리하지 못했습니다.");
+      Toasta(context).toast(Toast(subtitle: "처리하지 못했습니다"));
       sendingComment = false;
     }
   }

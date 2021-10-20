@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/bamboo_post_viewer.dart';
 import 'package:kish2019/widget/login_view.dart';
+import 'package:toasta/toasta.dart';
 
 class BambooPage extends StatefulWidget {
   BambooPage({Key? key}) : super(key: key);
@@ -144,15 +144,15 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                       color: loginButtonColor, onPressed: () async {
                       if (LoginView.isLoggined) {
                         try {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("로그아웃 중 ...")));
+                          Toasta(context).toast(Toast(subtitle: "로그아웃 중 ..."));
+
                           await LoginView.logout();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("로그아웃 성공")));
+                          Toasta(context).toast(Toast(subtitle: "로그아웃 성공"));
                         } catch (e) {
                           print(e);
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("로그아웃에 실패하였습니다. 인터넷을 확인해주세요.")));
+                              SnackBar(content: Text("로그아웃에 실패하였습니다.\n 인터넷을 확인해주세요."))
+                          );
                         }
                       } else {
                         await Navigator.push(context,
@@ -176,7 +176,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                         child: FlatButton.icon(
                             onPressed: NotificationManager.isFcmSupported
                                 ? updateNewPostNoti
-                                : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                                : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다."));},
                             icon: this.newBambooPostNotiIcon,
                             label: const Text("새 글 알림")
                         )
@@ -186,7 +186,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                         child: FlatButton.icon(
                             onPressed: NotificationManager.isFcmSupported
                                 ? updateBambooNoti
-                                : () {Fluttertoast.showToast(msg: "이 기기에서 지원되지 않습니다.");},
+                                : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다"));},
                             icon: this.bambooNotiIcon,
                             label: const Text("댓글 알림")
                         )
@@ -435,7 +435,9 @@ class _MyNotificationState extends State<MyNotification> {
 
     if (success == false || list == null) {
       if (msg != null) {
-        Fluttertoast.showToast(msg: "불러오지 못했습니다.\n$msg");
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("불러오지 못했습니다.\n$msg"))
+        );
       }
       pagingController.appendPage([], key);
       return;
@@ -558,7 +560,9 @@ class _MyPostsState extends State<MyPosts> {
 
     if (success == false || list == null) {
       if (msg != null) {
-        Fluttertoast.showToast(msg: "불러오지 못했습니다.");
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("불러오지 못했습니다.\n$msg"))
+        );
       }
       pagingController.appendPage([], key);
       return;
@@ -637,7 +641,9 @@ class _MyCommentsState extends State<MyComments> {
 
     if (success == false || list == null) {
       if (msg != null) {
-        Fluttertoast.showToast(msg: "불러오지 못했습니다.");
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("불러오지 못했습니다.\n$msg"))
+        );
       }
       pagingController.appendPage([], key);
       return;

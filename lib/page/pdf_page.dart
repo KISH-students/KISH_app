@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:toasta/toasta.dart';
 
 class PdfPage extends StatefulWidget {
   String url;
@@ -19,8 +19,7 @@ class _PdfPageState extends State<PdfPage> {
   @override
   void initState() {
     super.initState();
-    Fluttertoast.showToast(
-        msg: "페이지를 넘기려면 화면을 아래로 미세요", toastLength: Toast.LENGTH_LONG);
+    Toasta(context).toast(Toast(title: "페이지를 넘기려면 화면을 아래로 미세요"));
   }
 
   @override

@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/login_background.dart';
-import 'package:simple_animations/simple_animations.dart';
+import 'package:toasta/toasta.dart';
 
 import 'custom_text_form_field.dart';
 
@@ -103,7 +102,7 @@ class _RegisterViewState extends State<RegisterView> {
                     RaisedButton(
                         onPressed: () async {
                           if (isRegistering) {
-                            Fluttertoast.showToast(msg: "이미 회원가입 중입니다.");
+                            Toasta(context).toast(Toast(subtitle: "이미 회원가입 중입니다"));
                             return;
                           }
                           isRegistering = true;
@@ -114,28 +113,31 @@ class _RegisterViewState extends State<RegisterView> {
                           pwController.text = pwController.text.trim();
                           nameController.text = nameController.text.trim();
                           if (ckController.text != pwController.text) {
-                            Fluttertoast.showToast(msg: "확인 비밀번호가 다릅니다");
+                            Toasta(context).toast(Toast(subtitle: "확인 비밀번호가 다릅니다"));
                             isRegistering = false;
                             return;
                           }
 
-                          Fluttertoast.showToast(msg: "회원 확인 중...");
+                          Toasta(context).toast(Toast(subtitle: "회원 확인 중..."));
                           Map isMemberData = await (ApiHelper.isLibraryMember(
                               seqController.text, nameController.text)) as Map<dynamic, dynamic>;
 
                           if (isMemberData["result"] != "0") {
                             if (isMemberData["result"] == "1") {
-                              Fluttertoast.showToast(
-                                  msg: "회원을 찾을 수 없습니다.\n"
-                                      "성명과 학생증 ID 확인해주세요.", toastLength: Toast.LENGTH_LONG);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("회원을 찾을 수 없습니다.\n"
+                              "성명과 학생증 ID 확인해주세요."))
+                              );
                             } else {
-                              Fluttertoast.showToast(msg: isMemberData["message"]);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("${isMemberData["message"]}"))
+                              );
                             }
                             isRegistering = false;
                             return;
                           }
 
-                          Fluttertoast.showToast(msg: "회원가입 중...");
+                          Toasta(context).toast(Toast(subtitle: "회원가입 중..."));
                           Map registerData = await (ApiHelper.registerToLibrary(
                               seqController.text,
                               idController.text,
@@ -143,7 +145,9 @@ class _RegisterViewState extends State<RegisterView> {
                               ckController.text)) as Map<dynamic, dynamic>;
 
                           if (registerData["result"] != "0") {
-                            Fluttertoast.showToast(msg: registerData["message"], toastLength: Toast.LENGTH_LONG);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("${registerData["message"]}"))
+                            );
                           } else {
                             await storage.write(key: "id", value: idController.text.trim());
                             await storage.write(key: "pw", value: pwController.text.trim());

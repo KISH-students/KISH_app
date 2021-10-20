@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
-import 'package:kish2019/widget/DetailedCard.dart';
 import 'package:kish2019/widget/login_view.dart';
 import 'package:kish2019/widget/title_text.dart';
+import 'package:toasta/toasta.dart';
 
 class LibraryPage extends StatefulWidget {
   LibraryPage({Key? key}) : super(key: key);
@@ -136,8 +135,9 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
 
               dynamic resultCode = data["result"];
               if (data["result"] != "0") {
-                Fluttertoast.showToast(msg: data["message"]);
-
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${data["message"]}"))
+                );
                 if (resultCode == "2") {
                   this.initWidgets();
                   return Container();

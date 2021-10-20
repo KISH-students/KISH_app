@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/login_view.dart';
+import 'package:toasta/toasta.dart';
 
 class BambooPostWritingPage extends StatefulWidget {
   BambooPostWritingPage({Key? key}) : super(key: key);
@@ -124,17 +124,11 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
     String content = contentEditingController.text;
 
     if (title.trim().isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-          SnackBar(content: Text("제목을 입력해주세요."))
-      );
+      Toasta(context).toast(Toast(subtitle: "제목을 입력해주세요"));
       return;
     }
     if (content.trim().length < 5) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-          SnackBar(content: Text("글이 너무 짧습니다."))
-      );
+      Toasta(context).toast(Toast(subtitle: "글이 너무 짧습니다"));
       return;
     }
     showCheckingDialog();
@@ -152,15 +146,11 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
 
   Future<void> writePost(bool facebook) async{
     if (sending) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-          SnackBar(content: Text("이미 처리 중 입니다."))
-      );
+      Toasta(context).toast(Toast(subtitle: "이미 처리 중 입니다"));
       return;
     }
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("게시물 등록 중 ...")));
+    Toasta(context).toast(Toast(subtitle: "게시물 등록 중..."));
 
     sending = true;
     String title = titleEditingController.text;
@@ -172,15 +162,16 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
       bool success = response['success'];
       String msg = response['message'];
 
-      Fluttertoast.showToast(msg: msg);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("$msg"))
+      );
       if (success) {
         Navigator.pop(context);
       }
     } catch(e) {
       print(e);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-          SnackBar(content: Text("처리하지 못했습니다. 인터넷 상태를 확인해주세요."))
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("처리하지 못했습니다.\n인터넷 상태를 확인해주세요."))
       );
     } finally {
       sending = false;

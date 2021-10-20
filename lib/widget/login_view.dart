@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kish2019/main.dart';
 import 'package:kish2019/noti_manager.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:kish2019/widget/custom_text_form_field.dart';
 import 'package:kish2019/widget/register_view.dart';
+import 'package:toasta/toasta.dart';
 
 import 'login_background.dart';
 
@@ -26,7 +27,11 @@ class LoginView extends StatefulWidget {
     Map resultMap = new Map();
 
     if (isLogining) {
-      Fluttertoast.showToast(msg: "이미 로그인 중입니다");
+      BuildContext? mainContext = MyApp.navigatorKey.currentContext;
+      if (mainContext != null) {
+        Toasta(mainContext).toast(Toast(subtitle: "이미 로그인 중입니다"));
+      }
+
       resultMap["result"] = IN_PROGRESS;
       return resultMap;
     }
@@ -94,15 +99,19 @@ class _LoginViewState extends State<LoginView> {
 
     if (resultCode == LoginView.FAIL) {
       setState(() {
-        Fluttertoast.showToast(msg: result["msg"]);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("${result["msg"]}"))
+        );
       });
     } else if (resultCode == LoginView.IN_PROGRESS) {
-      Fluttertoast.showToast(msg: "이미 로그인 중! 잠시 후 다시 시도하세요");
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 로그인 중입니다.\n잠시 후 다시 시도하세요"))
+      );
     } else if (resultCode == LoginView.SUCCESS) {
       Map data = new Map();
       data["result"] = "success";
       Navigator.pop(context, data);
-      Fluttertoast.showToast(msg: "로그인에 성공하였습니다.");
+      Toasta(context).toast(Toast(subtitle: "로그인에 성공하였습니다"));
     }
   }
 

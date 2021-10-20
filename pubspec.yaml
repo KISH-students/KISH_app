@@ -25,7 +25,6 @@ dependencies:
   http: ^0.13.3
   english_words: ^4.0.0
   device_info: ^2.0.2
-  fluttertoast: ^8.0.7
   shared_preferences: ^2.0.6
   intl: ^0.17.0
   like_button: ^2.0.3
@@ -50,6 +49,7 @@ dependencies:
   notification_permissions: ^0.5.0
   flutter_launcher_icons: ^0.9.0
   simple_animations: ^3.1.1
+  toasta: ^1.0.2
 
 dev_dependencies:
   flutter_test:
