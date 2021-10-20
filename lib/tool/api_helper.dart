@@ -14,7 +14,7 @@ enum Method { get, post }
 class ApiHelper {
 
   static Future<String> request(
-      String api, Method method, Map<String, String?> params, {doCache: true, int timeout = 999999}) async {
+      String api, Method method, Map<String, String?> params, {doCache: true, int timeout = 10}) async {
     String url = api;
     late http.Response response;
 
@@ -40,16 +40,9 @@ class ApiHelper {
         saveResult(getCacheKey(api, params), response.body);
       }
     } catch (e) {
-      /* Fluttertoast.showToast(
-          msg: "정보를 불러오지 못했습니다.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.black54,
-          textColor: Colors.white,
-          fontSize: 16.0);*/
+      print(e.toString() + "  ____________________+");
       String? cache = await getCachedResult(getCacheKey(api, params));
       if(cache != null) return cache;
-      print(e.toString() + "  ____________________+");
     }
     return response.body;
   }
