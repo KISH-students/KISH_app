@@ -25,42 +25,52 @@ class LoginView extends StatefulWidget {
 
   static Future<Map> login() async {
     Map resultMap = new Map();
+    try {
+      if (isLogining) {
+        BuildContext? mainContext = MyApp.navigatorKey.currentContext;
+        if (mainContext != null) {
+          Toasta(mainContext).toast(Toast(subtitle: "이미 로그인 중입니다"));
+        }
 
-    if (isLogining) {
-      BuildContext? mainContext = MyApp.navigatorKey.currentContext;
-      if (mainContext != null) {
-        Toasta(mainContext).toast(Toast(subtitle: "이미 로그인 중입니다"));
+        resultMap["result"] = IN_PROGRESS;
+        return resultMap;
       }
 
-      resultMap["result"] = IN_PROGRESS;
-      return resultMap;
-    }
+      isLogining = true;
+      String? id = await storage.read(key: "id");
+      String? pw = await storage.read(key: "pw");
 
-    isLogining = true;
-    String? id = await storage.read(key: "id");
-    String? pw = await storage.read(key: "pw");
+      if (id == null || pw == null) {
+        resultMap["result"] = FAIL;
+        isLogining = false;
+        return resultMap;
+      }
 
-    if (id == null || pw == null) {
-      resultMap["result"] = FAIL;
+      Map? result = await ApiHelper.loginToLibrary(id, pw);
       isLogining = false;
-      return resultMap;
-    }
 
-    Map? result = await ApiHelper.loginToLibrary(id, pw);
-    isLogining = false;
+      if (result!["result"] != "0") {
+        resultMap["result"] = FAIL;
+        resultMap["msg"] = result["message"];
+      } else {
+        resultMap["result"] = SUCCESS;
+        seq = result["seq"];
+        isAdmin = result['admin'];
+        isLoggined = true;
 
-    if (result!["result"] != "0") {
-      resultMap["result"] = FAIL;
-      resultMap["msg"] = result["message"];
-    } else {
-      resultMap["result"] = SUCCESS;
-      seq = result["seq"];
-      isAdmin = result['admin'];
-      isLoggined = true;
-
-      NotificationManager manager = NotificationManager.getInstance();
-      bool bambooNotiEnabled = await manager.bambooNoti.isEnabled();
-      ApiHelper.toggleBambooNotification(bambooNotiEnabled, seq);
+        NotificationManager manager = NotificationManager.getInstance();
+        bool bambooNotiEnabled = await manager.bambooNoti.isEnabled();
+        ApiHelper.toggleBambooNotification(bambooNotiEnabled, seq);
+      }
+    } catch (e) {
+      print(e);
+      BuildContext? mainContext = MyApp.navigatorKey.currentContext;
+      if (mainContext != null) {
+        Toasta(mainContext).toast(
+            Toast(subtitle: "로그인 중 오류가 발생했습니다."));
+      }
+    } finally {
+      isLogining = false;
     }
 
     return resultMap;
