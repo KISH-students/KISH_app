@@ -46,9 +46,16 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
     List<Widget> temp = [];
     List comments = post['comment'];
 
+    List replies;
+    List<Widget> replyWidgetList;
+    bool popupIt;
+
     comments.forEach((parentComment) {
-      List<Widget> replyComments = [];
-      List replies = parentComment['replies'];
+      // 초기화
+      replies = parentComment['replies'];
+      replyWidgetList = [];
+      popupIt = false;
+      // 초기화 끝
 
       replies.forEach((element2) {
         Comment reply = new Comment(
@@ -63,8 +70,10 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
           parentId: parentComment['comment_id'],
           postId: widget.id,
         );
-
-        replyComments.add(reply);
+        if (widget.commentIdToView == element2['comment_id']) {
+          popupIt = true;
+        }
+        replyWidgetList.add(reply);
       });
 
       Comment comment = new Comment(
@@ -76,14 +85,18 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
         iAmAuthor: parentComment['IAmAuthor'],
         id: parentComment['comment_id'],
         postId: widget.id,
-        replies: replyComments,
+        replies: replyWidgetList,
       );
+
+      if (widget.commentIdToView == comment.id) {
+        popupIt = true;
+      }
 
       // 답글도 없으면 삭제된 댓글 표시 안 함
       if (!(comment.removed && comment.replies.length == 0)) {
         temp.add(comment);
 
-        if (widget.commentIdToView == comment.id) {
+        if (popupIt) {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return Scaffold(
                 body: CommentReplyScreen(tempComment: comment, postId: comment.postId)
