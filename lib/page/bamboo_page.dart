@@ -343,6 +343,7 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  String currentPageTitle = "내 정보";
   final PageController controller = PageController(initialPage: 0);
 
   @override
@@ -361,18 +362,33 @@ class _MyPageState extends State<MyPage> {
                           IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(CupertinoIcons.chevron_back)),
                           Text("돌아가기"),
                         ]),
-                    Text("내 정보", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                    Text(currentPageTitle, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                   ]),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 CupertinoButton(child: Text("알림"),
-                  onPressed: () {controller.jumpToPage(0);},),
+                  onPressed: () {
+                    setState(() {
+                      this.currentPageTitle = "받은 알림";
+                    });
+                    controller.jumpToPage(0);
+                  },),
                 CupertinoButton(child: Text("내 글"),
-                  onPressed: () {controller.jumpToPage(1);},),
+                  onPressed: () {
+                    setState(() {
+                      this.currentPageTitle = "작성한 글";
+                    });
+                    controller.jumpToPage(1);
+                  },),
                 CupertinoButton(child: Text("내 댓글"),
-                  onPressed: () {controller.jumpToPage(2);},),
+                  onPressed: () {
+                    setState(() {
+                      this.currentPageTitle = "작성한 댓글";
+                    });
+                    controller.jumpToPage(2);
+                  },),
               ],),
             Expanded(
                 child: PageView(
@@ -433,11 +449,11 @@ class _MyNotificationState extends State<MyNotification> {
 
       list.forEach((element) {
         NotificationInfoWidget notiWidget = new NotificationInfoWidget(
-          type: element['type'],
-          title: element['title'],
-          content: element['content'],
-          comment: element['comment_id'],
-          post: element['post_id']
+            type: element['type'],
+            title: element['title'],
+            content: element['content'],
+            comment: element['comment_id'],
+            post: element['post_id']
         );
         newWidgetList.add(notiWidget);
       });
@@ -488,14 +504,14 @@ class NotificationInfoWidget extends StatelessWidget {
         MaterialButton(child: Container(
           margin: EdgeInsets.symmetric(horizontal: 5),
           child: Card(
-            elevation: 0,
+              elevation: 0,
               color: Colors.grey.shade100,
               shadowColor: Colors.black.withOpacity(0.7),
               child: Container(
                 width: double.infinity,
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),),
                       Divider(),
