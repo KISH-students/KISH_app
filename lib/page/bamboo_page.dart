@@ -162,11 +162,6 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                     },
                       padding: EdgeInsets.symmetric(horizontal: 13, vertical: 6),
                     ),
-                    IconButton(onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return MyPage();
-                      },));
-                    }, icon: Icon(Icons.person))
                   ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -191,6 +186,16 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                             label: const Text("댓글 알림")
                         )
                     ),
+                    FlatButton.icon(onPressed: () {
+                      if (!LoginView.isLoggined) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => LoginView()));
+                        return;
+                      }
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return MyPage();
+                      },));
+                    }, icon: Icon(CupertinoIcons.person), label: Text("내 정보"),)
                   ]),
               SizedBox(height: 10,),
               Expanded(
