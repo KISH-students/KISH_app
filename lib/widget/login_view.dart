@@ -91,6 +91,22 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration.zero, () {
+      autoFill();
+    });
+  }
+
+  Future<void> autoFill() async {
+    String? id = await LoginView.storage.read(key: "id");
+    String? pw = await LoginView.storage.read(key: "pw");
+
+    if (id != null && pw != null) {
+      setState(() {
+        idController.text = id;
+        pwController.text = pw;
+      });
+    }
   }
 
   Future<void> login() async {
