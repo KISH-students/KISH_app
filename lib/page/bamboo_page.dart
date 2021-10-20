@@ -441,28 +441,24 @@ class _MyNotificationState extends State<MyNotification> {
       return;
     }
 
-    if (list != null) {
-      if (list.length == 0) {
-        pagingController.appendLastPage([]);
-        return;
-      }
-
-      list.forEach((element) {
-        NotificationInfoWidget notiWidget = new NotificationInfoWidget(
-            type: element['type'],
-            title: element['title'],
-            content: element['content'],
-            comment: element['comment_id'],
-            post: element['post_id']
-        );
-        newWidgetList.add(notiWidget);
-      });
-
-      this.notiWidgetList.addAll(newWidgetList);
-      pagingController.appendPage(newWidgetList, key + 1);
-    } else {
-      pagingController.appendPage([], key);
+    if (list.length == 0) {
+      pagingController.appendLastPage([]);
+      return;
     }
+
+    list.forEach((element) {
+      NotificationInfoWidget notiWidget = new NotificationInfoWidget(
+          type: element['type'],
+          title: element['title'],
+          content: element['content'],
+          comment: element['comment_id'],
+          post: element['post_id']
+      );
+      newWidgetList.add(notiWidget);
+    });
+
+    this.notiWidgetList.addAll(newWidgetList);
+    pagingController.appendPage(newWidgetList, key + 1);
   }
 
   void refreshPage() {
@@ -502,23 +498,30 @@ class NotificationInfoWidget extends StatelessWidget {
       children: [
         Divider(),
         MaterialButton(child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
-          child: Card(
-              elevation: 0,
-              color: Colors.grey.shade100,
-              shadowColor: Colors.black.withOpacity(0.7),
-              child: Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),),
-                      Divider(),
-                      Text(content),
-                    ]),
-              )
-          ),
+            margin: EdgeInsets.symmetric(horizontal: 5),
+            child: Container(
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                      style: TextStyle(fontFamily: "NanumSquareR", fontSize: 17),),
+                    Divider(),
+                    Container(
+                      margin: EdgeInsets.only(top: 5),
+                      child: Row(
+                        children: [
+                          Expanded(
+                          child: Text(content,
+                            style: TextStyle(color: Colors.black87),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,),
+                          ),
+                      ]),
+                    ),
+                  ]),
+            )
         ),
           onPressed: (){
             if (this.post != -1) {
