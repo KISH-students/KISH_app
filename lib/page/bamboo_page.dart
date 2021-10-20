@@ -510,15 +510,10 @@ class NotificationInfoWidget extends StatelessWidget {
                     Divider(),
                     Container(
                       margin: EdgeInsets.only(top: 5),
-                      child: Row(
-                        children: [
-                          Expanded(
-                          child: Text(content,
-                            style: TextStyle(color: Colors.black87),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,),
-                          ),
-                      ]),
+                      child: Text(content,
+                        style: TextStyle(color: Colors.black87),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,),
                     ),
                   ]),
             )
