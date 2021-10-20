@@ -27,7 +27,8 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   static String menu = "";
   static Widget body = Container();
 
-  PagingController<int, Widget> _pagingController = PagingController(firstPageKey: 0);
+  TextEditingController searchBarController = new TextEditingController();
+  PagingController<int, Widget> _pagingController = new PagingController(firstPageKey: 0);
   String? currentKeyword;
   List<PostInfo> postList = [];
   int searchIndex = 1;
@@ -107,10 +108,11 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
   void setBody2Normal() {
     setState(() {
       backButtonWidget = Container();
+      this.searchBarController.text = "";
       _pagingController.itemList = [];
       _pagingController.nextPageKey = 0;
-      searchIndex = -1;
       _pagingController.itemList = [];
+      searchIndex = -1;
       postList = [];
 
       body = FutureBuilder(
@@ -163,6 +165,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                 Container(
                   margin: const EdgeInsets.only(top: 10, left: 30, right: 30),
                   child: TextFormField(
+                    controller: searchBarController,
                       cursorColor: Colors.black38,
                       decoration: const InputDecoration(
                         icon: const Icon(CupertinoIcons.search),
