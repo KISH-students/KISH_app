@@ -105,9 +105,9 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                      hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요.\n"
-                          "단, 악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
-                          "학교 폭력과 같은 이유로 학교측이 정보를 요구할 경우,\n"
+                      hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요!\n\n"
+                          "악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
+                          "학교 폭력 등의 이유로 학교측이 정보를 요구할 경우,\n"
                           "정보가 제공될 수 있습니다.",
                       hintStyle: TextStyle(overflow: TextOverflow.clip),
                       border: InputBorder.none
