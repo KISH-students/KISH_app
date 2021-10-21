@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
+import 'package:photo_view/photo_view.dart';
 
 class KishMagazinePage extends StatefulWidget {
   KishMagazinePage({Key? key}) : super(key: key);
@@ -301,14 +302,15 @@ class ImgArticle extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlatButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PdfPage(
-                      KISHApi.HOST + data["url"],
-                      title: data["title"])
-              )
-          );
+          Navigator.push(context, PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+              return _ImageArticleViewer(
+                imgSrc: KISHApi.HOST + data["img"],
+                title: data["title"] as String,
+                desc: data["author"] as String,
+              );
+            },));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,6 +338,127 @@ class ImgArticle extends StatelessWidget {
               decoration: BoxDecoration(color: Colors.black54),
             ),
           ],
+        )
+    );
+  }
+}
+
+class _ImageArticleViewer extends StatefulWidget {
+  final String imgSrc;
+  final String title;
+  final String desc;
+  const _ImageArticleViewer({
+    required this.imgSrc,
+    required this.title,
+    required this.desc,
+    Key? key
+  }) : super(key: key);
+
+  @override
+  _ImageArticleViewerState createState() => _ImageArticleViewerState();
+}
+
+class _ImageArticleViewerState extends State<_ImageArticleViewer> {
+  bool _visible = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+        direction: DismissDirection.down,
+        key: const Key('static_key_00001'),
+        onDismissed: (v) => Navigator.of(context).pop(),
+        child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              setState(() {
+                _visible = !_visible;
+              });
+            },
+            child: Scaffold(
+                body: Stack(
+                    children: [
+                      Container(
+                          child: PhotoView.customChild(
+                            child: Image.network(
+                              widget.imgSrc,
+                              width: MediaQuery.of(context).size.width / 2,
+                              loadingBuilder: (context, child, progress) {
+                                return progress == null
+                                    ? child
+                                    : CupertinoActivityIndicator();
+                              },
+                            ),
+                          )
+                      ),
+                      Positioned.fill(
+                          bottom: 0,
+                          child: AnimatedOpacity(
+                              opacity: _visible ? 1 : 0,
+                              duration: const Duration(milliseconds: 500),
+                              child:
+                              Container(
+                                  height: 200,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                          colors: [
+                                            Colors.black.withOpacity(0.7),
+                                            Colors.black.withOpacity(0.3),
+                                            Colors.black.withOpacity(0.2),
+                                            Colors.black.withOpacity(0.08),
+                                            Colors.black.withOpacity(0.05),
+                                            Colors.black.withOpacity(0),
+                                            Colors.black.withOpacity(0),
+                                            Colors.black.withOpacity(0),
+                                            Colors.black.withOpacity(0),
+                                          ]
+                                      )
+                                  ),
+                                  child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                              left: 20,
+                                              bottom: 100
+                                          ),
+                                          child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(widget.title,
+                                                  style: TextStyle(
+                                                      fontSize: 25,
+                                                      color: Colors.white,
+                                                      fontFamily: "NanumSquareR"),),
+                                                Text(widget.desc,
+                                                  style: TextStyle(
+                                                      fontSize: 17,
+                                                      color: Colors.white70),)
+                                              ]),
+                                        )
+                                      ])
+                              )
+                          )
+                      ),
+                      AnimatedOpacity(
+                          opacity: _visible ? 1 : 0,
+                          duration: const Duration(milliseconds: 500),
+                          child: SafeArea(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(onPressed: (){
+                                      Navigator.pop(context);
+                                    }, icon: Icon(CupertinoIcons.xmark, color: Colors.white70,)
+                                    )
+                                  ])
+                          )
+                      ),
+                    ])
+            )
         )
     );
   }
