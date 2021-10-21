@@ -542,7 +542,7 @@ class _BambooPostListWidget extends StatelessWidget {
                   List data = snapshot.data as List;
                   List<Widget> posts = [];
                   data.forEach((element) {
-                    Widget post = MaterialButton(onPressed: () {MainState.instance!.changePage(2);},
+                    Widget post = MaterialButton(onPressed: () {MainState.instance!.changePage(1);},
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
