@@ -176,7 +176,6 @@ class MainState extends State<Home> {
           physics: NeverScrollableScrollPhysics(),
           children: [
             MainPage(),
-            KishMagazinePage(),
             Navigator(
               initialRoute: 'main',
               onGenerateRoute: (settings) {
@@ -190,6 +189,7 @@ class MainState extends State<Home> {
               },
             ),
             KishPostListPage(),
+            KishMagazinePage(),
             Navigator(
               onGenerateRoute: (settings) {
                 return MaterialPageRoute(builder: (a) => LibraryPage());
@@ -219,17 +219,6 @@ class MainState extends State<Home> {
                   color: Colors.redAccent,
                 ),
                 title: Text("홈")),
-            const BubbleBottomBarItem(  // KISH MAGAZINE
-                backgroundColor: Colors.black54,
-                icon: Icon(
-                  Icons.library_books_outlined,
-                  color: Colors.black,
-                ),
-                activeIcon: Icon(
-                  Icons.library_books_outlined,
-                  color: Colors.black54,
-                ),
-                title: Text("매거진")),
             const BubbleBottomBarItem(  // KISH 대나무숲
                 backgroundColor: Colors.green,
                 icon: Icon(
@@ -252,6 +241,17 @@ class MainState extends State<Home> {
                   color: Colors.black54,
                 ),
                 title: Text("가정통신문")),
+            const BubbleBottomBarItem(  // KISH MAGAZINE
+                backgroundColor: Colors.black54,
+                icon: Icon(
+                  Icons.library_books_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.library_books_outlined,
+                  color: Colors.black54,
+                ),
+                title: Text("매거진")),
             /*const BubbleBottomBarItem(  // KISH 도서
                 backgroundColor: Colors.brown,
                 icon: Icon(
