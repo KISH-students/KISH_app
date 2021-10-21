@@ -248,7 +248,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
               ),
               Container(
                 margin: EdgeInsets.only(bottom: 25),
-                child: TitleText('오늘의 식단을\n확인하세요', top: 50.0,),
+                child: TitleText('오늘의 식단을\n확인하세요', top: 30.0,),
               ),
               Center(
                   child: Column(
@@ -293,7 +293,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 child: _BambooPostListWidget(this),
-              )
+              ),
             ],),
         ),
       ),
