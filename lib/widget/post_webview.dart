@@ -20,11 +20,15 @@ class PostWebView extends StatefulWidget {
 }
 
 class _PostWebViewState extends State<PostWebView> {
+  bool isExpanded = false;
   Widget loadingWidget = Container();
+  late Future<List?> _attachmentFuture;
+
   @override
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    _attachmentFuture = ApiHelper.getPostAttachments(widget.menu, widget.id);
   }
 
   @override
@@ -42,27 +46,27 @@ class _PostWebViewState extends State<PostWebView> {
             child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    FlatButton.icon(
-                    icon: Icon(CupertinoIcons.chevron_back), label: Text("돌아가기"),
-                    onPressed: () {Navigator.pop(
-                        context);
-                    },),
-                    IconButton(
-                      icon: Icon(CupertinoIcons.arrowshape_turn_up_right),
-                      onPressed: (){
-                        String url = "http://hanoischool.net/?menu_no=${widget.menu}&board_mode=view&bno=${widget.id}";
-                        Share.share(url);
-                      },
-                    )
-                  ]),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FlatButton.icon(
+                          icon: Icon(CupertinoIcons.chevron_back), label: Text("돌아가기"),
+                          onPressed: () {Navigator.pop(
+                              context);
+                          },),
+                        IconButton(
+                          icon: Icon(CupertinoIcons.arrowshape_turn_up_right),
+                          onPressed: (){
+                            String url = "http://hanoischool.net/?menu_no=${widget.menu}&board_mode=view&bno=${widget.id}";
+                            Share.share(url);
+                          },
+                        )
+                      ]),
                   Card(
                       elevation: 5,
                       child: Container(
                           width: double.infinity,
                           child: FutureBuilder(
-                            future: ApiHelper.getPostAttachments(widget.menu, widget.id),
+                            future: _attachmentFuture,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.done) {
                                 if (snapshot.hasData) {
@@ -88,10 +92,35 @@ class _PostWebViewState extends State<PostWebView> {
                                     );
                                   });
 
-                                  return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: widgets
-                                  );
+                                  return ExpansionPanelList(
+                                      expansionCallback: (panelIndex, isExpanded) {
+                                        setState(() {
+                                          this.isExpanded = !isExpanded;
+                                        });
+                                      },
+                                      children: [
+                                        ExpansionPanel(
+                                          headerBuilder: (BuildContext context, bool isExpanded) {
+                                            return Container(
+                                                margin: EdgeInsets.only(left: 2, top: 10),
+                                                child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      Text("첨부파일을 보려면 화살표를 누르세요 (${widgets.length})",
+                                                        style: TextStyle(
+                                                            fontFamily: "IBM",
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold),),
+                                                    ])
+                                            );
+                                          },
+                                          isExpanded: this.isExpanded,
+                                          body: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: widgets,
+                                          ),
+                                        )
+                                      ]);
                                 } else {
                                   return Text("첨부파일을 불러오지 못했습니다.");
                                 }
