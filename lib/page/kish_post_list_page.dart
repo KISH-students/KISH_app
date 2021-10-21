@@ -165,7 +165,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                 Container(
                   margin: const EdgeInsets.only(top: 10, left: 30, right: 30),
                   child: TextFormField(
-                    controller: searchBarController,
+                      controller: searchBarController,
                       cursorColor: Colors.black38,
                       decoration: const InputDecoration(
                         icon: const Icon(CupertinoIcons.search),
@@ -311,48 +311,20 @@ class PostInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      padding: EdgeInsets.zero,
-      child : Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            border: Border.all(width: 1, color: Colors.black.withOpacity(0.1))
-        ),
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Container(
-            padding: const EdgeInsets.only(left: 12, right: 8, top: 10, bottom: 10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 5),
-                    child: Text(title!, style: TextStyle(fontFamily: "NanumSquareR", fontSize: 16, fontWeight: FontWeight.w500)),
-                  ),
-                  Row(
-                      children: [
-                        Text("작성자 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
-                        Text(author!, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
-                      ]),
-                  Container(
-                    width: double.infinity,
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text("작성일 : ", style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.w600)),
-                          Text(date!, style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600)),
-                        ]),
-                  ),
-                ])
-        ),
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PostWebView(menu: menu.toString(), id: id.toString(),)),
-        );
-      },
-    );
+    return Column(
+        children: [
+          Divider(),
+          ListTile(
+            title: Text("$title"),
+            subtitle: Text("$author | $date"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PostWebView(menu: menu.toString(), id: id.toString(),)),
+              );
+            },
+          ),
+        ]);
   }
 }
 
