@@ -85,6 +85,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
           child: TextFormField(
               controller: titleEditingController,
               style: TextStyle(fontFamily: "IBM"),
+              maxLength: 30,
               decoration: InputDecoration(
                   hintText: "제목을 입력해주세요",
                   hintStyle: TextStyle(overflow: TextOverflow.clip),
