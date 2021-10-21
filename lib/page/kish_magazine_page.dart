@@ -6,6 +6,7 @@ import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/page/pdf_page.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:awesome_dropdown/awesome_dropdown.dart';
 
 class KishMagazinePage extends StatefulWidget {
   KishMagazinePage({Key? key}) : super(key: key);
@@ -17,10 +18,10 @@ class KishMagazinePage extends StatefulWidget {
 }
 
 class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAliveClientMixin<KishMagazinePage> {
-  String? parent;
-  String? category;
+  String parent = "";
+  String category = "";
 
-  Widget body = CupertinoActivityIndicator();
+  Widget articleListBuilder = CupertinoActivityIndicator();
   Widget parentDropdown = CupertinoActivityIndicator();
   Widget categoryDropdown = CupertinoActivityIndicator();
 
@@ -47,22 +48,18 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
     super.dispose();
   }
 
-  void loadBody() {
+  void loadArticles() {
     Future<void>.delayed(Duration(seconds: 0), () {
       setState(() {
-        this.body = FutureBuilder(
+        this.articleListBuilder = FutureBuilder(
           future: ApiHelper.getMagazineHome(parent: parent, category: category),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 List? items;
                 if (snapshot.data != null) {
-                  if (!(snapshot.data is List)) {
-                    dynamic mapData = snapshot.data;
-                    items = mapData.toList();
-                  } else {
-                    items = snapshot.data as List?;
-                  }
+                  dynamic mapData = snapshot.data;
+                  items = mapData.toList();
                 } else {
                   items = [];
                 }
@@ -74,13 +71,13 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                           Map item = items![index];
                           String? type = item["type"];
 
-                          item["title"] = item["title"] is String
-                              ? item["title"].replaceAll("\n", " ")
-                              : item["title"];
+                          if (item["title"] is String) {
+                            item["title"]= item["title"].replaceAll("\n", " ");
+                          }
 
-                          item["summary"] = item["summary"] is String
-                              ? "\n" + item["summary"].replaceAll("\n", " ")
-                              : item["summary"];
+                          if (item["summary"] is String) {
+                            item["summary"] = "\n" + item["summary"].replaceAll("\n", " ");
+                          }
 
                           if (type == "TextArticleWithImg") return TextArticleWithImg(item);
                           else if (type == "ImgArticle") return ImgArticle(item);
@@ -108,14 +105,11 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                List? items;
-                if (!(snapshot.data is List)) {
-                  dynamic mapData = snapshot.data;
-                  items = mapData.toList();
-                } else {
-                  items = snapshot.data as List?;
-                }
-                this.parent = items![0];
+                List<String> items = [];
+                dynamic mapData = snapshot.data;
+                items = new List<String>.from(mapData.toList());
+
+                this.parent = items[0];
                 Future<void>.delayed(Duration(seconds: 0), () {
                   setState(() {
                     loadCategory();
@@ -143,22 +137,19 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                List? items;
-                if (!(snapshot.data is List)) {
-                  dynamic mapData = snapshot.data;
-                  items = mapData.toList();
-                } else {
-                  items = snapshot.data as List?;
-                }
-                items!.insert(0, "all");
-                this.category = items[0];
+                dynamic mapData = snapshot.data;
+                List categoryList;
+                categoryList = new List<String>.from(mapData.toList());
+                categoryList.insert(0, "all");
+
+                this.category = categoryList[0];
                 Future<void>.delayed(Duration(seconds: 0), () {
                   setState(() {
-                    loadBody();
+                    loadArticles();
                   });
                 });
 
-                return CategoryDropdown(this, items);
+                return CategoryDropdown(this, categoryList);
               } else {
                 return Text("로드 실패");
               }
@@ -173,37 +164,37 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Card(
-              child: Column(
+    return SafeArea(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
                   children : [
                     Container(
                         decoration: BoxDecoration(color: Colors.white),
                         child: Container(
-                            margin: EdgeInsets.only(top: 50, bottom: 10),
+                            margin: EdgeInsets.only(top: 5, bottom: 2),
                             child: Center(
                               child: Text(
                                 "KISH Magazine",
                                 style: TextStyle(
                                     color: Color.fromARGB(255, 71, 71, 71),
                                     fontFamily: "Cinzel",
-                                    fontSize: 30),
+                                    fontSize: 24),
                               ),
                             )
                         )
                     ),
+                    Divider(height: 0,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [parentDropdown, Text(" · "), categoryDropdown],
+                      children: [parentDropdown, categoryDropdown],
                     ),
                     Text(Platform.isIOS ? "\nCovid-19 또는 민감한 정보를 다루는 기사를 열람할 수 없습니다\n" : ""),
                   ]),
-              elevation: 3
-          ),
-          body
-        ]);
+              articleListBuilder
+            ])
+    );
   }
 
   @override
@@ -216,33 +207,36 @@ class TextArticle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PdfPage(
-                      KISHApi.HOST + data["url"],
-                      title: data["title"])
+    return Column(
+        children: [
+          FlatButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PdfPage(
+                            KISHApi.HOST + data["url"],
+                            title: data["title"])
+                    )
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 17)),
+                  Text(data["summary"],
+                      style: TextStyle(
+                          fontSize: 13, color: Color.fromARGB(255, 28, 28, 28),
+                          fontFamily: "NanumSquareR", fontWeight: FontWeight.w300)),
+                ],
               )
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 17)),
-            Text(data["summary"],
-                style: TextStyle(
-                    fontSize: 13, color: Color.fromARGB(255, 28, 28, 28),
-                    fontFamily: "NanumSquareR", fontWeight: FontWeight.w300)),
-            Container(
-              margin: EdgeInsets.only(top: 20, bottom: 16),
-              height: 1,
-              decoration: BoxDecoration(color: Colors.black54),
-            ),
-          ],
-        )
-    );
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 20, bottom: 16),
+            height: 1,
+            decoration: BoxDecoration(color: Colors.black54),
+          ),
+        ]);
   }
 }
 
@@ -252,45 +246,48 @@ class TextArticleWithImg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PdfPage(
-                      KISHApi.HOST + data["url"],
-                      title: data["title"])
-              )
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
-            Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28), fontFamily: "NanumSquareR")),
-            Container(
-                width: double.infinity,
-                margin: EdgeInsets.only(top: 10, bottom: 15),
-                child: Center(
-                    child: Image.network(
-                      KISHApi.HOST + data["img"],
-                      width: MediaQuery.of(context).size.width / 2,
-                      loadingBuilder: (context, child, progress) {
-                        return progress == null
-                            ? child
-                            : CupertinoActivityIndicator();
-                      },
+    return Column(
+        children: [
+          FlatButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PdfPage(
+                            KISHApi.HOST + data["url"],
+                            title: data["title"])
                     )
-                )
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 28),
-              height: 1,
-              decoration: BoxDecoration(color: Colors.black54),
-            ),
-          ],
-        )
-    );
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
+                  Text(data["summary"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28), fontFamily: "NanumSquareR")),
+                  Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(top: 10, bottom: 15),
+                      child: Center(
+                          child: Image.network(
+                            KISHApi.HOST + data["img"],
+                            width: MediaQuery.of(context).size.width / 2,
+                            loadingBuilder: (context, child, progress) {
+                              return progress == null
+                                  ? child
+                                  : CupertinoActivityIndicator();
+                            },
+                          )
+                      )
+                  ),
+                ],
+              )
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 28),
+            height: 1,
+            decoration: BoxDecoration(color: Colors.black54),
+          ),
+        ]);
   }
 }
 
@@ -300,46 +297,49 @@ class ImgArticle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-        onPressed: () {
-          Navigator.push(context, PageRouteBuilder(
-            opaque: false,
-            pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-              return _ImageArticleViewer(
-                imgSrc: KISHApi.HOST + data["img"],
-                title: data["title"] as String,
-                desc: data["author"] as String,
-              );
-            },));
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
-            Text(data["author"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.only(top: 10, bottom: 15),
-              child: Center(
-                  child: Image.network(
-                    KISHApi.HOST + data["img"],
-                    width: MediaQuery.of(context).size.width / 2,
-                    loadingBuilder: (context, child, progress) {
-                      return progress == null
-                          ? child
-                          : CupertinoActivityIndicator();
-                    },
-                  )
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 13, bottom: 28),
-              height: 1,
-              decoration: BoxDecoration(color: Colors.black54),
-            ),
-          ],
-        )
-    );
+    return Column(
+        children: [
+          FlatButton(
+              onPressed: () {
+                Navigator.push(context, PageRouteBuilder(
+                  opaque: false,
+                  pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+                    return _ImageArticleViewer(
+                      imgSrc: KISHApi.HOST + data["img"],
+                      title: data["title"] as String,
+                      desc: data["author"] as String,
+                    );
+                  },));
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data["title"], style: TextStyle(fontFamily: "Oswald-SemiBold", fontSize: 24)),
+                  Text(data["author"], style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 28, 28, 28))),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(top: 10, bottom: 15),
+                    child: Center(
+                        child: Image.network(
+                          KISHApi.HOST + data["img"],
+                          width: MediaQuery.of(context).size.width / 2,
+                          loadingBuilder: (context, child, progress) {
+                            return progress == null
+                                ? child
+                                : CupertinoActivityIndicator();
+                          },
+                        )
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 13, bottom: 28),
+                    height: 1,
+                    decoration: BoxDecoration(color: Colors.black54),
+                  ),
+                ],
+              )
+          )
+        ]);
   }
 }
 
@@ -466,7 +466,7 @@ class _ImageArticleViewerState extends State<_ImageArticleViewer> {
 
 class ParentDropdown extends StatefulWidget {
   KishMagazinePageState main;
-  List? data;
+  List<String>? data;
   ParentDropdown(this.main, this.data, {Key? key}) : super(key: key);
 
   @override
@@ -476,26 +476,23 @@ class ParentDropdown extends StatefulWidget {
 }
 
 class _ParentDropdownState extends State<ParentDropdown> {
+
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: widget.main.parent,
-      icon: const Icon(Icons.arrow_drop_down),
-      iconSize: 24,
-      style: const TextStyle(color: Colors.black),
-      onChanged: (String? v) {
-        setState(() {
-          widget.main.parent = v;
-          widget.main.body = CupertinoActivityIndicator();
-        });
-        widget.main.loadCategory();
-      },
-      items: widget.data!.map<DropdownMenuItem<String>>((value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+    return Expanded(
+        child: AwesomeDropDown(
+          elevation: 1,
+          dropDownList: widget.data as List<String>,
+          dropDownIcon: Icon(Icons.arrow_drop_down, color: Colors.grey, size: 23,),
+          selectedItem: widget.main.parent,
+          onDropDownItemClick: (selectedItem) {
+            setState(() {
+              widget.main.parent = selectedItem;
+              widget.main.articleListBuilder = CupertinoActivityIndicator();
+            });
+            widget.main.loadCategory();
+          },
+        )
     );
   }
 }
@@ -515,23 +512,20 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
-      value: widget.main.category,
-      icon: const Icon(Icons.arrow_drop_down),
-      iconSize: 24,
-      style: const TextStyle(color: Colors.black),
-      onChanged: (String? v) {
-        setState(() {
-          widget.main.category = v;
-        });
-        widget.main.loadBody();
-      },
-      items: widget.data!.map<DropdownMenuItem<String>>((value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+    return Expanded(
+        child: AwesomeDropDown(
+          elevation: 1,
+          dropDownList: widget.data as List<String>,
+          dropDownIcon: Icon(Icons.arrow_drop_down, color: Colors.grey, size: 23,),
+          selectedItem: widget.main.category,
+          numOfListItemToShow: 7,
+          onDropDownItemClick: (selectedItem) {
+            setState(() {
+              widget.main.category = selectedItem;
+            });
+            widget.main.loadArticles();
+          },
+        )
     );
   }
 }
