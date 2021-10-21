@@ -84,6 +84,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: TextFormField(
               controller: titleEditingController,
+              style: TextStyle(fontFamily: "IBM"),
               decoration: InputDecoration(
                   hintText: "제목을 입력해주세요",
                   hintStyle: TextStyle(overflow: TextOverflow.clip),
@@ -104,6 +105,7 @@ class _BambooPostWritingPageState extends State<BambooPostWritingPage> with Auto
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
+                  style: TextStyle(fontFamily: "IBM"),
                   decoration: InputDecoration(
                       hintText: "질문/썰/고민 등을 완전 익명으로 공유해보세요!\n\n"
                           "악성 글을 게시할 경우 서비스 제제를 받을 수 있으며,\n"
@@ -212,7 +214,7 @@ class _CheckDialogState extends State<CheckDialog> {
                       }),
                       Expanded(
                         child: Text("페이스북 KISH 대나무숲에 익명으로 게시",
-                        overflow: TextOverflow.clip),
+                            overflow: TextOverflow.clip),
                       )
                     ]
                 )

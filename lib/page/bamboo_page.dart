@@ -298,6 +298,7 @@ class _PostPreview extends StatelessWidget {
                               Text("$title",
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
+                                    fontFamily: "IBM",
                                     fontWeight: FontWeight.bold,
                                     fontSize: 17,
                                   )),
@@ -306,7 +307,7 @@ class _PostPreview extends StatelessWidget {
                               Row(
                                   children: [
                                     Expanded(
-                                      child: Text(content, style: TextStyle(fontSize: 15), maxLines: 11,),
+                                      child: Text(content, style: TextStyle(fontSize: 15, fontFamily: "IBM"), maxLines: 11,),
                                     ),
                                   ])
                             ])
@@ -513,12 +514,12 @@ class NotificationInfoWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title,
-                      style: TextStyle(fontFamily: "NanumSquareR", fontSize: 17),),
+                      style: TextStyle(fontFamily: "IBM", fontSize: 17, fontWeight: FontWeight.w600),),
                     Divider(),
                     Container(
                       margin: EdgeInsets.only(top: 5),
                       child: Text(content,
-                        style: TextStyle(color: Colors.black87),
+                        style: TextStyle(color: Colors.black87, fontFamily: "IBM"),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,),
                     ),

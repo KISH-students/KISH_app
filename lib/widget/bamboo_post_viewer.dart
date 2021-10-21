@@ -158,7 +158,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                                   color: Colors.black,
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: "NanumSquareR"
+                                  fontFamily: "IBM"
                               )),
                         ],
                       ),
@@ -208,7 +208,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                               }
                             }, icon: Icon(CupertinoIcons.trash, color: Colors.grey)),
                             Text(this.date,
-                                style: TextStyle(color: Colors.grey.shade600)),
+                                style: TextStyle(color: Colors.grey.shade600, fontFamily: "IBM")),
                           ]),
                     ]
                 ),
@@ -226,7 +226,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                           children: [
                             Expanded(
                                 child: SelectableText(content,
-                                  style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500),)
+                                  style: TextStyle(fontSize: 16, height: 1.8, fontWeight: FontWeight.w500, fontFamily: "IBM"),)
                             ),
                           ],
                         ),
@@ -360,6 +360,7 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                                             keyboardType: TextInputType.multiline,
                                             minLines: 1,
                                             maxLines: 5,
+                                            style: TextStyle(fontFamily: "IBM"),
                                             decoration: InputDecoration(
                                                 fillColor: Colors.blueGrey,
                                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -533,6 +534,7 @@ class _CommentState extends State<Comment> {
                               margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
                               child: SelectableText(widget.content,
                                   style: TextStyle(
+                                      fontFamily: "IBM",
                                       fontSize: 15,
                                       fontStyle: widget.removed ? FontStyle.italic : FontStyle.normal
                                   )),
@@ -711,7 +713,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
                                 fillColor: Colors.blueGrey,
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                 hintText: "답글을 달아주세요 :D",
-                                hintStyle: TextStyle(fontFamily: "NanumSquareL")
+                                hintStyle: TextStyle(fontFamily: "IBM")
                             ),
                           ),
                         ),
