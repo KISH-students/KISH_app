@@ -285,7 +285,7 @@ class MainState extends State<Home> {
     if (currentBackPressTime == null ||
         now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
       currentBackPressTime = now;
-      Toasta(context).toast(Toast(subtitle: "종료하려면 한번 더 누르세요"));
+      Toasta(context).toast(Toast(subtitle: "어플을 종료하려면 한번 더 누르세요"));
       return Future.value(false);
     }
     return Future.value(true);
