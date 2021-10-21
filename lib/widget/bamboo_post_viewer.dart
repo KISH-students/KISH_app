@@ -143,24 +143,29 @@ class _BambooPostViewerState extends State<BambooPostViewer> with AutomaticKeepA
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
-                            iconSize: 22,
-                            onPressed: (){
-                              Navigator.pop(context);
-                            },
-                          ),
-                          Text("$title",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "IBM"
-                              )),
-                        ],
+                      Flexible(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
+                              iconSize: 22,
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                            ),
+                            Flexible(
+                              child: Text("$title",
+                                  overflow: TextOverflow.clip,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "IBM"
+                                  )),
+                            )
+                          ],
+                        ),
                       ),
                       Column(
                           children: [
