@@ -535,7 +535,7 @@ class _BambooPostListWidget extends StatelessWidget {
                 if (snapshot.hasError) {
                   print(snapshot.error);
                   return MaterialButton(
-                    onPressed: (){mainPageState.initWidgets();},
+                      onPressed: (){mainPageState.initWidgets();},
                       child: Text("오류가 발생했습니다. 새로고치려면 터치하세요."));
                 }
                 if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {

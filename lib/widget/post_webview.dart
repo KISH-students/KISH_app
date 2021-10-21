@@ -6,6 +6,7 @@ import 'package:kish2019/kish_api.dart';
 import 'package:kish2019/tool/api_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:share/share.dart';
 
 class PostWebView extends StatefulWidget {
   String? menu;
@@ -40,11 +41,22 @@ class _PostWebViewState extends State<PostWebView> {
             margin: EdgeInsets.only(top: 15, left: 15, right: 15),
             child: Column(
                 children: [
-                  FlatButton.icon(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FlatButton.icon(
                     icon: Icon(CupertinoIcons.chevron_back), label: Text("돌아가기"),
                     onPressed: () {Navigator.pop(
                         context);
                     },),
+                    IconButton(
+                      icon: Icon(CupertinoIcons.arrowshape_turn_up_right),
+                      onPressed: (){
+                        String url = "http://hanoischool.net/?menu_no=${widget.menu}&board_mode=view&bno=${widget.id}";
+                        Share.share(url);
+                      },
+                    )
+                  ]),
                   Card(
                       elevation: 5,
                       child: Container(
