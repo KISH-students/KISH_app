@@ -264,7 +264,7 @@ class ApiHelper {
   static Future<Map> deleteBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_DELETE_POST,
-        Method.get,
+        Method.post,
         {'seq': seq, 'postId': postId.toString(), 'fcm': NotificationManager.FcmToken},
       doCache: false
     );
@@ -274,7 +274,7 @@ class ApiHelper {
   static Future<Map> deleteBambooComment(String seq, var commentId) async {
     String response = await request(
         KISHApi.BAMBOO_DELETE_COMMENT,
-        Method.get,
+        Method.post,
         {'seq': seq, 'commentId': commentId.toString(), 'fcm': NotificationManager.FcmToken},
       doCache: false
     );
@@ -284,7 +284,7 @@ class ApiHelper {
   static Future<Map> getBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_GET_POST,
-        Method.post,
+        Method.get,
         {'seq': seq, 'postId': postId.toString()},
       doCache: false
     );
@@ -294,7 +294,7 @@ class ApiHelper {
   static Future<Map?> getBambooReplies(String seq, var commentId) async {
     String response = await request(
         KISHApi.BAMBOO_GET_REPLIES,
-        Method.post,
+        Method.get,
         {'seq': seq, 'commentId': commentId.toString(),
           'fcm': NotificationManager.FcmToken},
       doCache: false
@@ -326,7 +326,7 @@ class ApiHelper {
   static Future<Map?> likeBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_LIKE_POST,
-        Method.get,
+        Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()},
       doCache: false
     );
@@ -336,7 +336,7 @@ class ApiHelper {
   static Future<Map?> likeBambooComment(String seq, var commentId) async {
     String response = await request(
         KISHApi.BAMBOO_LIKE_COMMENT,
-        Method.get,
+        Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()},
       doCache: false
     );
@@ -346,7 +346,7 @@ class ApiHelper {
   static Future<Map?> unlikeBambooPost(String seq, var postId) async {
     String response = await request(
         KISHApi.BAMBOO_UNLIKE_POST,
-        Method.get,
+        Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'postId': postId.toString()},
       doCache: false
     );
@@ -356,7 +356,7 @@ class ApiHelper {
   static Future<Map?> unlikeBambooComment(String seq, var commentId) async {
     String response = await request(
         KISHApi.BAMBOO_UNLIKE_COMMENT,
-        Method.get,
+        Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'commentId': commentId.toString()},
       doCache: false
     );
@@ -366,7 +366,7 @@ class ApiHelper {
   static Future<void> toggleBambooNotification(bool enable, String seq) async {
     String response = await request(
         KISHApi.BAMBOO_TOGGLE_NOTIFICATION,
-        Method.get,
+        Method.post,
         {'seq': seq, 'fcm': NotificationManager.FcmToken, 'enable': enable.toString()},
       doCache: false
     );
