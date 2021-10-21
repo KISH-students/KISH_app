@@ -61,7 +61,12 @@ class _PostWebViewState extends State<PostWebView> {
                                     widgets.add(
                                       FlatButton(
                                           minWidth: double.infinity,
-                                          onPressed: (){launch(element["url"]);},
+                                          onPressed: (){
+                                            launch(
+                                                element["url"],
+                                                forceSafariVC: false
+                                            );
+                                          },
                                           child: Row(
                                               children: [
                                                 Icon(CupertinoIcons.archivebox, color: Colors.redAccent),
