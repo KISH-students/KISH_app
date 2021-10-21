@@ -546,9 +546,9 @@ class _BambooPostListWidget extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(element['bamboo_title'], style: TextStyle(fontWeight: FontWeight.bold,)),
+                              Text(element['bamboo_title'], style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "IBM")),
                               Container(height: 4),
-                              Text(element['bamboo_content'], maxLines: 2, overflow: TextOverflow.ellipsis,)
+                              Text(element['bamboo_content'], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontFamily: "IBM"),)
                             ])
                     );
                     posts.add(post);
