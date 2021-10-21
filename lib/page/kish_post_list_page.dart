@@ -399,13 +399,14 @@ class _PostList extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      FlatButton(
+                      ElevatedButton(
                           onPressed: (){
                             _KishPostListPageState.mode = 2;
                             _KishPostListPageState.menu = menu.toString();
                             listPageState.setBody2PagedListView();
                           },
-                          child: const Text("더 보기", style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),)
+                          style: ElevatedButton.styleFrom(primary: Colors.black),
+                          child: const Text("더 보기", style: TextStyle(fontWeight: FontWeight.bold),)
                       )
                     ],
                   )
