@@ -685,16 +685,14 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
     return SafeArea(
         child: Column(
             children: [
-              Row(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: IconButton(icon: Icon(CupertinoIcons.back), onPressed: () {
-                          Navigator.pop(context);
-                        },)
-                    ),
-                    Text("돌아가기"),
-                  ]),
+              Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: FlatButton.icon(
+                    icon: Icon(CupertinoIcons.back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }, label: Text("돌아가기"),)
+              ),
               Expanded(
                 child: SingleChildScrollView(
                     controller: this.scrollController,

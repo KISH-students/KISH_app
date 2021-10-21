@@ -363,11 +363,12 @@ class _MyPageState extends State<MyPage> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                        children: [
-                          IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(CupertinoIcons.chevron_back)),
-                          Text("돌아가기"),
-                        ]),
+                    FlatButton.icon(
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(CupertinoIcons.chevron_back),
+                      label: Text("돌아가기"),),
                     Text(currentPageTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
                   ]),
             ),
