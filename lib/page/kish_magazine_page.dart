@@ -188,7 +188,19 @@ class KishMagazinePageState extends State<KishMagazinePage> with AutomaticKeepAl
                     Divider(height: 0,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [parentDropdown, categoryDropdown],
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        parentDropdown,
+                        categoryDropdown,
+                        IconButton(
+                          icon: Icon(CupertinoIcons.refresh,
+                            color: Colors.grey,
+                            size: 20,),
+                          padding: EdgeInsets.zero,
+                          highlightColor: Colors.white,
+                          onPressed: () => this.loadParent(),
+                        )
+                      ],
                     ),
                     Text(Platform.isIOS ? "\nCovid-19 또는 민감한 정보를 다루는 기사를 열람할 수 없습니다\n" : ""),
                   ]),
