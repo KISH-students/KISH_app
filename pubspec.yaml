@@ -79,9 +79,6 @@ flutter:
     - family: IBM
       fonts:
         - asset: fonts/IBMPlexSansKR-Light.ttf
-    - family: KOTRA
-      fonts:
-        - asset: fonts/KOTRA_BOLD.ttf
     - family: Cinzel
       fonts:
         - asset: fonts/Cinzel-VariableFont_wght.ttf
