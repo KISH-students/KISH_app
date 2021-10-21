@@ -173,6 +173,12 @@ class _LoginViewState extends State<LoginView> {
                         fontWeight: FontWeight.w100
                     ),
                         textAlign: TextAlign.center),
+                    const Text("학교 도서관 홈페이지랑 연동됩니다", style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w100
+                    ),
+                        textAlign: TextAlign.center),
                     Column(
                       children: [
                         CustomTextFromField(idController,

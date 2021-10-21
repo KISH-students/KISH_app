@@ -74,6 +74,12 @@ class _RegisterViewState extends State<RegisterView> {
                       key: UniqueKey(),
                       shrinkWrap: true,
                       children: [
+                        const Text("주의!\n학교 도서관 홈페이지와 계정이 연동됩니다.", style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w100
+                        ),
+                            textAlign: TextAlign.center),
                         CustomTextFromField(idController,
                             key: idKey,
                             labelText: "아이디",
