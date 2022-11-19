@@ -8,7 +8,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         tools:replace="android:label"
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:label="KISH"
         android:icon="@mipmap/launcher_icon">
 
@@ -28,6 +28,9 @@
             </intent-filter>
         </activity>
     </application>
+    <meta-data
+        android:name="flutterEmbedding"
+        android:value="2" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
