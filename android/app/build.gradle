@@ -55,11 +55,11 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            useProguard true
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.Hancho.KISH.kish2019'
 }
 
 flutter {
