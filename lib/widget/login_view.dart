@@ -8,8 +8,6 @@ import 'package:kish2019/widget/custom_text_form_field.dart';
 import 'package:kish2019/widget/register_view.dart';
 import 'package:toasta/toasta.dart';
 
-import 'login_background.dart';
-
 class LoginView extends StatefulWidget {
   static final int SUCCESS = 0;
   static final int IN_PROGRESS = 1;
@@ -151,101 +149,97 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: [
-          LoginBackground(),
-          Center(
-            child: Container(
-                margin: EdgeInsets.only(left: 50, right: 50),
-                child: Column(
+    return Center(
+      child: Container(
+          margin: EdgeInsets.only(left: 50, right: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("KISHA", style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold
+              ),
+                  textAlign: TextAlign.center),
+              const Text("KISH학생임을 인증하세요", style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w100
+              ),
+                  textAlign: TextAlign.center),
+              const Text("학교 도서관 홈페이지랑 연동됩니다", style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w100
+              ),
+                  textAlign: TextAlign.center),
+              Column(
+                children: [
+                  CustomTextFromField(idController,
+                      key: _idKey,
+                      labelText: "아이디",
+                      icon: CupertinoIcons.person),
+                  CustomTextFromField(pwController,
+                      key: _pwKey,
+                      labelText: "비밀번호",
+                      icon: CupertinoIcons.lock,
+                      isPassword: true)
+                ],
+              ),
+              Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text("KISHA", style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold
-                    ),
-                        textAlign: TextAlign.center),
-                    const Text("KISH학생임을 인증하세요", style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w100
-                    ),
-                        textAlign: TextAlign.center),
-                    const Text("학교 도서관 홈페이지랑 연동됩니다", style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w100
-                    ),
-                        textAlign: TextAlign.center),
-                    Column(
-                      children: [
-                        CustomTextFromField(idController,
-                            key: _idKey,
-                            labelText: "아이디",
-                            icon: CupertinoIcons.person),
-                        CustomTextFromField(pwController,
-                            key: _pwKey,
-                            labelText: "비밀번호",
-                            icon: CupertinoIcons.lock,
-                            isPassword: true)
-                      ],
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                await LoginView.storage.write(key: "id", value: idController.text.trim());
-                                await LoginView.storage.write(key: "pw", value: pwController.text.trim());
+                    ElevatedButton(
+                      onPressed: () async {
+                        await LoginView.storage.write(key: "id", value: idController.text.trim());
+                        await LoginView.storage.write(key: "pw", value: pwController.text.trim());
 
-                                login();
-                              },
-                              child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all(Colors.blueGrey.shade600),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ))
-                              ),
-                          ),
-                          SizedBox(width: 5,),
-                          ElevatedButton(
-                              onPressed: () async {
-                                Map? data = await Navigator.push(context, new MaterialPageRoute(
-                                    builder: (context) => RegisterView()));
+                        login();
+                      },
+                      child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(Colors.blueGrey.shade600),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ))
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Map? data = await Navigator.push(context, new MaterialPageRoute(
+                            builder: (context) => RegisterView()));
 
-                                if (data != null && data["result"] == "success") {
-                                  this.login();
-                                }
-                              },
-                              child: Text("회원가입", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white38),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)
-                                )),
-                              ),
-                          ),
-                          SizedBox(width: 5,),
-                          ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
-                              child: Text("나가기", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all(Colors.red.shade600.withOpacity(0.8)),
-                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)
-                                ),
-                                ),
-                              ),
-                          ),
-                        ]),
-                  ],
-                )),
-          )
-        ]);
+                        if (data != null && data["result"] == "success") {
+                          this.login();
+                        }
+                      },
+                      child: Text("회원가입", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white38),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)
+                        )),
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      },
+                      child: Text("나가기", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all(Colors.red.shade600.withOpacity(0.8)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)
+                        ),
+                        ),
+                      ),
+                    ),
+                  ]),
+            ],
+          )),
+    );
   }
 }
