@@ -168,7 +168,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                   children: [
                     Container(
                         alignment: Alignment.center,
-                        child: FlatButton.icon(
+                        child: TextButton.icon(
                             onPressed: NotificationManager.isFcmSupported
                                 ? updateNewPostNoti
                                 : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다."));},
@@ -178,7 +178,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                     ),
                     Container(
                         alignment: Alignment.center,
-                        child: FlatButton.icon(
+                        child: TextButton.icon(
                             onPressed: NotificationManager.isFcmSupported
                                 ? updateBambooNoti
                                 : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다"));},
@@ -186,7 +186,7 @@ class _BambooPageState extends State<BambooPage> with AutomaticKeepAliveClientMi
                             label: const Text("댓글 알림")
                         )
                     ),
-                    FlatButton.icon(onPressed: () {
+                    TextButton.icon(onPressed: () {
                       if (!LoginView.isLoggined) {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => LoginView()));
@@ -363,7 +363,7 @@ class _MyPageState extends State<MyPage> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    FlatButton.icon(
+                    TextButton.icon(
                       onPressed: (){
                         Navigator.of(context).pop();
                       },

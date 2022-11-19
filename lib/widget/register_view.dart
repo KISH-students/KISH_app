@@ -105,7 +105,7 @@ class _RegisterViewState extends State<RegisterView> {
                       ],
                     ),
 
-                    RaisedButton(
+                    ElevatedButton(
                         onPressed: () async {
                           if (isRegistering) {
                             Toasta(context).toast(Toast(subtitle: "이미 회원가입 중입니다"));
@@ -166,19 +166,23 @@ class _RegisterViewState extends State<RegisterView> {
                           isRegistering = false;
                         },
                         child: Text("회원가입", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                        color: Colors.white38,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)
-                        )
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(Colors.white38),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          )),
+                        ),
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
                         },
                         child: Text("나가기", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                        color: Colors.red.shade600.withOpacity(0.8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(Colors.red.shade600.withOpacity(0.8)),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ))
                         )
                     ),
                   ],

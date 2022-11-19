@@ -48,7 +48,7 @@ class _PostWebViewState extends State<PostWebView> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        FlatButton.icon(
+                        TextButton.icon(
                           icon: Icon(CupertinoIcons.chevron_back), label: Text("돌아가기"),
                           onPressed: () {Navigator.pop(
                               context);
@@ -75,19 +75,21 @@ class _PostWebViewState extends State<PostWebView> {
 
                                   data.forEach((element) {
                                     widgets.add(
-                                      FlatButton(
-                                          minWidth: double.infinity,
-                                          onPressed: (){
-                                            launch(
-                                                element["url"],
-                                                forceSafariVC: false
-                                            );
-                                          },
-                                          child: Row(
-                                              children: [
-                                                Icon(CupertinoIcons.archivebox, color: Colors.redAccent),
-                                                Text("  " + element["name"])
-                                              ])
+                                      ButtonTheme(
+                                        minWidth: double.infinity,
+                                        child: TextButton(
+                                            onPressed: (){
+                                              launch(
+                                                  element["url"],
+                                                  forceSafariVC: false
+                                              );
+                                            },
+                                            child: Row(
+                                                children: [
+                                                  Icon(CupertinoIcons.archivebox, color: Colors.redAccent),
+                                                  Text("  " + element["name"])
+                                                ])
+                                        ),
                                       ),
                                     );
                                   });

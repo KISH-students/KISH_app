@@ -241,7 +241,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
               Container(
                 margin: EdgeInsets.only(left: 17),
                 child: Center(
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () { _showAppInfoDialog(context); },
                     child: Image(image: AssetImage("images/kish_title_logo.png"), height: 59, width:  MediaQuery.of(context).size.width * 0.3,),
                   ),),
@@ -255,7 +255,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                       children: [
                         Container(
                             alignment: Alignment.topRight,
-                            child: FlatButton.icon(
+                            child: TextButton.icon(
                               onPressed: Platform.isIOS ? (){} : updateDdayNoti,  // ios에선 표시 안 함
                               icon: ddayNotiIcon,
                               label: Text(Platform.isIOS ? "" : "DDay 알림"),)),
@@ -273,13 +273,13 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin<
                             children: [
                               Container(
                                   alignment: Alignment.topLeft,
-                                  child: FlatButton.icon(
+                                  child: TextButton.icon(
                                     onPressed: Platform.isIOS ? (){} : updateLunchNoti,
                                     icon: this.lunchNotiIcon,
                                     label: Text(Platform.isIOS ? "" : "중식 알림"),)),
                               Container(
                                   alignment: Alignment.topRight,
-                                  child: FlatButton.icon(
+                                  child: TextButton.icon(
                                     onPressed: Platform.isIOS ? (){} : updateDinnerNoti,
                                     icon: this.dinnerNotiIcon,
                                     label: Text(Platform.isIOS ? "" : "석식 알림"),)),

@@ -68,7 +68,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
     });
 
     setState(() {
-      backButtonWidget = FlatButton.icon(
+      backButtonWidget = TextButton.icon(
           onPressed: (){ setBody2Normal(); },
           icon: const Icon(CupertinoIcons.back),
           label: const Text("뒤로가기"));
@@ -187,7 +187,7 @@ class _KishPostListPageState extends State<KishPostListPage> with AutomaticKeepA
                 ),
                 Container(
                     alignment: Alignment.center,
-                    child: FlatButton.icon(
+                    child: TextButton.icon(
                         onPressed: NotificationManager.isFcmSupported
                             ? updateNewKishPostNoti
                             : () {Toasta(context).toast(Toast(subtitle: "이 기기에서 지원되지 않습니다"));},
@@ -371,22 +371,27 @@ class _PostList extends StatelessWidget {
                       if (index > 2) return SizedBox.shrink();
                       Map element = postList![index];
 
-                      return FlatButton(
+                      return ButtonTheme(
                         padding: EdgeInsets.zero,
                         minWidth: double.infinity,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) =>
-                                PostWebView(
-                                    menu: element["menu"].toString(),
-                                    id: element["id"].toString())),
-                          );
-                        },
-                        child: Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.only(left: 8, right: 8),
-                            child: Text(element["title"], style: TextStyle(fontWeight: FontWeight.bold),)
+                        child:  TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>
+                                  PostWebView(
+                                      menu: element["menu"].toString(),
+                                      id: element["id"].toString()
+                                  )),
+                            );
+                          },
+
+
+                          child: Container(
+                              alignment: Alignment.topLeft,
+                              margin: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(element["title"], style: TextStyle(fontWeight: FontWeight.bold),)
+                          ),
                         ),
                       );
                     },

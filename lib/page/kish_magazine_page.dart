@@ -221,7 +221,7 @@ class TextArticle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
         children: [
-          FlatButton(
+          TextButton(
               onPressed: () {
                 Navigator.push(
                     context,
@@ -260,7 +260,7 @@ class TextArticleWithImg extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
         children: [
-          FlatButton(
+          TextButton(
               onPressed: () {
                 Navigator.push(
                     context,
@@ -311,7 +311,7 @@ class ImgArticle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
         children: [
-          FlatButton(
+          TextButton(
               onPressed: () {
                 Navigator.push(context, PageRouteBuilder(
                   opaque: false,

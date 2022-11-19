@@ -174,12 +174,16 @@ class _LibraryPageState extends State<LibraryPage> with AutomaticKeepAliveClient
                               ),
                               Container(
                                   child: Center(
-                                      child: FlatButton(
+                                      child: TextButton(
                                           onPressed: () async {
                                             await LoginView.logout();
                                             this.initWidgets();
                                           },
-                                          color: Color.fromARGB(255, 75, 0, 19),
+                                          style: ButtonStyle(
+                                            foregroundColor: MaterialStateProperty.all(
+                                              Color.fromARGB(255, 75, 0, 19),
+                                            )
+                                          ),
                                           child: Text("로그아웃", style: TextStyle(fontFamily: "CRB", color: Colors.white))
                                       )
                                   )

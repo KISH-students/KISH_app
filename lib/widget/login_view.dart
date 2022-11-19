@@ -195,7 +195,7 @@ class _LoginViewState extends State<LoginView> {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          RaisedButton(
+                          ElevatedButton(
                               onPressed: () async {
                                 await LoginView.storage.write(key: "id", value: idController.text.trim());
                                 await LoginView.storage.write(key: "pw", value: pwController.text.trim());
@@ -203,13 +203,15 @@ class _LoginViewState extends State<LoginView> {
                                 login();
                               },
                               child: Text("로그인", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              color: Colors.blueGrey.shade600,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)
-                              )
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all(Colors.blueGrey.shade600),
+                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ))
+                              ),
                           ),
                           SizedBox(width: 5,),
-                          RaisedButton(
+                          ElevatedButton(
                               onPressed: () async {
                                 Map? data = await Navigator.push(context, new MaterialPageRoute(
                                     builder: (context) => RegisterView()));
@@ -219,21 +221,26 @@ class _LoginViewState extends State<LoginView> {
                                 }
                               },
                               child: Text("회원가입", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              color: Colors.white38,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)
-                              )
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white38),
+                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)
+                                )),
+                              ),
                           ),
                           SizedBox(width: 5,),
-                          RaisedButton(
+                          ElevatedButton(
                               onPressed: () async {
                                 Navigator.pop(context);
                               },
                               child: Text("나가기", style: TextStyle(fontFamily: "NanumSquareR", color: Colors.white70)),
-                              color: Colors.red.shade600.withOpacity(0.8),
-                              shape: RoundedRectangleBorder(
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all(Colors.red.shade600.withOpacity(0.8)),
+                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)
-                              )
+                                ),
+                                ),
+                              ),
                           ),
                         ]),
                   ],

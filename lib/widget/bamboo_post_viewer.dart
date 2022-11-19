@@ -687,7 +687,7 @@ class _CommentReplyScreenState extends State<CommentReplyScreen> {
             children: [
               Padding(
                   padding: EdgeInsets.only(left: 10),
-                  child: FlatButton.icon(
+                  child: TextButton.icon(
                     icon: Icon(CupertinoIcons.back),
                     onPressed: () {
                       Navigator.pop(context);
