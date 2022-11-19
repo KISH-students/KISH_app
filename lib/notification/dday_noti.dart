@@ -53,7 +53,7 @@ class DdayNoti extends Noti {
       this.notiTitle = title;
       this.notiContent = content;
       dynamic detail =
-      await getOngoingAndroidDetails("dday", "D-DAY 알림", "D-Day가 알림에 표시돼요.");
+      await getOngoingAndroidDetails("dday", "D-DAY 알림");
 
       NotificationManager.notiPlugin
           .show(notificationId, title, content, detail);

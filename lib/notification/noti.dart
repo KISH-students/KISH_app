@@ -29,10 +29,10 @@ class Noti {
   }
 
   Future<NotificationDetails> getOngoingAndroidDetails(String id,
-      String name, String desc) async {
+      String name) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
-        id, name, desc,
+        id, name,
         importance: Importance.low,
         priority: Priority.low,
         onlyAlertOnce: true,

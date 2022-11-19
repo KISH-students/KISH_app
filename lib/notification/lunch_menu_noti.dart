@@ -62,7 +62,7 @@ class LunchMenuNoti extends Noti {
       return;
     }
 
-    dynamic detail = await getOngoingAndroidDetails("급식", "급식 알림", "석식을 포함한 급식 메뉴 알림이 표시됩니다.");
+    dynamic detail = await getOngoingAndroidDetails("급식", "급식 알림");
 
     result!.forEach((element) async {
       if (foundMenu) return;
