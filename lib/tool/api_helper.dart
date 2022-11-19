@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:android_id/android_id.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kish2019/kish_api.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum Method { get, post }
 
 class ApiHelper {
+  static const _androidIdPlugin = AndroidId();
 
   static Future<String> request(
       String api, Method method, Map<String, String?> params, {doCache: true, int timeout = 10}) async {
@@ -67,10 +69,9 @@ class ApiHelper {
 
     if (Platform.isIOS) {
       IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-      uuid = iosDeviceInfo.identifierForVendor;
+      uuid = iosDeviceInfo.identifierForVendor!;
     } else {
-      AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-      uuid = androidDeviceInfo.androidId;
+      uuid = (await _androidIdPlugin.getId())!;
     }
 
     return uuid;

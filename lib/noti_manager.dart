@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kish2019/notification/bamboo_noti.dart';
 import 'package:kish2019/notification/dday_noti.dart';
@@ -37,7 +37,7 @@ class NotificationManager {
     AndroidInitializationSettings('kish_icon');
     if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await DeviceInfoPlugin().iosInfo;
-      var version = iosInfo.systemVersion;
+      String version = iosInfo.systemVersion!;
       isFcmSupported = !version.startsWith("9."); // ios 9에서 FCM이 작동하지 않습니다.
     }
 
